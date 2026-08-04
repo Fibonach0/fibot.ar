@@ -1,0 +1,942 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FiBOT — Preguntale a tu empresa. Te contesta.</title>
+<meta name="description" content="Automatización por WhatsApp para PyMEs argentinas. Flotas, farmacia y control de vencimientos: la respuesta llega al único canal que tu gente ya tiene abierto.">
+<link rel="canonical" href="https://www.fibot.ar/">
+<meta name="theme-color" content="#eae5dc" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#100f0d" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+
+<meta property="og:type" content="website">
+<meta property="og:locale" content="es_AR">
+<meta property="og:site_name" content="FiBOT">
+<meta property="og:url" content="https://www.fibot.ar/">
+<meta property="og:title" content="FiBOT — Preguntale a tu empresa. Te contesta.">
+<meta property="og:description" content="Automatización por WhatsApp para PyMEs argentinas. Flotas, farmacia y control de vencimientos: la respuesta llega al único canal que tu gente ya tiene abierto.">
+<meta property="og:image" content="https://www.fibot.ar/assets/og-fibot.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ProfessionalService",
+  "name": "FiBOT",
+  "url": "https://www.fibot.ar/",
+  "description": "Automatización por WhatsApp para PyMEs argentinas. Flotas, farmacia y control de vencimientos: la respuesta llega al único canal que tu gente ya tiene abierto.",
+  "telephone": "+54-9-11-2852-4957",
+  "email": "ignacio.antu@gmail.com",
+  "areaServed": { "@type": "Country", "name": "Argentina" },
+  "parentOrganization": {
+    "@type": "Organization",
+    "name": "AntuñA",
+    "url": "https://www.xn--antua-rta.com.ar/"
+  },
+  "founder": { "@type": "Person", "name": "Ignacio Antuña" }
+}
+</script>
+
+<style>
+  :root{
+    --hueso:#eae5dc;
+    --hueso-2:#e0d9cd;
+    --tinta:#14120f;
+    --tinta-2:#57514a;
+    --bronce:#8a5a2b;
+    --bronce-vivo:#b9762f;
+    --rojo-oro:#9c3d1e;
+    --linea:#c9c0b1;
+
+    --sans:system-ui,-apple-system,"Segoe UI Variable","Segoe UI",Roboto,sans-serif;
+    --serif:Georgia,"Iowan Old Style","Palatino Linotype",serif;
+    --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{--hueso:#100f0d;--hueso-2:#191713;--tinta:#ece6db;--tinta-2:#9a9082;
+      --linea:#2e2a24;--bronce:#c9903f;--bronce-vivo:#e0a44c;--rojo-oro:#d2683c}
+  }
+  :root[data-theme="dark"]{--hueso:#100f0d;--hueso-2:#191713;--tinta:#ece6db;
+    --tinta-2:#9a9082;--linea:#2e2a24;--bronce:#c9903f;--bronce-vivo:#e0a44c;
+    --rojo-oro:#d2683c}
+  :root[data-theme="light"]{--hueso:#eae5dc;--hueso-2:#e0d9cd;--tinta:#14120f;
+    --tinta-2:#57514a;--linea:#c9c0b1;--bronce:#8a5a2b;--bronce-vivo:#b9762f;
+    --rojo-oro:#9c3d1e}
+
+  *{box-sizing:border-box}
+  /* Sin esto, los links del menú dejan el título tapado por la nav pegajosa. */
+  html{scroll-behavior:smooth;scroll-padding-top:78px}
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+  body{margin:0;background:var(--hueso);color:var(--tinta);
+    font-family:var(--serif);font-size:17px;line-height:1.68;
+    -webkit-font-smoothing:antialiased}
+  .m{max-width:1140px;margin:0 auto;padding:0 28px}
+  a{color:inherit}
+
+  .display{font-family:var(--sans);font-weight:800;letter-spacing:-.045em;
+    line-height:.94;text-wrap:balance}
+  .mono{font-family:var(--mono);font-size:.7rem;letter-spacing:.2em;
+    text-transform:uppercase}
+
+  /* ── nav pegajosa ─────────────────────────────────────
+     Estructura del header de HyperUI (MIT): marca · nav · CTA · hamburguesa.
+     El menú mobile es un <details>: se abre y cierra sin una línea de JS, así
+     que no queda roto si el script falla. */
+  .top{position:sticky;top:0;z-index:30;background:var(--hueso);
+    border-bottom:1px solid transparent;transition:border-color .2s}
+  .top.pegado{border-bottom-color:var(--linea)}
+  .top .m{display:flex;align-items:center;gap:24px;height:62px}
+  .marca{font-family:var(--sans);font-weight:800;font-size:1.05rem;
+    letter-spacing:-.03em;text-decoration:none}
+  .marca i{font-style:normal;color:var(--bronce-vivo)}
+  .nav-desk{margin-left:auto;display:flex;gap:26px;align-items:center}
+  .nav-desk a{font-family:var(--sans);font-size:.88rem;color:var(--tinta-2);
+    text-decoration:none;transition:color .15s}
+  .nav-desk a:hover{color:var(--tinta)}
+  .btn-top{font-family:var(--sans);font-size:.86rem;font-weight:650;
+    color:var(--hueso)!important;background:var(--tinta);padding:9px 17px;
+    text-decoration:none;transition:background .15s}
+  .btn-top:hover{background:var(--bronce)}
+
+  .menu-mob{margin-left:auto;position:relative}
+  .menu-mob summary{list-style:none;cursor:pointer;padding:8px;
+    display:flex;align-items:center}
+  .menu-mob summary::-webkit-details-marker{display:none}
+  .menu-mob svg{width:22px;height:22px;stroke:var(--tinta);stroke-width:1.8;
+    fill:none}
+  .menu-mob .panel{position:absolute;right:0;top:calc(100% + 10px);
+    background:var(--hueso);border:1px solid var(--linea);min-width:220px;
+    padding:8px 0;box-shadow:0 16px 40px rgba(20,15,8,.18)}
+  .menu-mob .panel a{display:block;padding:11px 20px;font-family:var(--sans);
+    font-size:.95rem;text-decoration:none;color:var(--tinta)}
+  .menu-mob .panel a:hover{background:var(--hueso-2)}
+  @media (min-width:900px){.menu-mob{display:none}}
+  @media (max-width:899px){.nav-desk{display:none}}
+
+  /* ── revelado al entrar en pantalla ───────────────────
+     Sólo se esconde si el JS corrió (clase .js). Sin JS, o con movimiento
+     reducido, todo se ve: la animación nunca es la que "trae" el contenido. */
+  .js .rev{opacity:0;transform:translateY(15px);
+    transition:opacity .65s ease,transform .65s cubic-bezier(.22,.61,.36,1)}
+  .js .rev.visible{opacity:1;transform:none}
+  @media (prefers-reduced-motion:reduce){
+    .js .rev{opacity:1;transform:none;transition:none}
+  }
+
+  /* ── portada ───────────────────────────────────────── */
+  .portada{padding:clamp(40px,7vw,84px) 0 clamp(48px,6vw,72px)}
+  .portada .display{font-size:clamp(3rem,10.5vw,7.6rem);max-width:13ch}
+  .portada .display b{font-weight:800;color:var(--bronce-vivo)}
+  .abajo{display:grid;gap:clamp(28px,4vw,54px);margin-top:clamp(30px,4vw,52px);
+    grid-template-columns:1fr}
+  @media (min-width:980px){
+    .abajo{grid-template-columns:1.15fr .85fr;align-items:start}
+    .abajo .col2{padding-top:74px}
+  }
+  .lead{font-size:clamp(1.15rem,1.9vw,1.4rem);max-width:34ch;line-height:1.5}
+  .nota-margen{font-family:var(--sans);font-size:.83rem;color:var(--tinta-2);
+    border-left:2px solid var(--bronce);padding-left:14px;margin-top:26px;
+    max-width:30ch;line-height:1.5}
+
+  .cta{display:inline-block;margin-top:30px;font-family:var(--sans);
+    font-weight:650;font-size:.98rem;color:var(--hueso);background:var(--tinta);
+    padding:14px 26px;text-decoration:none;transition:background .15s}
+  .cta:hover{background:var(--bronce)}
+  .cta:focus-visible{outline:2px solid var(--bronce-vivo);outline-offset:3px}
+
+  /* ── WhatsApp ──────────────────────────────────────── */
+  .wa{background:#0b141a;border-radius:6px;overflow:hidden;
+    box-shadow:0 18px 44px rgba(20,15,8,.28);max-width:400px}
+  .wa-top{background:#202c33;padding:10px 14px;display:flex;align-items:center;
+    gap:11px}
+  .wa-av{width:36px;height:36px;border-radius:50%;background:#5b6b73;
+    display:grid;place-items:center;color:#e9edef;font-family:var(--sans);
+    font-weight:700;font-size:.82rem}
+  .wa-top b{color:#e9edef;font-family:var(--sans);font-size:.92rem;
+    font-weight:500;display:block;line-height:1.25}
+  .wa-top small{color:#8696a0;font-family:var(--sans);font-size:.72rem}
+  .wa-cuerpo{padding:14px 12px 18px;display:flex;flex-direction:column;gap:6px;
+    background-color:#0b141a;
+    background-image:radial-gradient(circle at 20% 30%,rgba(255,255,255,.022) 1px,transparent 1px),
+      radial-gradient(circle at 70% 65%,rgba(255,255,255,.022) 1px,transparent 1px);
+    background-size:38px 38px,52px 52px}
+  .b{max-width:82%;padding:6px 9px 5px;border-radius:8px;
+    font-family:var(--sans);font-size:.875rem;line-height:1.4}
+  .b .t{font-size:.63rem;color:#ffffff8c;float:right;margin:6px 0 -2px 8px;
+    font-variant-numeric:tabular-nums}
+  .b.out{align-self:flex-end;background:#005c4b;color:#e9edef;
+    border-top-right-radius:2px}
+  .b.in{align-self:flex-start;background:#202c33;color:#e9edef;
+    border-top-left-radius:2px}
+  .b.out .t::after{content:" ✓✓";color:#53bdeb;letter-spacing:-1px}
+  .b strong{font-weight:600}
+  .b .n{font-variant-numeric:tabular-nums}
+
+  /* ── franja de cifras ──────────────────────────────── */
+  .franja{border-top:1px solid var(--linea);border-bottom:1px solid var(--linea);
+    padding:clamp(26px,3.4vw,40px) 0}
+  .franja .m{display:flex;gap:clamp(28px,5vw,72px);flex-wrap:wrap;
+    align-items:baseline}
+  .cif{display:flex;align-items:baseline;gap:11px}
+  .cif .v{font-family:var(--sans);font-weight:800;
+    font-size:clamp(1.9rem,3.4vw,2.7rem);letter-spacing:-.045em;
+    color:var(--bronce-vivo);font-variant-numeric:tabular-nums;line-height:1}
+  .cif .k{font-family:var(--sans);font-size:.86rem;color:var(--tinta-2);
+    max-width:17ch;line-height:1.32}
+
+  /* ── el enganche: cerebro + fuentes ───────────────────
+     El lienzo dibuja el diagrama; el texto de al lado NO lo repite, lo
+     explica. Si el canvas no carga, la sección sigue diciendo algo. */
+  .enganche{background:var(--tinta);color:var(--hueso);overflow:hidden}
+  .enganche .mono{color:var(--bronce-vivo)}
+  .enganche h2{color:var(--hueso)}
+  .enganche .txt{display:grid;gap:clamp(20px,3vw,48px);margin-top:26px;
+    grid-template-columns:1fr}
+  @media (min-width:880px){.enganche .txt{grid-template-columns:1fr 1fr}}
+  .enganche p{color:color-mix(in oklab,var(--hueso) 68%,var(--tinta));
+    max-width:46ch;margin:0}
+  .enganche p b{color:var(--hueso);font-weight:400;
+    border-bottom:1px solid var(--bronce)}
+  .lienzo-caja{margin-top:clamp(26px,3.5vw,44px);position:relative}
+  .lienzo{display:block;width:100%;height:clamp(400px,44vw,500px)}
+  @media (max-width:760px){.lienzo{height:560px}}
+  /* max-width:none porque .enganche p lo limita a 46ch y acá partía el pie
+     en dos líneas justo en la mitad de una frase. */
+  .enganche .lienzo-pie{font-family:var(--mono);font-size:.63rem;letter-spacing:.15em;
+    text-transform:uppercase;margin-top:14px;max-width:none;
+    color:color-mix(in oklab,var(--hueso) 45%,var(--tinta))}
+
+  /* ── secciones ─────────────────────────────────────── */
+  section{padding:clamp(56px,7vw,92px) 0}
+  .titulo{font-size:clamp(2rem,4.3vw,3.1rem);max-width:16ch}
+  .dos{display:grid;gap:clamp(26px,4vw,60px);margin-top:34px;
+    grid-template-columns:1fr}
+  @media (min-width:880px){.dos{grid-template-columns:.92fr 1.08fr}}
+  .dos p{max-width:44ch}
+  .dos p+p{margin-top:1em}
+
+  .lista{border-top:1px solid var(--linea);margin-top:44px}
+  .item{border-bottom:1px solid var(--linea);padding:26px 0;
+    display:grid;gap:8px 34px;grid-template-columns:1fr}
+  @media (min-width:820px){
+    .item{grid-template-columns:minmax(0,auto) 1fr;align-items:start}
+  }
+  .item h3{font-family:var(--sans);font-weight:800;letter-spacing:-.03em;
+    font-size:clamp(1.5rem,2.7vw,2.1rem);margin:0;min-width:7.5em}
+  .item .d{color:var(--tinta-2);max-width:52ch;margin:0}
+  .item .est{font-family:var(--mono);font-size:.66rem;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--bronce);display:block;margin-bottom:4px}
+  .item.tenue h3{font-weight:400;color:var(--tinta-2);
+    font-family:var(--serif);letter-spacing:0}
+
+  /* ── cómo arranca: línea de tiempo ────────────────────
+     Estructura tomada del widget Steps de AstroWind (MIT): regla vertical,
+     un punto por paso. Tres pasos numerados leen como un proceso; tres
+     tarjetas iguales leen como un folleto. */
+  .pasos{margin-top:40px;position:relative;padding-left:32px}
+  .pasos::before{content:"";position:absolute;left:5px;top:10px;bottom:14px;
+    width:1px;background:var(--linea)}
+  .paso{position:relative;padding-bottom:34px;max-width:54ch}
+  .paso:last-child{padding-bottom:0}
+  .paso::before{content:"";position:absolute;left:-32px;top:9px;width:11px;
+    height:11px;border-radius:50%;background:var(--hueso);
+    border:2px solid var(--bronce-vivo);box-sizing:border-box}
+  .paso h3{font-family:var(--sans);font-weight:800;letter-spacing:-.025em;
+    font-size:1.22rem;margin:0 0 4px}
+  .paso .cuando{font-family:var(--mono);font-size:.64rem;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--bronce);display:block;margin-bottom:6px}
+  .paso p{margin:0;color:var(--tinta-2)}
+
+  /* ── preguntas: <details> nativo, patrón de HyperUI ─── */
+  .faq{margin-top:36px;border-top:1px solid var(--linea)}
+  .faq details{border-bottom:1px solid var(--linea)}
+  .faq summary{list-style:none;cursor:pointer;display:flex;
+    justify-content:space-between;align-items:center;gap:20px;padding:20px 0;
+    font-family:var(--sans);font-weight:650;font-size:1.03rem}
+  .faq summary::-webkit-details-marker{display:none}
+  .faq summary:focus-visible{outline:2px solid var(--bronce-vivo);
+    outline-offset:3px}
+  .faq svg{width:18px;height:18px;flex:none;stroke:var(--bronce);
+    stroke-width:2;fill:none;transition:transform .25s}
+  .faq details[open] svg{transform:rotate(180deg)}
+  .faq p{margin:0 0 22px;color:var(--tinta-2);max-width:60ch}
+
+  /* ── cierre ────────────────────────────────────────── */
+  .cierre{background:var(--tinta);color:var(--hueso)}
+  .cierre .titulo{max-width:19ch}
+  .cierre p{color:#a89f92;max-width:46ch;margin-top:18px}
+  .cierre .cta{background:var(--bronce-vivo);color:#17110a;margin-top:28px}
+  .cierre .cta:hover{background:var(--hueso);color:var(--tinta)}
+
+  footer{padding:clamp(40px,5vw,64px) 0 44px;font-family:var(--sans);
+    font-size:.87rem;color:var(--tinta-2);border-top:1px solid var(--linea)}
+  .pie-cols{display:grid;gap:30px 40px;grid-template-columns:1fr}
+  @media (min-width:760px){.pie-cols{grid-template-columns:1.4fr 1fr 1fr}}
+  .pie-cols h4{font-family:var(--mono);font-size:.66rem;letter-spacing:.18em;
+    text-transform:uppercase;color:var(--tinta-2);margin:0 0 12px;
+    font-weight:400}
+  .pie-cols a{color:var(--tinta);text-decoration:none;display:block;
+    padding:3px 0}
+  .pie-cols a:hover{color:var(--bronce-vivo)}
+  .pie-cols .marca{font-size:1.15rem}
+  .pie-cols p{margin:10px 0 0;max-width:32ch;line-height:1.5}
+  .pie-legal{margin-top:34px;padding-top:20px;border-top:1px solid var(--linea);
+    display:flex;gap:18px;flex-wrap:wrap;font-size:.8rem}
+  .pie-legal span:last-child{margin-left:auto}
+  .pie-legal a{color:var(--bronce)}
+</style>
+</head>
+<body>
+<div class="top">
+  <div class="m">
+    <a class="marca" href="#">Fi<i>BOT</i></a>
+
+    <nav class="nav-desk">
+      <a href="#frentes">Qué hacemos</a>
+      <a href="#arranca">Cómo arranca</a>
+      <a href="#preguntas">Preguntas</a>
+      <a class="btn-top" href="https://wa.me/5491128524957">Escribinos</a>
+    </nav>
+
+    <details class="menu-mob">
+      <summary aria-label="Abrir menú">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" d="M4 6h16M4 12h16M4 18h16"/>
+        </svg>
+      </summary>
+      <div class="panel">
+        <a href="#frentes">Qué hacemos</a>
+        <a href="#arranca">Cómo arranca</a>
+        <a href="#preguntas">Preguntas</a>
+        <a href="https://wa.me/5491128524957">Escribinos</a>
+      </div>
+    </details>
+  </div>
+</div>
+
+<header class="portada">
+  <div class="m">
+    <h1 class="display">Preguntale a tu<br>empresa. <b>Te contesta.</b></h1>
+
+    <div class="abajo">
+      <div>
+        <p class="lead">Tu gente ya se pasa el día escribiendo por WhatsApp.
+          FiBOT trabaja ahí adentro: contesta lo que hoy alguien tiene que ir a
+          buscar, y avisa lo que a nadie le toca mirar.</p>
+        <p class="nota-margen">No es un dashboard. Un dashboard espera que
+          entres. A los seis meses no entra nadie, y eso lo sabemos porque nos
+          pasó antes de construir esto.</p>
+        <a class="cta" href="https://wa.me/5491128524957">Escribinos</a>
+      </div>
+
+      <div class="col2">
+        <div class="wa">
+          <div class="wa-top">
+            <div class="wa-av">Fi</div>
+            <div><b>FiBOT</b><small>en línea</small></div>
+          </div>
+          <div class="wa-cuerpo">
+            <div class="b out">¿Dónde está el 214?<span class="t">9:12</span></div>
+            <div class="b in"><strong>Interno 214</strong> — Ruta 3, km 412,
+              cerca de Azul. En movimiento a <span class="n">82 km/h</span>.
+              Chofer: Ruiz.<span class="t">9:12</span></div>
+            <div class="b out">¿y cuánto gastó este mes?<span class="t">9:13</span></div>
+            <div class="b in"><strong>1.847 litros</strong> en
+              <span class="n">6.320 km</span> — <span class="n">29,2 L/100km</span>.
+              Está <span class="n">4%</span> arriba de su promedio.<span class="t">9:13</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="franja">
+  <div class="m">
+    <div class="cif"><span class="v" data-hasta="267">267</span>
+      <span class="k">unidades consultadas todos los días</span></div>
+    <div class="cif"><span class="v" data-hasta="11">11</span>
+      <span class="k">plataformas de GPS compatibles</span></div>
+    <div class="cif"><span class="v" data-hasta="4">4</span>
+      <span class="k">fuentes cruzadas, porque una sola miente</span></div>
+  </div>
+</div>
+
+<section class="enganche">
+  <div class="m rev">
+    <span class="mono">El enganche</span>
+    <h2 class="display titulo" style="margin-top:14px">Una pregunta.
+      Cuatro lugares de donde sale la respuesta.</h2>
+    <div class="txt">
+      <p>Ninguna fuente sola dice la verdad completa. El GPS sabe dónde está el
+        camión pero no qué le toca hacer. El sistema sabe qué le toca pero no
+        dónde está. La planilla sabe qué se pagó. Y el chofer sabe lo que no
+        mide ningún sensor.</p>
+      <p><b>Cruzarlas es el trabajo.</b> Lo que llega por WhatsApp es una sola
+        respuesta, en una línea, sin que nadie tenga que abrir cuatro cosas
+        distintas y sacar la cuenta de memoria.</p>
+    </div>
+
+    <div class="lienzo-caja">
+      <canvas class="lienzo" role="img" aria-label="Diagrama: cuatro fuentes de
+        datos —GPS, planillas, el sistema de la empresa y los choferes— confluyen
+        en FiBOT, que responde por WhatsApp."></canvas>
+    </div>
+    <p class="lienzo-pie">GPS · Planillas · Tu sistema · Choferes → FiBOT → WhatsApp</p>
+  </div>
+</section>
+
+<section>
+  <div class="m rev">
+    <h2 class="display titulo">Lo difícil no es el dato. Es que alguien lo mire.</h2>
+    <div class="dos">
+      <div>
+        <p>Casi todo el software para PyMEs argentinas muere igual: se compra
+          con entusiasmo, se carga a medias, y a los seis meses lo abre una sola
+          persona. El dato existe. Nadie lo ve.</p>
+        <p>Nosotros invertimos el planteo. La información sale a buscar a la
+          persona por el único canal que tiene abierto de verdad, y no hay que
+          aprender nada ni instalar nada.</p>
+      </div>
+      <div>
+        <p>Eso tiene un costo que preferimos decir de entrada: <strong>no todo
+          se automatiza.</strong> Si lo que te preguntan cambia todos los días y
+          nunca se repite, un bot no te va a servir y te lo vamos a decir en la
+          primera charla.</p>
+        <p>Lo que sí funciona es lo aburrido: la pregunta que alguien hace
+          catorce veces por semana, y el papel que se vence mientras nadie
+          mira.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="frentes" style="padding-top:0">
+  <div class="m rev">
+    <span class="mono" style="color:var(--tinta-2)">Lo que hacemos</span>
+    <div class="lista">
+      <div class="item">
+        <h3>Flotas</h3>
+        <div>
+          <span class="est">En producción</span>
+          <p class="d">Dónde está cada camión, cuánto consumió, qué papeles
+            vencen y cuál conviene mandar. Se conecta al GPS que ya tenés —
+            once plataformas — sin cambiar de proveedor ni migrar nada.</p>
+        </div>
+      </div>
+      <div class="item">
+        <h3>Farmacia</h3>
+        <div>
+          <span class="est">En producción</span>
+          <p class="d">El farmacéutico está en el mostrador, no frente a una PC.
+            Escribe el nombre del remedio y le vuelve precio, coberturas de obra
+            social, equivalentes por droga y el prospecto en PDF.</p>
+        </div>
+      </div>
+      <div class="item">
+        <h3>Vencímetro</h3>
+        <div>
+          <span class="est">Nuevo</span>
+          <p class="d">Todo lo que vence en un solo lugar, avisando a quien tiene
+            que resolverlo. VTV, seguros, habilitaciones, matafuegos, ART,
+            contratos. Arranca desde una planilla que ya tengas.</p>
+        </div>
+      </div>
+      <div class="item tenue">
+        <h3>Y lo tuyo</h3>
+        <div>
+          <span class="est">A medida</span>
+          <p class="d">Si hay un dato que vive en una planilla y alguien pregunta
+            por él todos los días, ese es el candidato. Empezamos por un caso, no
+            por todo.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="arranca" style="background:var(--hueso-2)">
+  <div class="m rev">
+    <h2 class="display titulo">Cómo arranca, sin vueltas.</h2>
+    <div class="pasos">
+      <div class="paso">
+        <span class="cuando">Día 1 · 30 minutos</span>
+        <h3>Una charla, y nada más que eso</h3>
+        <p>Nos contás qué le preguntan a tu gente todos los días y con qué lo
+          resuelven hoy. De ahí sale si esto sirve o no. Si no sirve, se termina
+          ahí y no cuesta nada.</p>
+      </div>
+      <div class="paso">
+        <span class="cuando">Semanas 1 y 2</span>
+        <h3>Un caso andando, no el sistema entero</h3>
+        <p>Elegimos la pregunta que más se repite y la conectamos con lo que ya
+          tenés —el GPS, la planilla, el sistema de siempre—. A las dos semanas
+          hay algo funcionando en un grupo chico de gente real.</p>
+      </div>
+      <div class="paso">
+        <span class="cuando">Después</span>
+        <h3>Se suma lo que el uso pida</h3>
+        <p>El segundo caso lo elige la gente usando el primero, no una reunión de
+          planificación. Lo que nadie pregunta no se construye — y ahí es donde
+          la mayoría de los proyectos se van de presupuesto.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="preguntas">
+  <div class="m rev">
+    <h2 class="display titulo">Lo que siempre nos preguntan.</h2>
+    <div class="faq">
+      <details open>
+        <summary>¿Tengo que cambiar mi GPS o mi sistema?
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+        </summary>
+        <p>No. Nos conectamos al que ya tenés: hay once plataformas mapeadas y
+          documentadas. Si la tuya no está en la lista se estudia, pero no
+          siempre se puede — y eso lo sabemos en la primera semana, no a los
+          seis meses.</p>
+      </details>
+      <details>
+        <summary>¿Qué pasa si mi gente no lo usa?
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+        </summary>
+        <p>Es la pregunta correcta, y la razón por la que esto vive en WhatsApp y
+          no en una app. Igual medimos el uso desde el primer día: cuántas
+          consultas, de cuánta gente distinta. Si a las cuatro semanas escribe
+          una sola persona, el problema no era la herramienta y te lo decimos.</p>
+      </details>
+      <details>
+        <summary>¿Cuánto sale?
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+        </summary>
+        <p>No publicamos lista porque el primer caso define el alcance y las
+          diferencias son grandes. Lo que sí: en la primera charla sale un
+          número cerrado, no un rango ni un “depende”.</p>
+      </details>
+      <details>
+        <summary>¿Dónde quedan mis datos?
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+        </summary>
+        <p>En una base propia de tu empresa, separada de la de cualquier otro
+          cliente. Ninguna consulta de uno toca los datos de otro, y eso no es
+          una promesa comercial: son proyectos distintos.</p>
+      </details>
+      <details>
+        <summary>¿Y si mañana los quiero dejar?
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+        </summary>
+        <p>Te llevás tus datos exportados y se apaga. No hay permanencia ni
+          contrato largo. Preferimos que te quedes porque lo usás, que es además
+          la única forma en la que esto nos conviene a nosotros.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<section class="cierre">
+  <div class="m rev">
+    <h2 class="display titulo">Contanos qué le preguntan a tu gente todos los días.</h2>
+    <p>Si es siempre lo mismo, probablemente lo pueda contestar un bot. Si no, te
+      lo decimos: vender lo que no sirve es mal negocio para los dos.</p>
+    <a class="cta" href="https://wa.me/5491128524957">Escribinos por WhatsApp</a>
+  </div>
+</section>
+
+<footer>
+  <div class="m">
+    <div class="pie-cols">
+      <div>
+        <span class="marca">Fi<i>BOT</i></span>
+        <p>Automatización por WhatsApp para empresas que ya tienen los datos y
+          no los están mirando.</p>
+      </div>
+      <div>
+        <h4>Qué hacemos</h4>
+        <a href="#frentes">Flotas</a>
+        <a href="#frentes">Farmacia</a>
+        <a href="#frentes">Vencímetro</a>
+        <a href="#arranca">Cómo arranca</a>
+      </div>
+      <div>
+        <h4>Hablar con alguien</h4>
+        <a href="https://wa.me/5491128524957">+54 9 11 2852-4957</a>
+        <a href="mailto:ignacio.antu@gmail.com">Por mail</a>
+        <a href="https://xn--antua-rta.com.ar/">antuña.com.ar</a>
+      </div>
+    </div>
+    <div class="pie-legal">
+      <span>FiBOT — de <a href="https://xn--antua-rta.com.ar/">AntuñA</a>,
+        por Ignacio Antuña</span>
+      <span>Buenos Aires, Argentina</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+document.documentElement.classList.add('js');
+
+(function () {
+  var quieto = window.matchMedia &&
+               window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var hayIO = !!window.IntersectionObserver;
+
+  /* ── cifras que se suman ──────────────────────────────
+     El número final ya está en el HTML: el script lo pisa, nunca lo genera.
+     Un contador que no arranca y deja un cero es peor que no animar nada. */
+  var cifras = document.querySelectorAll('.cif .v[data-hasta]');
+  if (cifras.length && hayIO && !quieto) {
+    cifras.forEach(function (el) {
+      // Reservar el ancho final antes de vaciarlo: si no, la franja entera se
+      // corre sola mientras el número pasa de 1 a 3 dígitos.
+      el.style.display = 'inline-block';
+      el.style.minWidth = el.getBoundingClientRect().width + 'px';
+      el.textContent = '0';
+    });
+
+    var obsCif = new IntersectionObserver(function (es) {
+      es.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        obsCif.unobserve(e.target);          // una sola vez, no en cada scroll
+        var el = e.target;
+        var hasta = parseInt(el.dataset.hasta, 10);
+        var dura = 900 + Math.min(hasta, 300);   // los grandes tardan más
+        var t0 = null;
+        (function paso(t) {
+          if (t0 === null) t0 = t;
+          var p = Math.min(((t || 0) - t0) / dura, 1);
+          var suave = 1 - Math.pow(1 - p, 3);    // easeOutCubic: frena al final
+          el.textContent = Math.round(hasta * suave).toLocaleString('es-AR');
+          if (p < 1) requestAnimationFrame(paso);
+        })(performance.now());
+      });
+    }, { threshold: 0.6 });
+    cifras.forEach(function (el) { obsCif.observe(el); });
+  }
+
+  /* ── revelado de secciones ─────────────────────────── */
+  var revs = document.querySelectorAll('.rev');
+  if (revs.length) {
+    if (!hayIO || quieto) {
+      revs.forEach(function (el) { el.classList.add('visible'); });
+    } else {
+      var obsRev = new IntersectionObserver(function (es) {
+        es.forEach(function (e) {
+          if (!e.isIntersecting) return;
+          obsRev.unobserve(e.target);
+          e.target.classList.add('visible');
+        });
+      }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+      revs.forEach(function (el) { obsRev.observe(el); });
+    }
+  }
+
+  /* ── la nav se separa del fondo recién cuando hay scroll ──
+     Con un centinela en vez de un listener de scroll: no corre en cada píxel. */
+  var top = document.querySelector('.top');
+  if (top && hayIO) {
+    var centinela = document.createElement('div');
+    centinela.setAttribute('aria-hidden', 'true');
+    top.parentNode.insertBefore(centinela, top);
+    new IntersectionObserver(function (es) {
+      top.classList.toggle('pegado', !es[0].isIntersecting);
+    }).observe(centinela);
+  }
+
+  /* ── el menú mobile se cierra al elegir algo ─────────
+     Es un <details>: sin esto queda abierto tapando la sección a la que
+     acabás de saltar. */
+  var menu = document.querySelector('.menu-mob');
+  if (menu) {
+    menu.querySelectorAll('.panel a').forEach(function (a) {
+      a.addEventListener('click', function () { menu.open = false; });
+    });
+    document.addEventListener('click', function (e) {
+      if (menu.open && !menu.contains(e.target)) menu.open = false;
+    });
+  }
+
+  /* ── el enganche ─────────────────────────────────────
+     La nube de puntos es el CEREBRO, no el fondo. Un campo de partículas
+     detrás del texto no dice nada; acá cada punto está adentro del nodo que
+     procesa, y las cuatro fuentes se ven llegando. Es el gráfico de la cifra
+     "4 fuentes cruzadas", no decoración. */
+  var lienzo = document.querySelector('.lienzo');
+  if (lienzo && lienzo.getContext) enganche(lienzo, quieto, hayIO);
+
+  function enganche(cv, quieto, hayIO) {
+    var ctx = cv.getContext('2d');
+    var W = 0, H = 0, vert = false, N = null;
+    var col = {};
+    var FUENTES = [
+      { t: 'GPS',        s: 'once plataformas' },
+      { t: 'Planillas',  s: 'las que ya usás' },
+      { t: 'Tu sistema', s: 'el de siempre' },
+      { t: 'Choferes',   s: 'desde el camión' }
+    ];
+
+    // Nube fija: se genera una vez y sobrevive a los resize. Regenerarla en
+    // cada resize haría "saltar" el cerebro al girar el teléfono.
+    var nube = [];
+    for (var i = 0; i < 78; i++) {
+      nube.push({
+        a: Math.random() * Math.PI * 2,
+        r: 0.56 + 0.44 * Math.sqrt(Math.random()),   // anillo: el centro queda
+        va: (Math.random() - 0.5) * 0.00026,          // libre para la palabra
+        ph: Math.random() * Math.PI * 2,
+        sp: 0.0005 + Math.random() * 0.0009
+      });
+    }
+
+    function rgba(hex, a) {
+      var h = String(hex).replace('#', '').trim();
+      if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
+      var n = parseInt(h, 16);
+      if (h.length !== 6 || isNaN(n)) return 'rgba(150,140,125,' + a + ')';
+      return 'rgba(' + ((n >> 16) & 255) + ',' + ((n >> 8) & 255) + ',' +
+             (n & 255) + ',' + a + ')';
+    }
+
+    function colores() {
+      // El bloque usa --tinta de fondo y --hueso de texto, y esas dos se dan
+      // vuelta con el tema. Leyéndolas, el dibujo se invierte solo.
+      var cs = getComputedStyle(document.documentElement);
+      var g = function (n, f) { return (cs.getPropertyValue(n) || '').trim() || f; };
+      col.fondo  = g('--tinta', '#14120f');
+      col.texto  = g('--hueso', '#eae5dc');
+      col.acento = g('--bronce-vivo', '#b9762f');
+    }
+
+    function medir() {
+      var r = cv.getBoundingClientRect();
+      var dpr = Math.min(window.devicePixelRatio || 1, 2);
+      W = r.width; H = r.height;
+      if (!W || !H) return false;
+      cv.width = Math.round(W * dpr);
+      cv.height = Math.round(H * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      vert = W < 720;
+      var f = [];
+      if (vert) {
+        // 2×2 arriba: cuatro etiquetas en fila no entran en un teléfono.
+        [[0.27, 0.07], [0.73, 0.07], [0.27, 0.21], [0.73, 0.21]]
+          .forEach(function (p) { f.push({ x: W * p[0], y: H * p[1] }); });
+        N = { f: f, b: { x: W * 0.5, y: H * 0.55, r: Math.min(W, H) * 0.20 },
+              w: { x: W * 0.5, y: H * 0.88 } };
+      } else {
+        for (var i = 0; i < 4; i++) f.push({ x: W * 0.17, y: H * (0.17 + i * 0.22) });
+        N = { f: f, b: { x: W * 0.5, y: H * 0.5, r: Math.min(W, H) * 0.17 },
+              w: { x: W * 0.87, y: H * 0.5 } };
+      }
+      return true;
+    }
+
+    function ctrl(p0, p1) {   // control de la curva: el cable sale plano y dobla
+      return { x: (p0.x + p1.x) / 2, y: p0.y + (p1.y - p0.y) * 0.18 };
+    }
+    function bez(p0, c, p1, t) {
+      var u = 1 - t;
+      return { x: u * u * p0.x + 2 * u * t * c.x + t * t * p1.x,
+               y: u * u * p0.y + 2 * u * t * c.y + t * t * p1.y };
+    }
+    function recortar(p0, p1, r) {   // frenar la línea en el borde del cerebro
+      var dx = p1.x - p0.x, dy = p1.y - p0.y;
+      var d = Math.hypot(dx, dy) || 1;
+      return { x: p1.x - dx / d * r, y: p1.y - dy / d * r };
+    }
+
+    var PER = 2700;   // un pulso por cable, siempre en vuelo
+
+    function luz(hex) {   // ¿el fondo de este bloque es claro u oscuro?
+      var h = String(hex).replace('#', '').trim();
+      if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
+      var n = parseInt(h, 16);
+      if (h.length !== 6 || isNaN(n)) return 0;
+      return (0.2126 * ((n >> 16) & 255) + 0.7152 * ((n >> 8) & 255) +
+              0.0722 * (n & 255)) / 255;
+    }
+
+    // Etiqueta con el fondo recortado atrás. Los cables convergen y por fuerza
+    // pasan por donde va el texto; sin este recorte, en el teléfono se lee
+    // "Planillas" con una línea cruzándole el medio.
+    function etiqueta(txt, x, y, px, peso, alfa, alin) {
+      ctx.font = peso + ' ' + px + 'px ' + FUENTE;
+      ctx.textAlign = alin; ctx.textBaseline = 'middle';
+      var w = ctx.measureText(txt).width;
+      var x0 = alin === 'right' ? x - w : alin === 'center' ? x - w / 2 : x;
+      ctx.fillStyle = rgba(col.fondo, 0.88);
+      ctx.fillRect(x0 - 4, y - px / 2 - 3, w + 8, px + 6);
+      ctx.fillStyle = rgba(col.texto, alfa);
+      ctx.fillText(txt, x, y);
+    }
+
+    function marco(t) {
+      if (!N) return;
+      ctx.clearRect(0, 0, W, H);
+      var b = N.b, esc = vert ? 0.9 : 1, brillo = 0;
+      // El bloque se da vuelta con el tema: sobre fondo claro hay que cargar
+      // más tinta o las líneas finas desaparecen.
+      var k = luz(col.fondo) > 0.5 ? 1.7 : 1;
+      var i, a, z;
+
+      // ── paso 1: cables y pulsos ──
+      for (i = 0; i < N.f.length; i++) {
+        var p0 = N.f[i], fin = recortar(p0, b, b.r + 4), c = ctrl(p0, fin);
+        ctx.strokeStyle = rgba(col.texto, 0.17 * k);
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(p0.x, p0.y);
+        ctx.quadraticCurveTo(c.x, c.y, fin.x, fin.y);
+        ctx.stroke();
+
+        var p = ((t + i * PER / 4) % PER) / PER;
+        if (p > 0.9) brillo = Math.max(brillo, (p - 0.9) / 0.1);
+        var q = bez(p0, c, fin, p);
+        var g = ctx.createRadialGradient(q.x, q.y, 0, q.x, q.y, 7 * esc);
+        g.addColorStop(0, rgba(col.acento, 0.95));
+        g.addColorStop(1, rgba(col.acento, 0));
+        ctx.fillStyle = g;
+        ctx.beginPath(); ctx.arc(q.x, q.y, 7 * esc, 0, 7); ctx.fill();
+      }
+
+      var ini = recortar(N.w, b, b.r + 4), c2 = ctrl(ini, N.w);
+      ctx.strokeStyle = rgba(col.texto, 0.17 * k);
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(ini.x, ini.y);
+      ctx.quadraticCurveTo(c2.x, c2.y, N.w.x, N.w.y);
+      ctx.stroke();
+
+      var ps = ((t + 700) % 1900) / 1900;
+      var qs = bez(ini, c2, N.w, ps);
+      var gs = ctx.createRadialGradient(qs.x, qs.y, 0, qs.x, qs.y, 8 * esc);
+      gs.addColorStop(0, 'rgba(37,211,102,.95)');    // el verde de WhatsApp
+      gs.addColorStop(1, 'rgba(37,211,102,0)');
+      ctx.fillStyle = gs;
+      ctx.beginPath(); ctx.arc(qs.x, qs.y, 8 * esc, 0, 7); ctx.fill();
+
+      // ── paso 2: el cerebro ──
+      var halo = ctx.createRadialGradient(b.x, b.y, b.r * 0.2, b.x, b.y, b.r * 1.85);
+      halo.addColorStop(0, rgba(col.acento, (0.16 + brillo * 0.16) * (k > 1 ? 1.5 : 1)));
+      halo.addColorStop(1, rgba(col.acento, 0));
+      ctx.fillStyle = halo;
+      ctx.beginPath(); ctx.arc(b.x, b.y, b.r * 1.85, 0, 7); ctx.fill();
+
+      var pos = nube.map(function (n) {
+        var ang = n.a + n.va * t;
+        var rad = b.r * n.r * (0.95 + 0.05 * Math.sin(n.ph + t * n.sp));
+        return { x: b.x + Math.cos(ang) * rad, y: b.y + Math.sin(ang) * rad };
+      });
+
+      var lim = b.r * 0.5;
+      ctx.lineWidth = 0.7;
+      for (a = 0; a < pos.length; a++) {
+        for (z = a + 1; z < pos.length; z++) {
+          var d = Math.hypot(pos[a].x - pos[z].x, pos[a].y - pos[z].y);
+          if (d > lim) continue;
+          ctx.strokeStyle = rgba(col.acento,
+            (1 - d / lim) * (0.3 + brillo * 0.35) * k);
+          ctx.beginPath();
+          ctx.moveTo(pos[a].x, pos[a].y);
+          ctx.lineTo(pos[z].x, pos[z].y);
+          ctx.stroke();
+        }
+      }
+      ctx.fillStyle = rgba(col.acento, 0.9);
+      for (a = 0; a < pos.length; a++) {
+        ctx.beginPath(); ctx.arc(pos[a].x, pos[a].y, 1.5 * esc, 0, 7); ctx.fill();
+      }
+
+      // ── paso 3: nodos, burbuja y etiquetas, arriba de todo ──
+      for (i = 0; i < N.f.length; i++) {
+        var n0 = N.f[i];
+        ctx.fillStyle = col.fondo;
+        ctx.strokeStyle = rgba(col.texto, 0.45 * k);
+        ctx.lineWidth = 1.4;
+        ctx.beginPath(); ctx.arc(n0.x, n0.y, 5.5 * esc, 0, 7);
+        ctx.fill(); ctx.stroke();
+
+        if (vert) {   // en teléfono el texto va arriba del punto
+          etiqueta(FUENTES[i].t, n0.x, n0.y - 26, 11.5, '600', 1, 'center');
+          etiqueta(FUENTES[i].s, n0.x, n0.y - 13, 9.5, '400', 0.55, 'center');
+        } else {
+          etiqueta(FUENTES[i].t, n0.x - 15, n0.y - 6, 13, '600', 1, 'right');
+          etiqueta(FUENTES[i].s, n0.x - 15, n0.y + 9, 11, '400', 0.55, 'right');
+        }
+      }
+
+      var w = N.w, s = (vert ? 21 : 24);
+      ctx.fillStyle = col.fondo;
+      ctx.strokeStyle = 'rgba(37,211,102,.85)';
+      ctx.lineWidth = 1.6;
+      ctx.beginPath();
+      if (ctx.roundRect) ctx.roundRect(w.x - s, w.y - s * 0.72, s * 2, s * 1.44, 7);
+      else ctx.rect(w.x - s, w.y - s * 0.72, s * 2, s * 1.44);
+      ctx.fill(); ctx.stroke();
+      ctx.beginPath();                       // la colita de la burbuja
+      ctx.moveTo(w.x - s * 0.42, w.y + s * 0.7);
+      ctx.lineTo(w.x - s * 0.72, w.y + s * 1.15);
+      ctx.lineTo(w.x - s * 0.08, w.y + s * 0.7);
+      ctx.closePath();
+      ctx.fillStyle = col.fondo; ctx.fill(); ctx.stroke();
+      etiqueta('Tu gente', w.x, w.y + s * 1.95, vert ? 10 : 11, '600', 0.8, 'center');
+
+      ctx.fillStyle = col.texto;
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.font = '800 ' + (vert ? 15 : 17) + 'px ' + FUENTE;
+      ctx.fillText('FiBOT', b.x, b.y);
+    }
+
+    var FUENTE = 'system-ui,-apple-system,"Segoe UI",Roboto,sans-serif';
+    var corriendo = false, id = 0, t0 = performance.now();
+
+    function bucle(t) {
+      marco(t - t0);
+      id = requestAnimationFrame(bucle);
+    }
+    function arrancar() {
+      if (corriendo || quieto) return;
+      corriendo = true; id = requestAnimationFrame(bucle);
+    }
+    function frenar() {
+      corriendo = false;
+      if (id) cancelAnimationFrame(id);
+    }
+
+    colores();
+    if (!medir()) return;
+    // Con movimiento reducido queda un cuadro fijo, con los pulsos a mitad de
+    // camino: el diagrama se entiende igual, sin nada moviéndose.
+    marco(quieto ? 1100 : 0);
+
+    // No gastar batería dibujando algo que no está en pantalla.
+    if (hayIO && !quieto) {
+      new IntersectionObserver(function (es) {
+        es[0].isIntersecting ? arrancar() : frenar();
+      }, { threshold: 0.05 }).observe(cv);
+    } else if (!quieto) {
+      arrancar();
+    }
+
+    var reMedir = function () { if (medir()) marco(quieto ? 1100 : performance.now() - t0); };
+    if (window.ResizeObserver) new ResizeObserver(reMedir).observe(cv);
+    else window.addEventListener('resize', reMedir);
+
+    // El tema se puede cambiar en caliente (botón del visor o del sistema):
+    // sin esto el dibujo queda con los colores del tema anterior.
+    var reColor = function () { colores(); reMedir(); };
+    new MutationObserver(reColor).observe(document.documentElement,
+      { attributes: true, attributeFilter: ['data-theme', 'class', 'style'] });
+    if (window.matchMedia) {
+      var mq = window.matchMedia('(prefers-color-scheme: dark)');
+      mq.addEventListener ? mq.addEventListener('change', reColor)
+                          : mq.addListener(reColor);
+    }
+  }
+})();
+</script>
+</body>
+</html>
