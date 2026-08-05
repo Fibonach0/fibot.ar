@@ -233,6 +233,19 @@
   .item.tenue h3{font-weight:400;color:var(--tinta-2);
     font-family:var(--serif);letter-spacing:0}
 
+  /* Capa de abajo de un ítem: lo que rodea al producto sin ser el producto.
+     Va colgando con una regla al costado en vez de como ítem propio, porque
+     una quinta fila igual a las otras diría que son cinco cosas del mismo
+     rango, y no lo son. */
+  .sub{margin-top:18px;padding-left:16px;border-left:2px solid var(--bronce);
+    max-width:52ch}
+  .sub .et{font-family:var(--mono);font-size:.62rem;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--tinta-2);display:block;
+    margin-bottom:6px}
+  .sub p{margin:0;color:var(--tinta-2);font-size:.95rem;line-height:1.6}
+  .sub b{color:var(--tinta);font-weight:400;
+    border-bottom:1px solid var(--linea)}
+
   /* ── cómo arranca: línea de tiempo ────────────────────
      Estructura tomada del widget Steps de AstroWind (MIT): regla vertical,
      un punto por paso. Tres pasos numerados leen como un proceso; tres
@@ -438,6 +451,16 @@
             precio, coberturas de obra social, equivalentes por droga y el
             prospecto en PDF. No reemplaza al sistema de gestión; es lo que
             sigue estando cuando el sistema no está.</p>
+
+          <div class="sub">
+            <span class="et">Y el sistema, que es otra cosa</span>
+            <p>Aparte del bot están la <b>gestión de farmacia</b> y la
+              <b>gestión de droguería</b>: dos sistemas parecidos apuntados a
+              lados distintos del mostrador, que hablan con FiBOT. El bot
+              contesta en el momento y no depende de nada; el sistema lleva la
+              operación de todos los días. Van juntos o por separado, según de
+              qué lado estés.</p>
+          </div>
         </div>
       </div>
       <div class="item">
