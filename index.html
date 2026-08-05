@@ -96,10 +96,6 @@
   .nav-desk a{font-family:var(--sans);font-size:.88rem;color:var(--tinta-2);
     text-decoration:none;transition:color .15s}
   .nav-desk a:hover{color:var(--tinta)}
-  .btn-top{font-family:var(--sans);font-size:.86rem;font-weight:650;
-    color:var(--hueso)!important;background:var(--tinta);padding:9px 17px;
-    text-decoration:none;transition:background .15s}
-  .btn-top:hover{background:var(--bronce)}
 
   .menu-mob{margin-left:auto;position:relative}
   .menu-mob summary{list-style:none;cursor:pointer;padding:8px;
@@ -118,9 +114,14 @@
 
   /* ── revelado al entrar en pantalla ───────────────────
      Sólo se esconde si el JS corrió (clase .js). Sin JS, o con movimiento
-     reducido, todo se ve: la animación nunca es la que "trae" el contenido. */
-  .js .rev{opacity:0;transform:translateY(15px);
-    transition:opacity .65s ease,transform .65s cubic-bezier(.22,.61,.36,1)}
+     reducido, todo se ve: la animación nunca es la que "trae" el contenido.
+
+     Corto: la página tiene casi nueve pantallas en un teléfono, y con la
+     transición larga scrollear rápido dejaba bandas en blanco. Combinado con
+     el rootMargin de abajo, la sección ya terminó de aparecer para cuando
+     llega al viewport. */
+  .js .rev{opacity:0;transform:translateY(12px);
+    transition:opacity .4s ease,transform .4s cubic-bezier(.22,.61,.36,1)}
   .js .rev.visible{opacity:1;transform:none}
   @media (prefers-reduced-motion:reduce){
     .js .rev{opacity:1;transform:none;transition:none}
@@ -298,7 +299,7 @@
       <a href="#frentes">Qué hacemos</a>
       <a href="#arranca">Cómo arranca</a>
       <a href="#preguntas">Preguntas</a>
-      <a class="btn-top" href="https://wa.me/5491128524957">Escribinos</a>
+      <a href="https://wa.me/5491128524957">Escribinos</a>
     </nav>
 
     <details class="menu-mob">
@@ -329,7 +330,6 @@
         <p class="nota-margen">No es un dashboard. Un dashboard espera que
           entres. A los seis meses no entra nadie, y eso lo sabemos porque nos
           pasó antes de construir esto.</p>
-        <a class="cta" href="https://wa.me/5491128524957">Escribinos</a>
       </div>
 
       <div class="col2">
@@ -431,9 +431,13 @@
         <h3>Farmacia</h3>
         <div>
           <span class="est">En producción</span>
-          <p class="d">El farmacéutico está en el mostrador, no frente a una PC.
-            Escribe el nombre del remedio y le vuelve precio, coberturas de obra
-            social, equivalentes por droga y el prospecto en PDF.</p>
+          <p class="d">En el mostrador hay una computadora, y anda bien —
+            hasta que se corta la luz, se cae el sistema, o hay cola y nadie
+            puede soltar la caja. FiBOT va en el bolsillo del farmacéutico y no
+            se cae con lo demás: escribe el nombre del remedio y le vuelve
+            precio, coberturas de obra social, equivalentes por droga y el
+            prospecto en PDF. No reemplaza al sistema de gestión; es lo que
+            sigue estando cuando el sistema no está.</p>
         </div>
       </div>
       <div class="item">
@@ -565,11 +569,11 @@
         <h4>Hablar con alguien</h4>
         <a href="https://wa.me/5491128524957">+54 9 11 2852-4957</a>
         <a href="mailto:ignacio.antu@gmail.com">Por mail</a>
-        <a href="https://xn--antua-rta.com.ar/">antuña.com.ar</a>
+        <a href="https://www.xn--antua-rta.com.ar/">antuña.com.ar</a>
       </div>
     </div>
     <div class="pie-legal">
-      <span>FiBOT — de <a href="https://xn--antua-rta.com.ar/">AntuñA</a>,
+      <span>FiBOT — de <a href="https://www.xn--antua-rta.com.ar/">AntuñA</a>,
         por Ignacio Antuña</span>
       <span>Buenos Aires, Argentina</span>
     </div>
@@ -617,20 +621,44 @@ document.documentElement.classList.add('js');
     cifras.forEach(function (el) { obsCif.observe(el); });
   }
 
-  /* ── revelado de secciones ─────────────────────────── */
-  var revs = document.querySelectorAll('.rev');
+  /* ── revelado de secciones ───────────────────────────
+     Va por scroll y NO por IntersectionObserver, a propósito.
+
+     Con el observer, una sección que nunca llegó a intersectar no se entera
+     nunca: si saltás de golpe al fondo —un swipe fuerte en el teléfono, un
+     enlace con ancla, recargar con la página ya scrolleada— las secciones del
+     medio pasan de "abajo del viewport" a "arriba del viewport" sin un solo
+     cuadro adentro, y quedan invisibles PARA SIEMPRE. Al volver a subir te
+     encontrás bloques en blanco que ocupan lugar y no muestran nada.
+
+     La regla acá es posicional, no de eventos: se revela todo lo que quedó
+     por encima de la línea del viewport, se haya visto o no. Un salto no se
+     puede "perder" nada. */
+  var revs = [].slice.call(document.querySelectorAll('.rev'));
   if (revs.length) {
-    if (!hayIO || quieto) {
+    if (quieto) {
       revs.forEach(function (el) { el.classList.add('visible'); });
     } else {
-      var obsRev = new IntersectionObserver(function (es) {
-        es.forEach(function (e) {
-          if (!e.isIntersecting) return;
-          obsRev.unobserve(e.target);
-          e.target.classList.add('visible');
+      var pendiente = false;
+      var revelar = function () {
+        pendiente = false;
+        var linea = window.innerHeight + 300;   // 300px de anticipo: para
+        revs = revs.filter(function (el) {      // cuando la ves, ya terminó
+          if (el.getBoundingClientRect().top >= linea) return true;
+          el.classList.add('visible');
+          return false;
         });
-      }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
-      revs.forEach(function (el) { obsRev.observe(el); });
+        // Cuando no queda nada por revelar, el listener se saca solo.
+        if (!revs.length) window.removeEventListener('scroll', alScroll);
+      };
+      var alScroll = function () {
+        if (pendiente) return;                  // un chequeo por cuadro
+        pendiente = true;
+        requestAnimationFrame(revelar);
+      };
+      window.addEventListener('scroll', alScroll, { passive: true });
+      window.addEventListener('resize', alScroll, { passive: true });
+      revelar();
     }
   }
 
