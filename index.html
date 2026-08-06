@@ -210,6 +210,40 @@
     text-transform:uppercase;margin-top:14px;max-width:none;
     color:color-mix(in oklab,var(--hueso) 45%,var(--tinta))}
 
+  /* ── la nebulosa ──────────────────────────────────────
+     Versión de home de la pantalla /neuronas del panel de flota. Allá cada
+     punto es una cosa real del cliente y se puede tocar; acá no hay datos de
+     nadie, así que es una REPRESENTACIÓN y el pie lo dice. Dibujar 500 puntos
+     dando a entender que son reales sería justo lo que esa pantalla no hace. */
+  .nebu{background:var(--tinta);color:var(--hueso)}
+  .nebu .mono{color:var(--bronce-vivo)}
+  .nebu h2{color:var(--hueso)}
+  .nebu .txt{display:grid;gap:clamp(20px,3vw,48px);margin-top:26px;
+    grid-template-columns:1fr}
+  @media (min-width:880px){.nebu .txt{grid-template-columns:1fr 1fr}}
+  .nebu p{color:color-mix(in oklab,var(--hueso) 68%,var(--tinta));
+    max-width:46ch;margin:0}
+  .nebu p b{color:var(--hueso);font-weight:400;
+    border-bottom:1px solid var(--bronce)}
+  .nebu-caja{margin-top:clamp(26px,3.5vw,44px)}
+  .nebulosa{display:block;width:100%;height:clamp(380px,40vw,470px);
+    border-radius:4px}
+  @media (max-width:760px){.nebulosa{height:380px}}
+
+  /* La leyenda va en HTML y no dibujada en el canvas: así se puede leer,
+     seleccionar y la lee un lector de pantalla. */
+  .nebu-pie{display:flex;gap:10px 26px;flex-wrap:wrap;margin-top:16px;
+    font-family:var(--sans);font-size:.76rem;
+    color:color-mix(in oklab,var(--hueso) 55%,var(--tinta))}
+  .nebu-pie span{display:flex;align-items:center;gap:7px}
+  .nebu-pie i{width:8px;height:8px;border-radius:50%;flex:none}
+  /* Con `.nebu-nota` a secas pierde por especificidad contra `.nebu p`, que la
+     limita a 46ch, y el pie se parte en cuatro líneas. Ya pasó igual en el
+     panel del Vencímetro. */
+  .nebu .nebu-nota{font-family:var(--mono);font-size:.63rem;letter-spacing:.14em;
+    text-transform:uppercase;margin-top:18px;max-width:none;
+    color:color-mix(in oklab,var(--hueso) 42%,var(--tinta))}
+
   /* ── secciones ─────────────────────────────────────── */
   section{padding:clamp(56px,7vw,92px) 0}
   .titulo{font-size:clamp(2rem,4.3vw,3.1rem);max-width:16ch}
@@ -399,6 +433,40 @@
         en FiBOT, que responde por WhatsApp."></canvas>
     </div>
     <p class="lienzo-pie">GPS · Planillas · Tu sistema · Choferes → FiBOT → WhatsApp</p>
+  </div>
+</section>
+
+<section class="nebu">
+  <div class="m rev">
+    <span class="mono">Cuando ya está adentro</span>
+    <h2 class="display titulo" style="margin-top:14px">Cada cosa que existe,
+      en una sola pantalla.</h2>
+    <div class="txt">
+      <p>Una vez que las fuentes están cruzadas, tu empresa deja de ser una pila
+        de planillas y pasa a ser una sola cosa mirable: cada unidad, cada
+        persona que puede preguntar, cada papel que vence, cada trabajo que
+        corre solo a la noche.</p>
+      <p><b>El color es el estado, no la familia.</b> El rojo es rojo en todos
+        lados, así que se ve qué necesita algo sin ir a buscar la referencia.
+        Quién es cada cosa lo dice el lugar: cada cúmulo es una familia.</p>
+    </div>
+
+    <div class="nebu-caja">
+      <canvas class="nebulosa" role="img" aria-label="Representación del
+        servicio de un cliente como una nebulosa: seis cúmulos de puntos
+        —unidades, personas, documentos, tickets, datos y trabajos programados—
+        con señales viajando entre ellos. El color de cada punto indica su
+        estado."></canvas>
+      <div class="nebu-pie">
+        <span><i style="background:#3ddc97"></i>se movió hoy</span>
+        <span><i style="background:#e0a44c"></i>esperando algo</span>
+        <span><i style="background:#e2564a"></i>hay que hacer algo</span>
+        <span><i style="background:#8b8377"></i>existe y no pasa nada</span>
+        <span><i style="background:#4aa8ff"></i>infraestructura</span>
+      </div>
+    </div>
+    <p class="nebu-nota">Representación · La pantalla real existe en el panel,
+      y ahí cada punto es una cosa con nombre que se puede tocar</p>
   </div>
 </section>
 
@@ -717,6 +785,286 @@ document.documentElement.classList.add('js');
      "4 fuentes cruzadas", no decoración. */
   var lienzo = document.querySelector('.lienzo');
   if (lienzo && lienzo.getContext) enganche(lienzo, quieto, hayIO);
+
+  /* ── la nebulosa ─────────────────────────────────────
+     Versión de home de /neuronas. Se traen las tres ideas que la hacen legible
+     allá, y una decisión propia de acá:
+
+       · la posición sale de un hash de la clave, no del azar, así el dibujo es
+         el mismo en cada carga y se puede mirar dos veces
+       · el color dice el ESTADO y no la familia, así el rojo es rojo en todas
+         partes; la familia la dice el lugar
+       · el radio de cada cúmulo va con la RAÍZ de su cantidad, o sea área
+         proporcional: si no, el de 267 aplasta al de 17
+
+     Y lo de acá: los datos son inventados y el pie lo dice. En el panel cada
+     punto es una cosa real con nombre. */
+  var neb = document.querySelector('.nebulosa');
+  if (neb && neb.getContext) nebulosa(neb, quieto, hayIO);
+
+  function nebulosa(cv, quieto, hayIO) {
+    var ctx = cv.getContext('2d');
+    var TAU = 6.283185307179586;
+    var AUREO = 2.399963229728653;   // reparte los cúmulos sin alinearlos
+    // Propia: la de `enganche` es local a esa función, y tomarla prestada
+    // tiraba "FUENTE is not defined" en cada cuadro.
+    var FUENTE = 'system-ui,-apple-system,"Segoe UI",Roboto,sans-serif';
+
+    // Seis familias. Las cantidades son de una flota como la de Cantarini: la
+    // única que se publica en esta página es 267, el resto da la proporción.
+    var FAM = [
+      { id: 'unidades',   nombre: 'Unidades',   n: 267, gas: '#3ddc97' },
+      { id: 'documentos', nombre: 'Documentos', n: 96,  gas: '#b48cff' },
+      { id: 'tickets',    nombre: 'Tickets',    n: 41,  gas: '#ff7a59' },
+      { id: 'personas',   nombre: 'Personas',   n: 34,  gas: '#ffb347' },
+      { id: 'datos',      nombre: 'Datos',      n: 22,  gas: '#4aa8ff' },
+      { id: 'trabajos',   nombre: 'Trabajos',   n: 17,  gas: '#9ee37d' }
+    ];
+    // Proporción de estados por familia: los papeles vencen, las tablas no.
+    var MEZCLA = {
+      unidades:   [0.62, 0.16, 0.07, 0.15, 0],
+      documentos: [0.10, 0.30, 0.14, 0.46, 0],
+      tickets:    [0.30, 0.34, 0.24, 0.12, 0],
+      personas:   [0.55, 0.10, 0.02, 0.33, 0],
+      datos:      [0, 0, 0, 0, 1],
+      trabajos:   [0.70, 0.10, 0.05, 0, 0.15]
+    };
+    var TONOS = ['vivo', 'espera', 'alerta', 'quieto', 'dato'];
+
+    // FNV-1a: mismo hash en todos los navegadores y en todas las cargas.
+    function hash(s) {
+      var h = 2166136261;
+      for (var i = 0; i < s.length; i++) {
+        h ^= s.charCodeAt(i); h = Math.imul(h, 16777619);
+      }
+      return h >>> 0;
+    }
+    function rng(a) {   // mulberry32
+      return function () {
+        a |= 0; a = a + 0x6D2B79F5 | 0;
+        var t = Math.imul(a ^ a >>> 15, 1 | a);
+        t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+        return ((t ^ t >>> 14) >>> 0) / 4294967296;
+      };
+    }
+
+    var col = {}, claro = true;
+    function colores() {
+      var cs = getComputedStyle(document.documentElement);
+      var g = function (n, f) { return (cs.getPropertyValue(n) || '').trim() || f; };
+      // El bloque usa --tinta de fondo, que se da vuelta con el tema.
+      var fondo = g('--tinta', '#14120f');
+      claro = luz(fondo) > 0.5;
+      col = {
+        fondo: fondo, texto: g('--hueso', '#eae5dc'), acento: g('--bronce-vivo', '#b9762f'),
+        vivo: '#3ddc97', espera: '#e0a44c', alerta: '#e2564a',
+        quieto: claro ? '#6f675d' : '#8b8377', dato: '#4aa8ff'
+      };
+      brillos = {};
+    }
+    function luz(hex) {
+      var h = String(hex).replace('#', '').trim();
+      if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
+      var n = parseInt(h, 16);
+      if (h.length !== 6 || isNaN(n)) return 0;
+      return (0.2126 * ((n >> 16) & 255) + 0.7152 * ((n >> 8) & 255) +
+              0.0722 * (n & 255)) / 255;
+    }
+    function rgba(hex, a) {
+      var h = String(hex).replace('#', '').trim();
+      if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
+      var n = parseInt(h, 16);
+      if (h.length !== 6 || isNaN(n)) return 'rgba(140,130,115,' + a + ')';
+      return 'rgba(' + ((n >> 16) & 255) + ',' + ((n >> 8) & 255) + ',' +
+             (n & 255) + ',' + a + ')';
+    }
+
+    // Un gradiente radial por punto y por cuadro tira los FPS; una imagen ya
+    // dibujada se copia y listo.
+    var brillos = {};
+    function brillo(color) {
+      if (brillos[color]) return brillos[color];
+      var R = 24, c = document.createElement('canvas');
+      c.width = c.height = R * 2;
+      var g = c.getContext('2d');
+      var gr = g.createRadialGradient(R, R, 0, R, R, R);
+      gr.addColorStop(0, color);
+      gr.addColorStop(0.16, color);
+      gr.addColorStop(1, 'transparent');
+      g.globalAlpha = claro ? 0.5 : 0.8;
+      g.fillStyle = gr;
+      g.beginPath(); g.arc(R, R, R, 0, TAU); g.fill();
+      brillos[color] = c;
+      return c;
+    }
+
+    // ── armado: una sola vez, en coordenadas normalizadas (-1..1) ──
+    var nodos = [], cumulos = [], puentes = [];
+    (function armar() {
+      var radios = FAM.map(function (f) { return 4 + 0.9 * Math.sqrt(f.n); });
+      var dists = [], acum = 6, extremo = 0;
+      for (var i = 0; i < FAM.length; i++) {
+        dists[i] = acum + radios[i];
+        acum = dists[i] + radios[i] * 0.25 + 2;
+        extremo = Math.max(extremo, dists[i] + radios[i] * 1.15);
+      }
+      var k = extremo > 0 ? 0.94 / extremo : 1;
+
+      FAM.forEach(function (f, i) {
+        var ang = i * AUREO;
+        var cx = Math.cos(ang) * dists[i] * k, cy = Math.sin(ang) * dists[i] * k;
+        var rad = radios[i] * k;
+        cumulos.push({ cx: cx, cy: cy, r: rad, gas: f.gas, nombre: f.nombre });
+
+        // Cada nube con su elipse y su inclinación: seis círculos iguales se
+        // leen como seis planetas, no como gas.
+        var fr = rng(hash(f.id));
+        var asp = 0.65 + fr() * 0.7, rot = fr() * TAU;
+        var cr = Math.cos(rot), sr = Math.sin(rot);
+        var mez = MEZCLA[f.id];
+
+        for (var j = 0; j < f.n; j++) {
+          var r2 = rng(hash(f.id + '|' + j));
+          // Exponente 0.55 ≈ raíz: única forma de repartir parejo dentro de un
+          // círculo. Más alto y la densidad se dispara al centro, que sumando
+          // brillo termina en un núcleo blanco que se come los puntos.
+          var rr = Math.pow(r2(), 0.55) * rad;
+          if (r2() < 0.16) rr *= 1.35;      // el borde deshilachado
+          var a2 = r2() * TAU;
+          var px = Math.cos(a2) * rr, py = Math.sin(a2) * rr * asp;
+          var u = r2(), acu = 0, tono = 'quieto';
+          for (var t = 0; t < TONOS.length; t++) {
+            acu += mez[t];
+            if (u <= acu) { tono = TONOS[t]; break; }
+          }
+          // Centro del cúmulo y desplazamiento se guardan SEPARADOS: al pintar,
+          // el ensanche horizontal se aplica sólo a los centros. Aplicándolo a
+          // la posición final, cada cúmulo se estiraría en óvalo.
+          nodos.push({
+            cx: cx, cy: cy,
+            ox: px * cr - py * sr,
+            oy: px * sr + py * cr,
+            tono: tono,
+            fase: r2() * TAU,
+            vel: 0.4 + r2() * 0.9,
+            tam: 0.9 + r2() * 0.8
+          });
+        }
+      });
+
+      // Puentes entre cúmulos: son lo que dice que esto es un servicio y no
+      // seis listas sueltas.
+      for (var a = 0; a < cumulos.length; a++) {
+        for (var b = a + 1; b < cumulos.length; b++) {
+          if ((a + b) % 2) continue;        // no todos, o queda una telaraña
+          puentes.push({ a: a, b: b, off: (a * 7 + b * 13) % 10 / 10 });
+        }
+      }
+    })();
+
+    var W = 0, H = 0, CX = 0, CY = 0, R = 1, ASP = 1;
+    function medir() {
+      var r = cv.getBoundingClientRect();
+      var dpr = Math.min(window.devicePixelRatio || 1, 2);
+      W = r.width; H = r.height;
+      if (!W || !H) return false;
+      cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      CX = W / 2; CY = H / 2; R = Math.min(W, H) * 0.54;
+      // En una caja ancha, una nebulosa circular deja dos márgenes enormes a
+      // los costados. Los cúmulos se separan horizontalmente hasta llenarla;
+      // cada cúmulo sigue redondo porque esto no toca los desplazamientos.
+      ASP = Math.max(1, Math.min(2.2, (W / H) / 1.35));
+      return true;
+    }
+    // Centro del cúmulo ensanchado + desplazamiento sin tocar.
+    var px = function (n) { return CX + (n.cx * ASP + (n.ox || 0)) * R; };
+    var py = function (n) { return CY + (n.cy + (n.oy || 0)) * R; };
+
+    function marco(t) {
+      ctx.clearRect(0, 0, W, H);
+
+      // El gas de cada familia, bien abajo.
+      cumulos.forEach(function (c) {
+        var x = px(c), y = py(c), rr = c.r * R * 1.5;
+        var g = ctx.createRadialGradient(x, y, 0, x, y, rr);
+        g.addColorStop(0, rgba(c.gas, claro ? 0.13 : 0.16));
+        g.addColorStop(1, rgba(c.gas, 0));
+        ctx.fillStyle = g;
+        ctx.beginPath(); ctx.arc(x, y, rr, 0, TAU); ctx.fill();
+      });
+
+      // Puentes y las señales que viajan por ellos.
+      ctx.lineWidth = 1;
+      puentes.forEach(function (p) {
+        var A = cumulos[p.a], B = cumulos[p.b];
+        var ax = px(A), ay = py(A), bx = px(B), by = py(B);
+        ctx.strokeStyle = rgba(col.texto, claro ? 0.13 : 0.09);
+        ctx.beginPath();
+        ctx.moveTo(ax, ay); ctx.lineTo(bx, by);
+        ctx.stroke();
+        var u = ((t / 4200) + p.off) % 1;
+        var sx = ax + (bx - ax) * u, sy = ay + (by - ay) * u;
+        ctx.drawImage(brillo(col.acento), sx - 9, sy - 9, 18, 18);
+      });
+
+      // Los puntos. Sumar luz sólo sobre fondo oscuro: sobre papel, 'lighter'
+      // lleva todo al blanco y la nebulosa desaparece.
+      ctx.globalCompositeOperation = claro ? 'source-over' : 'lighter';
+      for (var i = 0; i < nodos.length; i++) {
+        var n = nodos[i];
+        var pulso = 0.62 + 0.38 * Math.sin(n.fase + t * 0.0011 * n.vel);
+        var s = (2.6 + n.tam * 2.4) * pulso;
+        ctx.globalAlpha = claro ? 0.55 + pulso * 0.4 : 0.5 + pulso * 0.5;
+        ctx.drawImage(brillo(col[n.tono]), px(n) - s, py(n) - s, s * 2, s * 2);
+      }
+      ctx.globalAlpha = 1;
+      ctx.globalCompositeOperation = 'source-over';
+
+      // El nombre de cada familia, al lado de su cúmulo.
+      ctx.font = '600 11px ' + FUENTE;
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      cumulos.forEach(function (c) {
+        ctx.fillStyle = rgba(col.texto, 0.62);
+        ctx.fillText(c.nombre, px(c), py(c) - c.r * R - 13);
+      });
+    }
+
+    var corriendo = false, id = 0, t0 = performance.now();
+    function bucle(t) { marco(t - t0); id = requestAnimationFrame(bucle); }
+    function arrancar() {
+      if (corriendo || quieto) return;
+      corriendo = true; id = requestAnimationFrame(bucle);
+    }
+    function frenar() { corriendo = false; if (id) cancelAnimationFrame(id); }
+
+    colores();
+    if (!medir()) return;
+    marco(quieto ? 2400 : 0);
+
+    if (hayIO && !quieto) {
+      new IntersectionObserver(function (es) {
+        es[0].isIntersecting ? arrancar() : frenar();
+      }, { threshold: 0.05 }).observe(cv);
+    } else if (!quieto) {
+      arrancar();
+    }
+
+    var reMedir = function () {
+      if (medir()) marco(quieto ? 2400 : performance.now() - t0);
+    };
+    if (window.ResizeObserver) new ResizeObserver(reMedir).observe(cv);
+    else window.addEventListener('resize', reMedir);
+
+    var reColor = function () { colores(); reMedir(); };
+    new MutationObserver(reColor).observe(document.documentElement,
+      { attributes: true, attributeFilter: ['data-theme', 'class', 'style'] });
+    if (window.matchMedia) {
+      var mq = window.matchMedia('(prefers-color-scheme: dark)');
+      mq.addEventListener ? mq.addEventListener('change', reColor)
+                          : mq.addListener(reColor);
+    }
+  }
 
   function enganche(cv, quieto, hayIO) {
     var ctx = cv.getContext('2d');
