@@ -675,6 +675,96 @@
 document.documentElement.classList.add('js');
 
 (function () {
+
+  /* ── utilidades comunes de los dos dibujos ────────────
+     Están afuera porque antes cada función tenía su copia de rgba() y de
+     luz(), y una de las dos se olvidó de FUENTE: eso tiró "FUENTE is not
+     defined" en cada cuadro hasta que se notó. */
+  var SANS = 'system-ui,-apple-system,"Segoe UI",Roboto,sans-serif';
+  var MONO = 'ui-monospace,SFMono-Regular,Menlo,Consolas,monospace';
+  var TAU = 6.283185307179586;
+
+  function rgba(hex, a) {
+    var h = String(hex).replace('#', '').trim();
+    if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
+    var n = parseInt(h, 16);
+    if (h.length !== 6 || isNaN(n)) return 'rgba(150,140,125,' + a + ')';
+    return 'rgba(' + ((n >> 16) & 255) + ',' + ((n >> 8) & 255) + ',' +
+           (n & 255) + ',' + a + ')';
+  }
+  function luz(hex) {
+    var h = String(hex).replace('#', '').trim();
+    if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
+    var n = parseInt(h, 16);
+    if (h.length !== 6 || isNaN(n)) return 0;
+    return (0.2126 * ((n >> 16) & 255) + 0.7152 * ((n >> 8) & 255) +
+            0.0722 * (n & 255)) / 255;
+  }
+  // FNV-1a: el mismo dibujo en cada carga y en cada navegador. Que el gráfico
+  // cambie solo entre visitas es lo que lo hace parecer un protector de
+  // pantalla en vez de una lectura de algo.
+  function hash(s) {
+    var h = 2166136261;
+    for (var i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); }
+    return h >>> 0;
+  }
+  function rng(a) {
+    return function () {
+      a |= 0; a = a + 0x6D2B79F5 | 0;
+      var t = Math.imul(a ^ a >>> 15, 1 | a);
+      t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+      return ((t ^ t >>> 14) >>> 0) / 4294967296;
+    };
+  }
+  // Un canvas con dpr aplicado. Sin esto, en un teléfono cada punto de 2px se
+  // dibuja borroso: es la mitad de por qué un canvas se ve barato.
+  function medirLienzo(cv, ctx) {
+    var r = cv.getBoundingClientRect();
+    var dpr = Math.min(window.devicePixelRatio || 1, 2.5);
+    if (!r.width || !r.height) return null;
+    cv.width = Math.round(r.width * dpr);
+    cv.height = Math.round(r.height * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return { w: r.width, h: r.height };
+  }
+  // Motor de animación compartido: arranca sólo si el dibujo está en pantalla
+  // y se apaga cuando no. Antes estaba duplicado en las dos funciones.
+  function animar(cv, marco, medir, colores, quieto, hayIO, cuadroFijo) {
+    var corriendo = false, id = 0, t0 = performance.now();
+    function bucle(t) { marco(t - t0); id = requestAnimationFrame(bucle); }
+    function arrancar() {
+      if (corriendo || quieto) return;
+      corriendo = true; id = requestAnimationFrame(bucle);
+    }
+    function frenar() { corriendo = false; if (id) cancelAnimationFrame(id); }
+
+    colores();
+    if (!medir()) return;
+    marco(quieto ? cuadroFijo : 0);
+
+    if (hayIO && !quieto) {
+      new IntersectionObserver(function (es) {
+        es[0].isIntersecting ? arrancar() : frenar();
+      }, { threshold: 0.05 }).observe(cv);
+    } else if (!quieto) { arrancar(); }
+
+    var reMedir = function () {
+      if (medir()) marco(quieto ? cuadroFijo : performance.now() - t0);
+    };
+    if (window.ResizeObserver) new ResizeObserver(reMedir).observe(cv);
+    else window.addEventListener('resize', reMedir);
+
+    var reColor = function () { colores(); reMedir(); };
+    new MutationObserver(reColor).observe(document.documentElement,
+      { attributes: true, attributeFilter: ['data-theme', 'class', 'style'] });
+    if (window.matchMedia) {
+      var mq = window.matchMedia('(prefers-color-scheme: dark)');
+      mq.addEventListener ? mq.addEventListener('change', reColor)
+                          : mq.addListener(reColor);
+    }
+  }
+
+
   var quieto = window.matchMedia &&
                window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var hayIO = !!window.IntersectionObserver;
@@ -801,105 +891,86 @@ document.documentElement.classList.add('js');
      punto es una cosa real con nombre. */
   var neb = document.querySelector('.nebulosa');
   if (neb && neb.getContext) nebulosa(neb, quieto, hayIO);
+  /* ── la nebulosa ──────────────────────────────────────
+     Versión de home de /neuronas: el servicio de un cliente, todo junto.
 
+     La decisión que ordena el dibujo: **el color dice el ESTADO, nunca la
+     familia.** La familia la dice el lugar y la etiqueta. Antes cada familia
+     tenía además su propio color y los dos sistemas competían — seis tonos
+     saturados repartidos al azar es exactamente lo que hace que un gráfico se
+     lea como ruido en vez de como información.
+
+     Y hay dos dibujos, no uno con la opacidad bajada:
+
+       · sobre fondo oscuro, luz: núcleo nítido + halo, sumando (`lighter`)
+       · sobre papel, TINTA: discos sólidos y líneas finas, sin halo
+
+     Fingir brillo sobre crema da grises sucios. Es la otra mitad de por qué
+     esto se veía barato. */
   function nebulosa(cv, quieto, hayIO) {
     var ctx = cv.getContext('2d');
-    var TAU = 6.283185307179586;
-    var AUREO = 2.399963229728653;   // reparte los cúmulos sin alinearlos
-    // Propia: la de `enganche` es local a esa función, y tomarla prestada
-    // tiraba "FUENTE is not defined" en cada cuadro.
-    var FUENTE = 'system-ui,-apple-system,"Segoe UI",Roboto,sans-serif';
+    var AUREO = 2.399963229728653;
 
     // Seis familias. Las cantidades son de una flota como la de Cantarini: la
     // única que se publica en esta página es 267, el resto da la proporción.
     var FAM = [
-      { id: 'unidades',   nombre: 'Unidades',   n: 267, gas: '#3ddc97' },
-      { id: 'documentos', nombre: 'Documentos', n: 96,  gas: '#b48cff' },
-      { id: 'tickets',    nombre: 'Tickets',    n: 41,  gas: '#ff7a59' },
-      { id: 'personas',   nombre: 'Personas',   n: 34,  gas: '#ffb347' },
-      { id: 'datos',      nombre: 'Datos',      n: 22,  gas: '#4aa8ff' },
-      { id: 'trabajos',   nombre: 'Trabajos',   n: 17,  gas: '#9ee37d' }
+      { id: 'unidades',   nombre: 'Unidades',   n: 267 },
+      { id: 'documentos', nombre: 'Documentos', n: 96 },
+      { id: 'tickets',    nombre: 'Tickets',    n: 41 },
+      { id: 'personas',   nombre: 'Personas',   n: 34 },
+      { id: 'datos',      nombre: 'Datos',      n: 22 },
+      { id: 'trabajos',   nombre: 'Trabajos',   n: 17 }
     ];
     // Proporción de estados por familia: los papeles vencen, las tablas no.
     var MEZCLA = {
-      unidades:   [0.62, 0.16, 0.07, 0.15, 0],
-      documentos: [0.10, 0.30, 0.14, 0.46, 0],
-      tickets:    [0.30, 0.34, 0.24, 0.12, 0],
-      personas:   [0.55, 0.10, 0.02, 0.33, 0],
-      datos:      [0, 0, 0, 0, 1],
-      trabajos:   [0.70, 0.10, 0.05, 0, 0.15]
+      unidades:   [0.50, 0.22, 0.09, 0.19],
+      documentos: [0.10, 0.30, 0.14, 0.46],
+      tickets:    [0.30, 0.34, 0.24, 0.12],
+      personas:   [0.55, 0.10, 0.02, 0.33],
+      datos:      [0.86, 0.06, 0.02, 0.06],
+      trabajos:   [0.70, 0.10, 0.05, 0.15]
     };
-    var TONOS = ['vivo', 'espera', 'alerta', 'quieto', 'dato'];
+    var TONOS = ['vivo', 'espera', 'alerta', 'quieto'];
 
-    // FNV-1a: mismo hash en todos los navegadores y en todas las cargas.
-    function hash(s) {
-      var h = 2166136261;
-      for (var i = 0; i < s.length; i++) {
-        h ^= s.charCodeAt(i); h = Math.imul(h, 16777619);
-      }
-      return h >>> 0;
-    }
-    function rng(a) {   // mulberry32
-      return function () {
-        a |= 0; a = a + 0x6D2B79F5 | 0;
-        var t = Math.imul(a ^ a >>> 15, 1 | a);
-        t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
-        return ((t ^ t >>> 14) >>> 0) / 4294967296;
-      };
-    }
-
-    var col = {}, claro = true;
+    var col = {}, papel = true;
     function colores() {
       var cs = getComputedStyle(document.documentElement);
       var g = function (n, f) { return (cs.getPropertyValue(n) || '').trim() || f; };
-      // El bloque usa --tinta de fondo, que se da vuelta con el tema.
       var fondo = g('--tinta', '#14120f');
-      claro = luz(fondo) > 0.5;
+      papel = luz(fondo) > 0.5;
       col = {
-        fondo: fondo, texto: g('--hueso', '#eae5dc'), acento: g('--bronce-vivo', '#b9762f'),
-        vivo: '#3ddc97', espera: '#e0a44c', alerta: '#e2564a',
-        quieto: claro ? '#6f675d' : '#8b8377', dato: '#4aa8ff'
+        fondo: fondo, texto: g('--hueso', '#eae5dc'),
+        acento: g('--bronce-vivo', '#b9762f'),
+        // Sobre papel los estados van más oscuros y menos saturados: los mismos
+        // tonos que brillan sobre negro, sobre crema son pasteles ilegibles.
+        vivo:   papel ? '#1d7a51' : '#3ddc97',
+        espera: papel ? '#9a6410' : '#e0a44c',
+        alerta: papel ? '#b0382a' : '#e2564a',
+        quieto: papel ? '#9d9385' : '#7d7568'
       };
-      brillos = {};
-    }
-    function luz(hex) {
-      var h = String(hex).replace('#', '').trim();
-      if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
-      var n = parseInt(h, 16);
-      if (h.length !== 6 || isNaN(n)) return 0;
-      return (0.2126 * ((n >> 16) & 255) + 0.7152 * ((n >> 8) & 255) +
-              0.0722 * (n & 255)) / 255;
-    }
-    function rgba(hex, a) {
-      var h = String(hex).replace('#', '').trim();
-      if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
-      var n = parseInt(h, 16);
-      if (h.length !== 6 || isNaN(n)) return 'rgba(140,130,115,' + a + ')';
-      return 'rgba(' + ((n >> 16) & 255) + ',' + ((n >> 8) & 255) + ',' +
-             (n & 255) + ',' + a + ')';
+      halos = {};
     }
 
-    // Un gradiente radial por punto y por cuadro tira los FPS; una imagen ya
-    // dibujada se copia y listo.
-    var brillos = {};
-    function brillo(color) {
-      if (brillos[color]) return brillos[color];
-      var R = 24, c = document.createElement('canvas');
+    // Un gradiente por punto y por cuadro tira los FPS; una imagen ya dibujada
+    // se copia y listo. Se usa SÓLO de noche.
+    var halos = {};
+    function halo(color) {
+      if (halos[color]) return halos[color];
+      var R = 22, c = document.createElement('canvas');
       c.width = c.height = R * 2;
       var g = c.getContext('2d');
       var gr = g.createRadialGradient(R, R, 0, R, R, R);
-      gr.addColorStop(0, color);
-      gr.addColorStop(0.16, color);
-      gr.addColorStop(1, 'transparent');
-      g.globalAlpha = claro ? 0.5 : 0.8;
+      gr.addColorStop(0, rgba(color, 0.55));
+      gr.addColorStop(0.35, rgba(color, 0.14));
+      gr.addColorStop(1, rgba(color, 0));
       g.fillStyle = gr;
-      g.beginPath(); g.arc(R, R, R, 0, TAU); g.fill();
-      brillos[color] = c;
+      g.fillRect(0, 0, R * 2, R * 2);
+      halos[color] = c;
       return c;
     }
 
-    // ── armado: una sola vez, en coordenadas normalizadas (-1..1) ──
-    var nodos = [], cumulos = [], puentes = [];
+    // ── armado: una sola vez, en coordenadas normalizadas ──
+    var nodos = [], cumulos = [], puentes = [], mallas = [];
     (function armar() {
       var radios = FAM.map(function (f) { return 4 + 0.9 * Math.sqrt(f.n); });
       var dists = [], acum = 6, extremo = 0;
@@ -908,28 +979,27 @@ document.documentElement.classList.add('js');
         acum = dists[i] + radios[i] * 0.25 + 2;
         extremo = Math.max(extremo, dists[i] + radios[i] * 1.15);
       }
-      var k = extremo > 0 ? 0.94 / extremo : 1;
+      var k = extremo > 0 ? 0.9 / extremo : 1;
 
       FAM.forEach(function (f, i) {
         var ang = i * AUREO;
         var cx = Math.cos(ang) * dists[i] * k, cy = Math.sin(ang) * dists[i] * k;
         var rad = radios[i] * k;
-        cumulos.push({ cx: cx, cy: cy, r: rad, gas: f.gas, nombre: f.nombre });
+        var desde = nodos.length;
+        cumulos.push({ cx: cx, cy: cy, r: rad, nombre: f.nombre, n: f.n,
+                       desde: desde, hasta: desde + f.n });
 
-        // Cada nube con su elipse y su inclinación: seis círculos iguales se
-        // leen como seis planetas, no como gas.
         var fr = rng(hash(f.id));
-        var asp = 0.65 + fr() * 0.7, rot = fr() * TAU;
+        var asp = 0.72 + fr() * 0.5, rot = fr() * TAU;
         var cr = Math.cos(rot), sr = Math.sin(rot);
         var mez = MEZCLA[f.id];
 
         for (var j = 0; j < f.n; j++) {
           var r2 = rng(hash(f.id + '|' + j));
           // Exponente 0.55 ≈ raíz: única forma de repartir parejo dentro de un
-          // círculo. Más alto y la densidad se dispara al centro, que sumando
-          // brillo termina en un núcleo blanco que se come los puntos.
+          // círculo. Más alto y la densidad se dispara al centro.
           var rr = Math.pow(r2(), 0.55) * rad;
-          if (r2() < 0.16) rr *= 1.35;      // el borde deshilachado
+          if (r2() < 0.14) rr *= 1.3;      // el borde deshilachado
           var a2 = r2() * TAU;
           var px = Math.cos(a2) * rr, py = Math.sin(a2) * rr * asp;
           var u = r2(), acu = 0, tono = 'quieto';
@@ -937,203 +1007,260 @@ document.documentElement.classList.add('js');
             acu += mez[t];
             if (u <= acu) { tono = TONOS[t]; break; }
           }
-          // Centro del cúmulo y desplazamiento se guardan SEPARADOS: al pintar,
-          // el ensanche horizontal se aplica sólo a los centros. Aplicándolo a
-          // la posición final, cada cúmulo se estiraría en óvalo.
           nodos.push({
             cx: cx, cy: cy,
-            ox: px * cr - py * sr,
-            oy: px * sr + py * cr,
-            tono: tono,
-            fase: r2() * TAU,
-            vel: 0.4 + r2() * 0.9,
-            tam: 0.9 + r2() * 0.8
+            ox: px * cr - py * sr, oy: px * sr + py * cr,
+            tono: tono, fase: r2() * TAU,
+            vel: 0.4 + r2() * 0.9, tam: 0.75 + r2() * 0.6
           });
         }
       });
 
-      // Puentes entre cúmulos: son lo que dice que esto es un servicio y no
-      // seis listas sueltas.
-      for (var a = 0; a < cumulos.length; a++) {
-        for (var b = a + 1; b < cumulos.length; b++) {
-          if ((a + b) % 2) continue;        // no todos, o queda una telaraña
-          puentes.push({ a: a, b: b, off: (a * 7 + b * 13) % 10 / 10 });
+      // Malla interna: cada punto con su vecino más cercano. Es lo que hace
+      // que un cúmulo se lea como una red y no como un aerosol — y se calcula
+      // UNA vez, no en cada cuadro.
+      cumulos.forEach(function (c) {
+        for (var a = c.desde; a < c.hasta; a++) {
+          var mejor = -1, dm = 1e9;
+          for (var b = c.desde; b < c.hasta; b++) {
+            if (a === b) continue;
+            var dx = nodos[a].ox - nodos[b].ox, dy = nodos[a].oy - nodos[b].oy;
+            var d = dx * dx + dy * dy;
+            if (d < dm) { dm = d; mejor = b; }
+          }
+          // El umbral va con la DENSIDAD: en un cúmulo de 267 los vecinos
+          // están seis veces más cerca que en uno de 17. Con un umbral fijo,
+          // o no se une nada o se une todo con todo.
+          var cerca = c.r * 2.4 / Math.sqrt(c.n);
+          if (mejor >= 0 && dm < cerca * cerca) mallas.push([a, mejor]);
+        }
+      });
+
+      // Puentes: lo que dice que esto es un servicio y no seis listas sueltas.
+      for (var a2i = 0; a2i < cumulos.length; a2i++) {
+        for (var b2 = a2i + 1; b2 < cumulos.length; b2++) {
+          if ((a2i + b2) % 2) continue;        // no todos, o queda una telaraña
+          puentes.push({ a: a2i, b: b2, off: (a2i * 7 + b2 * 13) % 10 / 10 });
         }
       }
     })();
 
-    var W = 0, H = 0, CX = 0, CY = 0, R = 1, ASP = 1;
+    var W = 0, H = 0, CX = 0, CY = 0, R = 1, ASP = 1, esc = 1;
     function medir() {
-      var r = cv.getBoundingClientRect();
-      var dpr = Math.min(window.devicePixelRatio || 1, 2);
-      W = r.width; H = r.height;
-      if (!W || !H) return false;
-      cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      CX = W / 2; CY = H / 2; R = Math.min(W, H) * 0.54;
-      // En una caja ancha, una nebulosa circular deja dos márgenes enormes a
-      // los costados. Los cúmulos se separan horizontalmente hasta llenarla;
-      // cada cúmulo sigue redondo porque esto no toca los desplazamientos.
-      ASP = Math.max(1, Math.min(2.2, (W / H) / 1.35));
+      var m = medirLienzo(cv, ctx);
+      if (!m) return false;
+      W = m.w; H = m.h;
+      esc = Math.min(1.25, Math.max(0.8, W / 900));
+      // En una caja ancha los cúmulos se separan en horizontal; cada uno sigue
+      // redondo porque esto no toca los desplazamientos.
+      ASP = Math.max(1, Math.min(2.4, (W / H) / 1.3));
+
+      // Encuadre: se mide lo que ocupa el dibujo y se ajusta a la caja, en vez
+      // de confiar en que entre. Sin esto la composición queda pegada arriba
+      // con la mitad de abajo vacía — y ESO es lo que hace que se vea como un
+      // gráfico que salió así, no como uno compuesto.
+      var x0 = 1e9, x1 = -1e9, y0 = 1e9, y1 = -1e9;
+      cumulos.forEach(function (c) {
+        var arriba = c.r + 0.085;                  // el aire de la etiqueta
+        x0 = Math.min(x0, c.cx * ASP - c.r); x1 = Math.max(x1, c.cx * ASP + c.r);
+        y0 = Math.min(y0, c.cy - arriba);    y1 = Math.max(y1, c.cy + c.r);
+      });
+      var pad = 18 * esc;
+      R = Math.min((W - pad * 2) / (x1 - x0), (H - pad * 2) / (y1 - y0));
+      CX = W / 2 - (x0 + x1) / 2 * R;
+      CY = H / 2 - (y0 + y1) / 2 * R;
       return true;
     }
-    // Centro del cúmulo ensanchado + desplazamiento sin tocar.
     var px = function (n) { return CX + (n.cx * ASP + (n.ox || 0)) * R; };
     var py = function (n) { return CY + (n.cy + (n.oy || 0)) * R; };
 
     function marco(t) {
       ctx.clearRect(0, 0, W, H);
 
-      // El gas de cada familia, bien abajo.
+      // Un solo gas, del color de la marca, y muy tenue: la familia la dicen
+      // el lugar y la etiqueta, no el color.
       cumulos.forEach(function (c) {
-        var x = px(c), y = py(c), rr = c.r * R * 1.5;
+        var x = px(c), y = py(c), rr = c.r * R * 1.85;
         var g = ctx.createRadialGradient(x, y, 0, x, y, rr);
-        g.addColorStop(0, rgba(c.gas, claro ? 0.13 : 0.16));
-        g.addColorStop(1, rgba(c.gas, 0));
+        g.addColorStop(0, rgba(col.acento, papel ? 0.055 : 0.10));
+        g.addColorStop(1, rgba(col.acento, 0));
         ctx.fillStyle = g;
         ctx.beginPath(); ctx.arc(x, y, rr, 0, TAU); ctx.fill();
       });
 
-      // Puentes y las señales que viajan por ellos.
-      ctx.lineWidth = 1;
+      // Malla interna, en un solo trazo: 500 beginPath por cuadro cuestan.
+      ctx.strokeStyle = rgba(col.texto, papel ? 0.13 : 0.10);
+      ctx.lineWidth = papel ? 0.6 : 0.5;
+      ctx.beginPath();
+      for (var m = 0; m < mallas.length; m++) {
+        var a = nodos[mallas[m][0]], b = nodos[mallas[m][1]];
+        ctx.moveTo(px(a), py(a)); ctx.lineTo(px(b), py(b));
+      }
+      ctx.stroke();
+
+      // Puentes: curvas, no rectas. Una recta entre dos nubes se lee como el
+      // borde de una caja; una curva, como un recorrido.
       puentes.forEach(function (p) {
         var A = cumulos[p.a], B = cumulos[p.b];
         var ax = px(A), ay = py(A), bx = px(B), by = py(B);
-        ctx.strokeStyle = rgba(col.texto, claro ? 0.13 : 0.09);
+        var mx = (ax + bx) / 2, my = (ay + by) / 2;
+        var dx = bx - ax, dy = by - ay;
+        var cxq = mx - dy * 0.13, cyq = my + dx * 0.13;   // panza hacia afuera
+        ctx.strokeStyle = rgba(col.texto, papel ? 0.16 : 0.11);
+        ctx.lineWidth = 1;
         ctx.beginPath();
-        ctx.moveTo(ax, ay); ctx.lineTo(bx, by);
+        ctx.moveTo(ax, ay); ctx.quadraticCurveTo(cxq, cyq, bx, by);
         ctx.stroke();
-        var u = ((t / 4200) + p.off) % 1;
-        var sx = ax + (bx - ax) * u, sy = ay + (by - ay) * u;
-        ctx.drawImage(brillo(col.acento), sx - 9, sy - 9, 18, 18);
+
+        // El pulso: núcleo nítido con estela corta. Una bolita difusa sola
+        // parece un defecto del dibujo; con estela se lee que va hacia algún
+        // lado.
+        var u = ((t / 5200) + p.off) % 1;
+        for (var s = 0; s < 5; s++) {
+          var uu = u - s * 0.018;
+          if (uu < 0) continue;
+          var iu = 1 - uu, q = {
+            x: iu * iu * ax + 2 * iu * uu * cxq + uu * uu * bx,
+            y: iu * iu * ay + 2 * iu * uu * cyq + uu * uu * by
+          };
+          ctx.fillStyle = rgba(col.acento, (papel ? 0.85 : 0.95) * (1 - s / 5));
+          ctx.beginPath();
+          ctx.arc(q.x, q.y, (2.2 - s * 0.32) * esc, 0, TAU);
+          ctx.fill();
+        }
       });
 
-      // Los puntos. Sumar luz sólo sobre fondo oscuro: sobre papel, 'lighter'
-      // lleva todo al blanco y la nebulosa desaparece.
-      ctx.globalCompositeOperation = claro ? 'source-over' : 'lighter';
-      for (var i = 0; i < nodos.length; i++) {
-        var n = nodos[i];
-        var pulso = 0.62 + 0.38 * Math.sin(n.fase + t * 0.0011 * n.vel);
-        var s = (2.6 + n.tam * 2.4) * pulso;
-        ctx.globalAlpha = claro ? 0.55 + pulso * 0.4 : 0.5 + pulso * 0.5;
-        ctx.drawImage(brillo(col[n.tono]), px(n) - s, py(n) - s, s * 2, s * 2);
+      // Los puntos. De noche, luz; sobre papel, tinta.
+      if (!papel) {
+        ctx.globalCompositeOperation = 'lighter';
+        for (var i = 0; i < nodos.length; i++) {
+          var n = nodos[i];
+          var pulso = 0.7 + 0.3 * Math.sin(n.fase + t * 0.0011 * n.vel);
+          var s2 = (5 + n.tam * 5) * pulso * esc;
+          ctx.globalAlpha = 0.5 + pulso * 0.45;
+          ctx.drawImage(halo(col[n.tono]), px(n) - s2, py(n) - s2, s2 * 2, s2 * 2);
+        }
+        ctx.globalAlpha = 1;
+        ctx.globalCompositeOperation = 'source-over';
       }
-      ctx.globalAlpha = 1;
-      ctx.globalCompositeOperation = 'source-over';
+      // El núcleo va SIEMPRE, y sólido. Es lo que hace que se vean puntos y no
+      // manchas: un halo sin núcleo es una mancha.
+      for (var i2 = 0; i2 < nodos.length; i2++) {
+        var n2 = nodos[i2];
+        var pl = 0.72 + 0.28 * Math.sin(n2.fase + t * 0.0011 * n2.vel);
+        ctx.fillStyle = rgba(col[n2.tono], papel ? 0.5 + pl * 0.5 : 0.85);
+        ctx.beginPath();
+        ctx.arc(px(n2), py(n2), (0.9 + n2.tam * 0.9) * pl * esc, 0, TAU);
+        ctx.fill();
+      }
 
-      // El nombre de cada familia, al lado de su cúmulo.
-      ctx.font = '600 11px ' + FUENTE;
-      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      // Etiquetas: nombre y cantidad, con una guía corta hasta el cúmulo. Es
+      // lo que convierte una mancha de colores en una lectura.
       cumulos.forEach(function (c) {
-        ctx.fillStyle = rgba(col.texto, 0.62);
-        ctx.fillText(c.nombre, px(c), py(c) - c.r * R - 13);
+        var x = px(c), y = py(c) - c.r * R - 16 * esc;
+        ctx.strokeStyle = rgba(col.texto, papel ? 0.28 : 0.22);
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(x, y + 6 * esc); ctx.lineTo(x, y + 13 * esc);
+        ctx.stroke();
+
+        ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
+        ctx.font = '600 ' + (11.5 * esc).toFixed(1) + 'px ' + SANS;
+        ctx.fillStyle = rgba(col.texto, papel ? 0.92 : 0.88);
+        ctx.fillText(c.nombre, x, y);
+        ctx.font = (9.5 * esc).toFixed(1) + 'px ' + MONO;
+        ctx.fillStyle = rgba(col.texto, 0.5);
+        ctx.fillText(String(c.n), x, y - 13 * esc);
       });
     }
 
-    var corriendo = false, id = 0, t0 = performance.now();
-    function bucle(t) { marco(t - t0); id = requestAnimationFrame(bucle); }
-    function arrancar() {
-      if (corriendo || quieto) return;
-      corriendo = true; id = requestAnimationFrame(bucle);
-    }
-    function frenar() { corriendo = false; if (id) cancelAnimationFrame(id); }
-
-    colores();
-    if (!medir()) return;
-    marco(quieto ? 2400 : 0);
-
-    if (hayIO && !quieto) {
-      new IntersectionObserver(function (es) {
-        es[0].isIntersecting ? arrancar() : frenar();
-      }, { threshold: 0.05 }).observe(cv);
-    } else if (!quieto) {
-      arrancar();
-    }
-
-    var reMedir = function () {
-      if (medir()) marco(quieto ? 2400 : performance.now() - t0);
-    };
-    if (window.ResizeObserver) new ResizeObserver(reMedir).observe(cv);
-    else window.addEventListener('resize', reMedir);
-
-    var reColor = function () { colores(); reMedir(); };
-    new MutationObserver(reColor).observe(document.documentElement,
-      { attributes: true, attributeFilter: ['data-theme', 'class', 'style'] });
-    if (window.matchMedia) {
-      var mq = window.matchMedia('(prefers-color-scheme: dark)');
-      mq.addEventListener ? mq.addEventListener('change', reColor)
-                          : mq.addListener(reColor);
-    }
+    animar(cv, marco, medir, colores, quieto, hayIO, 2400);
   }
 
+  /* ── el enganche ──────────────────────────────────────
+     Las cuatro fuentes entrando, el motor, y lo que sale por WhatsApp.
+
+     Dos cosas que lo sacan de parecer un fondo animado:
+
+       · el núcleo tiene ESTRUCTURA — dos anillos y sus radios, girando en
+         sentidos opuestos. Una nube de puntos unidos por cercanía es una
+         maraña: se ve enredo, no mecanismo. Y era al azar, así que además
+         cambiaba en cada carga.
+       · lo que sale tiene CONTENIDO — la burbuja lleva un mensaje de verdad.
+         Un rectángulo vacío se lee como un lugar donde todavía no pusieron
+         nada. */
   function enganche(cv, quieto, hayIO) {
     var ctx = cv.getContext('2d');
-    var W = 0, H = 0, vert = false, N = null;
-    var col = {};
+    var W = 0, H = 0, vert = false, N = null, esc = 1;
+    var col = {}, papel = true;
+
     var FUENTES = [
       { t: 'GPS',        s: 'once plataformas' },
       { t: 'Planillas',  s: 'las que ya usás' },
       { t: 'Tu sistema', s: 'el de siempre' },
       { t: 'Choferes',   s: 'desde el camión' }
     ];
+    var VERDE = '#25d366';
+    // Un mensaje real, del tipo que manda de verdad. Sin esto la burbuja es
+    // un cuadrado vacío.
+    var MSG = ['Camión 412 sin reportar', 'hace 3 h · última: Zárate'];
 
-    // Nube fija: se genera una vez y sobrevive a los resize. Regenerarla en
-    // cada resize haría "saltar" el cerebro al girar el teléfono.
-    var nube = [];
-    for (var i = 0; i < 78; i++) {
-      nube.push({
-        a: Math.random() * Math.PI * 2,
-        r: 0.56 + 0.44 * Math.sqrt(Math.random()),   // anillo: el centro queda
-        va: (Math.random() - 0.5) * 0.00026,          // libre para la palabra
-        ph: Math.random() * Math.PI * 2,
-        sp: 0.0005 + Math.random() * 0.0009
+    // El motor: dos anillos y sus radios, determinista.
+    var ANILLOS = [{ n: 18, r: 1.0, vel: 0.000055 },
+                   { n: 11, r: 0.62, vel: -0.00009 }];
+    var motor = [], vinculos = [];
+    (function armar() {
+      ANILLOS.forEach(function (an, ai) {
+        var base = motor.length;
+        var fr = rng(hash('anillo' + ai));
+        for (var i = 0; i < an.n; i++) {
+          motor.push({ a: i / an.n * TAU + fr() * 0.12, r: an.r,
+                       vel: an.vel, ph: fr() * TAU, anillo: ai });
+        }
+        for (var j = 0; j < an.n; j++) {           // el anillo cerrado
+          vinculos.push([base + j, base + (j + 1) % an.n]);
+        }
       });
-    }
-
-    function rgba(hex, a) {
-      var h = String(hex).replace('#', '').trim();
-      if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
-      var n = parseInt(h, 16);
-      if (h.length !== 6 || isNaN(n)) return 'rgba(150,140,125,' + a + ')';
-      return 'rgba(' + ((n >> 16) & 255) + ',' + ((n >> 8) & 255) + ',' +
-             (n & 255) + ',' + a + ')';
-    }
+      // Los radios: cada nodo del anillo chico con dos del grande.
+      var g0 = 0, g1 = ANILLOS[0].n;
+      for (var k = 0; k < ANILLOS[1].n; k++) {
+        var idx = g1 + k;
+        var destino = Math.round(k / ANILLOS[1].n * ANILLOS[0].n);
+        vinculos.push([idx, g0 + destino % ANILLOS[0].n]);
+        vinculos.push([idx, g0 + (destino + 1) % ANILLOS[0].n]);
+      }
+    })();
 
     function colores() {
-      // El bloque usa --tinta de fondo y --hueso de texto, y esas dos se dan
-      // vuelta con el tema. Leyéndolas, el dibujo se invierte solo.
       var cs = getComputedStyle(document.documentElement);
       var g = function (n, f) { return (cs.getPropertyValue(n) || '').trim() || f; };
       col.fondo  = g('--tinta', '#14120f');
       col.texto  = g('--hueso', '#eae5dc');
       col.acento = g('--bronce-vivo', '#b9762f');
+      papel = luz(col.fondo) > 0.5;
     }
 
     function medir() {
-      var r = cv.getBoundingClientRect();
-      var dpr = Math.min(window.devicePixelRatio || 1, 2);
-      W = r.width; H = r.height;
-      if (!W || !H) return false;
-      cv.width = Math.round(W * dpr);
-      cv.height = Math.round(H * dpr);
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      var m = medirLienzo(cv, ctx);
+      if (!m) return false;
+      W = m.w; H = m.h;
       vert = W < 720;
+      esc = Math.min(1.2, Math.max(0.85, W / 1000));
       var f = [];
       if (vert) {
-        // 2×2 arriba: cuatro etiquetas en fila no entran en un teléfono.
-        [[0.27, 0.07], [0.73, 0.07], [0.27, 0.21], [0.73, 0.21]]
+        [[0.26, 0.08], [0.74, 0.08], [0.26, 0.23], [0.74, 0.23]]
           .forEach(function (p) { f.push({ x: W * p[0], y: H * p[1] }); });
-        N = { f: f, b: { x: W * 0.5, y: H * 0.55, r: Math.min(W, H) * 0.20 },
-              w: { x: W * 0.5, y: H * 0.88 } };
+        N = { f: f, b: { x: W * 0.5, y: H * 0.55, r: Math.min(W, H) * 0.19 },
+              w: { x: W * 0.5, y: H * 0.87 } };
       } else {
         for (var i = 0; i < 4; i++) f.push({ x: W * 0.17, y: H * (0.17 + i * 0.22) });
-        N = { f: f, b: { x: W * 0.5, y: H * 0.5, r: Math.min(W, H) * 0.17 },
-              w: { x: W * 0.87, y: H * 0.5 } };
+        N = { f: f, b: { x: W * 0.48, y: H * 0.5, r: Math.min(W, H) * 0.175 },
+              w: { x: W * 0.855, y: H * 0.5 } };
       }
       return true;
     }
 
-    function ctrl(p0, p1) {   // control de la curva: el cable sale plano y dobla
+    function ctrl(p0, p1) {
       return { x: (p0.x + p1.x) / 2, y: p0.y + (p1.y - p0.y) * 0.18 };
     }
     function bez(p0, c, p1, t) {
@@ -1141,50 +1268,47 @@ document.documentElement.classList.add('js');
       return { x: u * u * p0.x + 2 * u * t * c.x + t * t * p1.x,
                y: u * u * p0.y + 2 * u * t * c.y + t * t * p1.y };
     }
-    function recortar(p0, p1, r) {   // frenar la línea en el borde del cerebro
+    function recortar(p0, p1, r) {
       var dx = p1.x - p0.x, dy = p1.y - p0.y;
       var d = Math.hypot(dx, dy) || 1;
       return { x: p1.x - dx / d * r, y: p1.y - dy / d * r };
     }
-
-    var PER = 2700;   // un pulso por cable, siempre en vuelo
-
-    function luz(hex) {   // ¿el fondo de este bloque es claro u oscuro?
-      var h = String(hex).replace('#', '').trim();
-      if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
-      var n = parseInt(h, 16);
-      if (h.length !== 6 || isNaN(n)) return 0;
-      return (0.2126 * ((n >> 16) & 255) + 0.7152 * ((n >> 8) & 255) +
-              0.0722 * (n & 255)) / 255;
+    // Estela: el mismo pulso repetido hacia atrás con menos tinta.
+    function pulso(p0, c, p1, u, color, cuantos, r) {
+      for (var s = 0; s < cuantos; s++) {
+        var uu = u - s * 0.02;
+        if (uu < 0) continue;
+        var q = bez(p0, c, p1, uu);
+        ctx.fillStyle = rgba(color, (papel ? 0.9 : 1) * (1 - s / cuantos));
+        ctx.beginPath();
+        ctx.arc(q.x, q.y, (r - s * r * 0.16) * esc, 0, TAU);
+        ctx.fill();
+      }
     }
-
-    // Etiqueta con el fondo recortado atrás. Los cables convergen y por fuerza
-    // pasan por donde va el texto; sin este recorte, en el teléfono se lee
-    // "Planillas" con una línea cruzándole el medio.
-    function etiqueta(txt, x, y, px, peso, alfa, alin) {
-      ctx.font = peso + ' ' + px + 'px ' + FUENTE;
+    function etiqueta(txt, x, y, px2, peso, alfa, alin, fuente) {
+      ctx.font = peso + ' ' + px2 + 'px ' + (fuente || SANS);
       ctx.textAlign = alin; ctx.textBaseline = 'middle';
       var w = ctx.measureText(txt).width;
       var x0 = alin === 'right' ? x - w : alin === 'center' ? x - w / 2 : x;
-      ctx.fillStyle = rgba(col.fondo, 0.88);
-      ctx.fillRect(x0 - 4, y - px / 2 - 3, w + 8, px + 6);
+      // Los cables convergen y pasan por donde va el texto; sin este recorte,
+      // en el teléfono se lee "Planillas" con una línea cruzándole el medio.
+      ctx.fillStyle = rgba(col.fondo, 0.9);
+      ctx.fillRect(x0 - 5, y - px2 / 2 - 3, w + 10, px2 + 6);
       ctx.fillStyle = rgba(col.texto, alfa);
       ctx.fillText(txt, x, y);
     }
 
+    var PER = 3000;
+
     function marco(t) {
       if (!N) return;
       ctx.clearRect(0, 0, W, H);
-      var b = N.b, esc = vert ? 0.9 : 1, brillo = 0;
-      // El bloque se da vuelta con el tema: sobre fondo claro hay que cargar
-      // más tinta o las líneas finas desaparecen.
-      var k = luz(col.fondo) > 0.5 ? 1.7 : 1;
-      var i, a, z;
+      var b = N.b, i, llegada = 0;
 
-      // ── paso 1: cables y pulsos ──
+      // ── los cables ──
       for (i = 0; i < N.f.length; i++) {
-        var p0 = N.f[i], fin = recortar(p0, b, b.r + 4), c = ctrl(p0, fin);
-        ctx.strokeStyle = rgba(col.texto, 0.17 * k);
+        var p0 = N.f[i], fin = recortar(p0, b, b.r + 5), c = ctrl(p0, fin);
+        ctx.strokeStyle = rgba(col.texto, papel ? 0.22 : 0.16);
         ctx.lineWidth = 1;
         ctx.beginPath();
         ctx.moveTo(p0.x, p0.y);
@@ -1192,148 +1316,135 @@ document.documentElement.classList.add('js');
         ctx.stroke();
 
         var p = ((t + i * PER / 4) % PER) / PER;
-        if (p > 0.9) brillo = Math.max(brillo, (p - 0.9) / 0.1);
-        var q = bez(p0, c, fin, p);
-        var g = ctx.createRadialGradient(q.x, q.y, 0, q.x, q.y, 7 * esc);
-        g.addColorStop(0, rgba(col.acento, 0.95));
-        g.addColorStop(1, rgba(col.acento, 0));
-        ctx.fillStyle = g;
-        ctx.beginPath(); ctx.arc(q.x, q.y, 7 * esc, 0, 7); ctx.fill();
+        // Acelera al acercarse: entra al motor, no flota hacia él.
+        var pe = p * p * (3 - 2 * p);
+        if (pe > 0.88) llegada = Math.max(llegada, (pe - 0.88) / 0.12);
+        pulso(p0, c, fin, pe, col.acento, 6, 2.4);
       }
 
-      var ini = recortar(N.w, b, b.r + 4), c2 = ctrl(ini, N.w);
-      ctx.strokeStyle = rgba(col.texto, 0.17 * k);
+      // ── la salida ──
+      var ini = recortar(N.w, b, b.r + 5), c2 = ctrl(ini, N.w);
+      ctx.strokeStyle = rgba(col.texto, papel ? 0.22 : 0.16);
       ctx.lineWidth = 1;
       ctx.beginPath();
       ctx.moveTo(ini.x, ini.y);
       ctx.quadraticCurveTo(c2.x, c2.y, N.w.x, N.w.y);
       ctx.stroke();
+      pulso(ini, c2, N.w, ((t + 700) % 2100) / 2100, VERDE, 6, 2.6);
 
-      var ps = ((t + 700) % 1900) / 1900;
-      var qs = bez(ini, c2, N.w, ps);
-      var gs = ctx.createRadialGradient(qs.x, qs.y, 0, qs.x, qs.y, 8 * esc);
-      gs.addColorStop(0, 'rgba(37,211,102,.95)');    // el verde de WhatsApp
-      gs.addColorStop(1, 'rgba(37,211,102,0)');
-      ctx.fillStyle = gs;
-      ctx.beginPath(); ctx.arc(qs.x, qs.y, 8 * esc, 0, 7); ctx.fill();
+      // ── el motor ──
+      // Anillo de luz, dibujado con trazo: un relleno radial grande sobre
+      // papel es una mancha naranja, no un brillo.
+      var vibra = 1 + llegada * 0.06;
+      // Un aro, no una banda: tres trazos cada vez más finos y más opacos
+      // hacia adentro. Un relleno radial grande sobre este fondo es una
+      // mancha marrón, que es justo lo que se quería sacar.
+      for (var g2 = 3; g2 >= 1; g2--) {
+        ctx.strokeStyle = rgba(col.acento,
+          (papel ? 0.035 : 0.045) * g2 * (0.7 + llegada * 1.1));
+        ctx.lineWidth = g2 * 3.5 * esc;
+        ctx.beginPath();
+        ctx.arc(b.x, b.y, b.r * (1.05 + g2 * 0.045) * vibra, 0, TAU);
+        ctx.stroke();
+      }
 
-      // ── paso 2: el cerebro ──
-      var halo = ctx.createRadialGradient(b.x, b.y, b.r * 0.2, b.x, b.y, b.r * 1.85);
-      halo.addColorStop(0, rgba(col.acento, (0.16 + brillo * 0.16) * (k > 1 ? 1.5 : 1)));
-      halo.addColorStop(1, rgba(col.acento, 0));
-      ctx.fillStyle = halo;
-      ctx.beginPath(); ctx.arc(b.x, b.y, b.r * 1.85, 0, 7); ctx.fill();
-
-      var pos = nube.map(function (n) {
-        var ang = n.a + n.va * t;
-        var rad = b.r * n.r * (0.95 + 0.05 * Math.sin(n.ph + t * n.sp));
+      var pos = motor.map(function (n) {
+        var ang = n.a + n.vel * t;
+        var rad = b.r * 0.86 * n.r * (1 + 0.035 * Math.sin(n.ph + t * 0.0009));
         return { x: b.x + Math.cos(ang) * rad, y: b.y + Math.sin(ang) * rad };
       });
 
-      var lim = b.r * 0.5;
-      ctx.lineWidth = 0.7;
-      for (a = 0; a < pos.length; a++) {
-        for (z = a + 1; z < pos.length; z++) {
-          var d = Math.hypot(pos[a].x - pos[z].x, pos[a].y - pos[z].y);
-          if (d > lim) continue;
-          ctx.strokeStyle = rgba(col.acento,
-            (1 - d / lim) * (0.3 + brillo * 0.35) * k);
-          ctx.beginPath();
-          ctx.moveTo(pos[a].x, pos[a].y);
-          ctx.lineTo(pos[z].x, pos[z].y);
-          ctx.stroke();
-        }
+      ctx.strokeStyle = rgba(col.acento, (papel ? 0.5 : 0.42) * (0.75 + llegada * 0.5));
+      ctx.lineWidth = 0.9;
+      ctx.beginPath();
+      for (i = 0; i < vinculos.length; i++) {
+        var A = pos[vinculos[i][0]], B = pos[vinculos[i][1]];
+        ctx.moveTo(A.x, A.y); ctx.lineTo(B.x, B.y);
       }
-      ctx.fillStyle = rgba(col.acento, 0.9);
-      for (a = 0; a < pos.length; a++) {
-        ctx.beginPath(); ctx.arc(pos[a].x, pos[a].y, 1.5 * esc, 0, 7); ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = rgba(col.acento, 0.95);
+      for (i = 0; i < pos.length; i++) {
+        ctx.beginPath();
+        ctx.arc(pos[i].x, pos[i].y, (motor[i].anillo ? 1.6 : 2.1) * esc, 0, TAU);
+        ctx.fill();
       }
 
-      // ── paso 3: nodos, burbuja y etiquetas, arriba de todo ──
+      // ── nodos de entrada ──
       for (i = 0; i < N.f.length; i++) {
         var n0 = N.f[i];
         ctx.fillStyle = col.fondo;
-        ctx.strokeStyle = rgba(col.texto, 0.45 * k);
+        ctx.strokeStyle = rgba(col.texto, papel ? 0.5 : 0.42);
         ctx.lineWidth = 1.4;
-        ctx.beginPath(); ctx.arc(n0.x, n0.y, 5.5 * esc, 0, 7);
+        ctx.beginPath(); ctx.arc(n0.x, n0.y, 5 * esc, 0, TAU);
         ctx.fill(); ctx.stroke();
+        ctx.fillStyle = rgba(col.acento, 0.9);
+        ctx.beginPath(); ctx.arc(n0.x, n0.y, 2 * esc, 0, TAU); ctx.fill();
 
-        if (vert) {   // en teléfono el texto va arriba del punto
-          etiqueta(FUENTES[i].t, n0.x, n0.y - 26, 11.5, '600', 1, 'center');
-          etiqueta(FUENTES[i].s, n0.x, n0.y - 13, 9.5, '400', 0.55, 'center');
+        if (vert) {
+          etiqueta(FUENTES[i].t, n0.x, n0.y - 27, 11.5, '600', 0.95, 'center');
+          etiqueta(FUENTES[i].s, n0.x, n0.y - 14, 8.5, '400', 0.5, 'center', MONO);
         } else {
-          etiqueta(FUENTES[i].t, n0.x - 15, n0.y - 6, 13, '600', 1, 'right');
-          etiqueta(FUENTES[i].s, n0.x - 15, n0.y + 9, 11, '400', 0.55, 'right');
+          etiqueta(FUENTES[i].t, n0.x - 16, n0.y - 7, 13, '600', 0.95, 'right');
+          etiqueta(FUENTES[i].s, n0.x - 16, n0.y + 8, 9.5, '400', 0.5, 'right', MONO);
         }
       }
 
-      var w = N.w, s = (vert ? 21 : 24);
-      ctx.fillStyle = col.fondo;
-      ctx.strokeStyle = 'rgba(37,211,102,.85)';
-      ctx.lineWidth = 1.6;
-      ctx.beginPath();
-      if (ctx.roundRect) ctx.roundRect(w.x - s, w.y - s * 0.72, s * 2, s * 1.44, 7);
-      else ctx.rect(w.x - s, w.y - s * 0.72, s * 2, s * 1.44);
-      ctx.fill(); ctx.stroke();
-      ctx.beginPath();                       // la colita de la burbuja
-      ctx.moveTo(w.x - s * 0.42, w.y + s * 0.7);
-      ctx.lineTo(w.x - s * 0.72, w.y + s * 1.15);
-      ctx.lineTo(w.x - s * 0.08, w.y + s * 0.7);
-      ctx.closePath();
-      ctx.fillStyle = col.fondo; ctx.fill(); ctx.stroke();
-      etiqueta('Tu gente', w.x, w.y + s * 1.95, vert ? 10 : 11, '600', 0.8, 'center');
+      // ── la burbuja, con el mensaje adentro ──
+      var w = N.w;
+      // Se mide con la MISMA tipografía con la que se dibuja. Midiendo a 11 y
+      // dibujando a 12.6, el texto sale más ancho que la caja que se calculó
+      // para contenerlo, y se corta.
+      var fTit = '600 ' + (10.5 * esc).toFixed(1) + 'px ' + SANS;
+      var fSub = (9.5 * esc).toFixed(1) + 'px ' + SANS;
+      ctx.font = fTit;
+      var anchoTxt = ctx.measureText(MSG[0]).width;
+      ctx.font = fSub;
+      anchoTxt = Math.max(anchoTxt, ctx.measureText(MSG[1]).width);
+      var bw = Math.min(anchoTxt + 26, vert ? W * 0.62 : W * 0.3);
+      var bh = 42 * esc;
+      var bx = vert ? w.x - bw / 2 : w.x - 8, by = w.y - bh / 2;
+      // Que no se salga de la caja: el ancho depende del texto y del idioma,
+      // así que confiar en que entre es confiar en la suerte.
+      bx = Math.min(bx, W - bw - 6);
 
-      ctx.fillStyle = col.texto;
+      ctx.fillStyle = papel ? '#ffffff' : '#10241a';
+      ctx.strokeStyle = rgba(VERDE, papel ? 0.55 : 0.75);
+      ctx.lineWidth = 1.3;
+      ctx.beginPath();
+      if (ctx.roundRect) ctx.roundRect(bx, by, bw, bh, 9);
+      else ctx.rect(bx, by, bw, bh);
+      ctx.fill(); ctx.stroke();
+      ctx.beginPath();                       // la colita
+      ctx.moveTo(bx + 10, by + bh);
+      ctx.lineTo(bx + 3, by + bh + 8);
+      ctx.lineTo(bx + 22, by + bh);
+      ctx.closePath();
+      ctx.fillStyle = papel ? '#ffffff' : '#10241a';
+      ctx.fill();
+
+      ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+      ctx.fillStyle = papel ? 'rgba(20,18,15,.92)' : rgba(col.texto, 0.92);
+      ctx.font = fTit;
+      ctx.fillText(MSG[0], bx + 11, by + bh * 0.36);
+      ctx.fillStyle = papel ? 'rgba(20,18,15,.6)' : rgba(col.texto, 0.6);
+      ctx.font = fSub;
+      ctx.fillText(MSG[1], bx + 11, by + bh * 0.68);
+
+      etiqueta('Tu gente', vert ? w.x : bx + bw / 2, by + bh + 22,
+               vert ? 10 : 10.5, '600', 0.7, 'center');
+
+      // ── el nombre, arriba de todo ──
       ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-      ctx.font = '800 ' + (vert ? 15 : 17) + 'px ' + FUENTE;
+      ctx.fillStyle = rgba(col.fondo, 0.82);
+      ctx.font = '800 ' + (vert ? 15 : 17) * esc + 'px ' + SANS;
+      var wn = ctx.measureText('FiBOT').width;
+      ctx.fillRect(b.x - wn / 2 - 8, b.y - 11 * esc, wn + 16, 22 * esc);
+      ctx.fillStyle = rgba(col.texto, 0.97);
       ctx.fillText('FiBOT', b.x, b.y);
     }
 
-    var FUENTE = 'system-ui,-apple-system,"Segoe UI",Roboto,sans-serif';
-    var corriendo = false, id = 0, t0 = performance.now();
-
-    function bucle(t) {
-      marco(t - t0);
-      id = requestAnimationFrame(bucle);
-    }
-    function arrancar() {
-      if (corriendo || quieto) return;
-      corriendo = true; id = requestAnimationFrame(bucle);
-    }
-    function frenar() {
-      corriendo = false;
-      if (id) cancelAnimationFrame(id);
-    }
-
-    colores();
-    if (!medir()) return;
-    // Con movimiento reducido queda un cuadro fijo, con los pulsos a mitad de
-    // camino: el diagrama se entiende igual, sin nada moviéndose.
-    marco(quieto ? 1100 : 0);
-
-    // No gastar batería dibujando algo que no está en pantalla.
-    if (hayIO && !quieto) {
-      new IntersectionObserver(function (es) {
-        es[0].isIntersecting ? arrancar() : frenar();
-      }, { threshold: 0.05 }).observe(cv);
-    } else if (!quieto) {
-      arrancar();
-    }
-
-    var reMedir = function () { if (medir()) marco(quieto ? 1100 : performance.now() - t0); };
-    if (window.ResizeObserver) new ResizeObserver(reMedir).observe(cv);
-    else window.addEventListener('resize', reMedir);
-
-    // El tema se puede cambiar en caliente (botón del visor o del sistema):
-    // sin esto el dibujo queda con los colores del tema anterior.
-    var reColor = function () { colores(); reMedir(); };
-    new MutationObserver(reColor).observe(document.documentElement,
-      { attributes: true, attributeFilter: ['data-theme', 'class', 'style'] });
-    if (window.matchMedia) {
-      var mq = window.matchMedia('(prefers-color-scheme: dark)');
-      mq.addEventListener ? mq.addEventListener('change', reColor)
-                          : mq.addListener(reColor);
-    }
+    animar(cv, marco, medir, colores, quieto, hayIO, 1400);
   }
 })();
 </script>
