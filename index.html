@@ -439,24 +439,27 @@
 <section class="nebu">
   <div class="m rev">
     <span class="mono">Cuando ya está adentro</span>
-    <h2 class="display titulo" style="margin-top:14px">Cada cosa que existe,
-      en una sola pantalla.</h2>
+    <h2 class="display titulo" style="margin-top:14px">Y entonces empieza
+      a preguntar solo.</h2>
     <div class="txt">
-      <p>Una vez que las fuentes están cruzadas, tu empresa deja de ser una pila
-        de planillas y pasa a ser una sola cosa mirable: cada unidad, cada
-        persona que puede preguntar, cada papel que vence, cada trabajo que
-        corre solo a la noche.</p>
-      <p><b>El color es el estado, no la familia.</b> El rojo es rojo en todos
-        lados, así que se ve qué necesita algo sin ir a buscar la referencia.
-        Quién es cada cosa lo dice el lugar: cada cúmulo es una familia.</p>
+      <p>Una vez cruzadas las fuentes, tu empresa deja de ser una pila de
+        planillas. Pero lo que importa no es el dibujo: es lo que pasa abajo.
+        <b>Cada tanto FiBOT agarra una unidad y le pregunta a varias fuentes a
+        la vez</b> — dónde está, qué papel le vence, quién la maneja, si tiene
+        un trabajo abierto.</p>
+      <p><b>Una sola fuente miente.</b> El GPS dice “parado” y el chofer sabe
+        que está esperando carga; el papel figura al día y el taller lo tiene
+        hace dos días. Por eso la conclusión sale de cruzarlas, y por eso abajo
+        se ve la consulta entera y no sólo el resultado.</p>
     </div>
 
     <div class="nebu-caja">
       <canvas class="nebulosa" role="img" aria-label="Representación del
-        servicio de un cliente como una nebulosa: seis cúmulos de puntos
-        —unidades, personas, documentos, tickets, datos y trabajos programados—
-        con señales viajando entre ellos. El color de cada punto indica su
-        estado."></canvas>
+        servicio de un cliente: seis cúmulos de puntos —unidades, personas,
+        documentos, tickets, datos y trabajos programados—, con el color
+        indicando el estado. Cada tanto se ejecuta un chequeo: se marca una
+        unidad, se consultan tres cúmulos y se escribe qué contestó cada uno
+        antes de la conclusión."></canvas>
       <div class="nebu-pie">
         <span><i style="background:#3ddc97"></i>se movió hoy</span>
         <span><i style="background:#e0a44c"></i>esperando algo</span>
@@ -465,8 +468,8 @@
         <span><i style="background:#4aa8ff"></i>infraestructura</span>
       </div>
     </div>
-    <p class="nebu-nota">Representación · La pantalla real existe en el panel,
-      y ahí cada punto es una cosa con nombre que se puede tocar</p>
+    <p class="nebu-nota">Los chequeos de abajo son de ejemplo · La pantalla real
+      existe en el panel, y ahí cada punto es una cosa con nombre que se puede tocar</p>
   </div>
 </section>
 
@@ -932,6 +935,37 @@ document.documentElement.classList.add('js');
     };
     var TONOS = ['vivo', 'espera', 'alerta', 'quieto'];
 
+    /* Lo que el sistema hace de verdad: agarra una unidad y le pregunta a
+       varias fuentes a la vez. Una sola miente —el GPS dice "parado" y el
+       chofer sabe que está esperando carga— así que la conclusión sale de
+       cruzarlas, no de creerle a ninguna.
+
+       Esto es eso, ejecutándose. No es el adorno de la sección: es la
+       sección. */
+    var CHEQUEOS = [
+      { unidad: 'Unidad 412', nodo: 37, veredicto: 'parada sin aviso · avisar al encargado',
+        tono: 'alerta', consulta: [
+          { cum: 'datos',      dice: '3 h sin reportar' },
+          { cum: 'personas',   dice: 'el chofer no informó' },
+          { cum: 'trabajos',   dice: 'sin orden abierta' } ] },
+      { unidad: 'Unidad 118', nodo: 122, veredicto: 'puede salir · la VTV vence en 9 días',
+        tono: 'espera', consulta: [
+          { cum: 'datos',      dice: 'en ruta, hace 12 min' },
+          { cum: 'documentos', dice: 'VTV vence en 9 días' },
+          { cum: 'personas',   dice: 'chofer asignado' } ] },
+      { unidad: 'Unidad 233', nodo: 201, veredicto: 'en taller · no asignarle viaje',
+        tono: 'quieto', consulta: [
+          { cum: 'tickets',    dice: '2 tickets abiertos' },
+          { cum: 'trabajos',   dice: 'frenos, desde ayer' },
+          { cum: 'documentos', dice: 'seguro al día' } ] },
+      { unidad: 'Unidad 507', nodo: 88, veredicto: 'todo en orden',
+        tono: 'vivo', consulta: [
+          { cum: 'datos',      dice: 'en planta, hace 4 min' },
+          { cum: 'documentos', dice: 'papeles al día' },
+          { cum: 'personas',   dice: 'chofer en horario' } ] }
+    ];
+    var CICLO = 8200, ENTRADA = 700, PASO = 950, CIERRE = 900;
+
     var col = {}, papel = true;
     function colores() {
       var cs = getComputedStyle(document.documentElement);
@@ -970,7 +1004,7 @@ document.documentElement.classList.add('js');
     }
 
     // ── armado: una sola vez, en coordenadas normalizadas ──
-    var nodos = [], cumulos = [], puentes = [], mallas = [];
+    var nodos = [], cumulos = [], puentes = [], mallas = [], porId = {};
     (function armar() {
       var radios = FAM.map(function (f) { return 4 + 0.9 * Math.sqrt(f.n); });
       var dists = [], acum = 6, extremo = 0;
@@ -986,7 +1020,7 @@ document.documentElement.classList.add('js');
         var cx = Math.cos(ang) * dists[i] * k, cy = Math.sin(ang) * dists[i] * k;
         var rad = radios[i] * k;
         var desde = nodos.length;
-        cumulos.push({ cx: cx, cy: cy, r: rad, nombre: f.nombre, n: f.n,
+        cumulos.push({ id: f.id, cx: cx, cy: cy, r: rad, nombre: f.nombre, n: f.n,
                        desde: desde, hasta: desde + f.n });
 
         var fr = rng(hash(f.id));
@@ -1015,6 +1049,10 @@ document.documentElement.classList.add('js');
           });
         }
       });
+
+      // El cúmulo por id, para que un chequeo pueda decir "consultá Documentos"
+      // sin saber en qué posición quedó.
+      cumulos.forEach(function (c, i) { porId[c.id] = i; });
 
       // Malla interna: cada punto con su vecino más cercano. Es lo que hace
       // que un cúmulo se lea como una red y no como un aerosol — y se calcula
@@ -1073,6 +1111,129 @@ document.documentElement.classList.add('js');
     }
     var px = function (n) { return CX + (n.cx * ASP + (n.ox || 0)) * R; };
     var py = function (n) { return CY + (n.cy + (n.oy || 0)) * R; };
+
+    /* ── el chequeo, ejecutándose ──────────────────────
+       Cada ciclo agarra una unidad, le pregunta a tres cúmulos y saca una
+       conclusión. Las líneas y los renglones aparecen de a uno y en el mismo
+       orden: se ve la consulta, no el resultado ya cocinado. */
+    function chequeo(t) {
+      var q = CHEQUEOS[Math.floor(t / CICLO) % CHEQUEOS.length];
+      var u = t % CICLO;
+      var vivo = Math.min(1, u / 260);
+      var salida = u > CICLO - CIERRE ? 1 - (u - (CICLO - CIERRE)) / CIERRE : 1;
+      var op = vivo * salida;
+      if (op <= 0.01) return;
+
+      var sujeto = nodos[q.nodo % nodos.length];
+      var sx = px(sujeto), sy = py(sujeto);
+      var cuantas = 0;
+      for (var i = 0; i < q.consulta.length; i++) {
+        if (u > ENTRADA + i * PASO) cuantas = i + 1;
+      }
+
+      // Las líneas de consulta: se dibujan creciendo hacia el cúmulo, así se
+      // ve que la pregunta VA, no que el vínculo ya estaba.
+      for (var j = 0; j < cuantas; j++) {
+        var c = cumulos[porId[q.consulta[j].cum]];
+        if (!c) continue;
+        var avance = Math.min(1, (u - (ENTRADA + j * PASO)) / 420);
+        var ex = sx + (px(c) - sx) * avance, ey = sy + (py(c) - sy) * avance;
+        ctx.strokeStyle = rgba(col.acento, (papel ? 0.6 : 0.5) * op);
+        ctx.lineWidth = 1.3;
+        ctx.setLineDash([4, 3]);
+        ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(ex, ey); ctx.stroke();
+        ctx.setLineDash([]);
+        if (avance >= 1) {
+          ctx.strokeStyle = rgba(col.acento, 0.55 * op);
+          ctx.lineWidth = 1.2;
+          ctx.beginPath();
+          ctx.arc(px(c), py(c), c.r * R + 7 * esc, 0, TAU);
+          ctx.stroke();
+        }
+      }
+
+      // El sujeto, marcado: un anillo que late.
+      var late = 1 + 0.12 * Math.sin(u * 0.006);
+      ctx.strokeStyle = rgba(col.acento, 0.9 * op);
+      ctx.lineWidth = 1.6;
+      ctx.beginPath(); ctx.arc(sx, sy, 9 * esc * late, 0, TAU); ctx.stroke();
+      ctx.fillStyle = rgba(col.acento, 0.95 * op);
+      ctx.beginPath(); ctx.arc(sx, sy, 2.6 * esc, 0, TAU); ctx.fill();
+
+      panel(q, cuantas, u, op, sx, sy);
+    }
+
+    /* El renglón por renglón. Es la parte que hace que esto se lea como una
+       consulta y no como un gráfico bonito: se ve QUÉ preguntó y QUÉ le
+       contestó cada fuente antes de la conclusión. */
+    function panel(q, cuantas, u, op, sx, sy) {
+      var angosto = W < 640;
+      var pw = angosto ? W - 24 * esc : Math.min(330 * esc, W * 0.34);
+      var lh = 15 * esc, pad = 13 * esc;
+      var filas = 2 + cuantas + (u > ENTRADA + q.consulta.length * PASO ? 2 : 0);
+      var ph = pad * 2 + lh * filas;
+      var pxp = angosto ? 12 * esc : 14 * esc;
+      var pyp = H - ph - (angosto ? 10 * esc : 14 * esc);
+
+      ctx.globalAlpha = op;
+      ctx.fillStyle = rgba(col.fondo, papel ? 0.88 : 0.82);
+      ctx.strokeStyle = rgba(col.texto, papel ? 0.16 : 0.12);
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      if (ctx.roundRect) ctx.roundRect(pxp, pyp, pw, ph, 8); else ctx.rect(pxp, pyp, pw, ph);
+      ctx.fill(); ctx.stroke();
+
+      // Una guía desde el panel hasta la unidad que se está mirando.
+      ctx.strokeStyle = rgba(col.acento, 0.3);
+      ctx.setLineDash([3, 4]);
+      ctx.beginPath();
+      ctx.moveTo(pxp + pw, pyp + pad + lh * 0.6); ctx.lineTo(sx, sy);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      var x = pxp + pad, y = pyp + pad + lh * 0.75;
+      ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
+      ctx.font = (8.5 * esc).toFixed(1) + 'px ' + MONO;
+      ctx.fillStyle = rgba(col.texto, 0.45);
+      ctx.fillText('CHEQUEO EN CURSO', x, y);
+      y += lh;
+      ctx.font = '600 ' + (11.5 * esc).toFixed(1) + 'px ' + SANS;
+      ctx.fillStyle = rgba(col.texto, 0.95);
+      ctx.fillText(q.unidad, x, y);
+
+      ctx.font = (10 * esc).toFixed(1) + 'px ' + MONO;
+      for (var i = 0; i < cuantas; i++) {
+        y += lh;
+        var c = cumulos[porId[q.consulta[i].cum]];
+        var nom = c ? c.nombre : q.consulta[i].cum;
+        ctx.fillStyle = rgba(col.texto, 0.5);
+        ctx.fillText(nom, x, y);
+        var dice = q.consulta[i].dice;
+        ctx.fillStyle = rgba(col.texto, 0.88);
+        var wd = ctx.measureText(dice).width;
+        ctx.fillText(dice, pxp + pw - pad - wd, y);
+        // Los puntitos que unen la fuente con lo que contestó: sin ellos, en
+        // el ancho de un teléfono no se sabe qué dato es de quién.
+        var desde = x + ctx.measureText(nom).width + 6 * esc;
+        var hasta = pxp + pw - pad - wd - 6 * esc;
+        if (hasta > desde) {
+          ctx.fillStyle = rgba(col.texto, 0.22);
+          for (var d = desde; d < hasta; d += 4 * esc) ctx.fillText('.', d, y);
+        }
+      }
+
+      if (u > ENTRADA + q.consulta.length * PASO) {
+        y += lh * 0.65;
+        ctx.strokeStyle = rgba(col.texto, 0.16);
+        ctx.beginPath();
+        ctx.moveTo(x, y); ctx.lineTo(pxp + pw - pad, y); ctx.stroke();
+        y += lh;
+        ctx.font = '600 ' + (11 * esc).toFixed(1) + 'px ' + SANS;
+        ctx.fillStyle = rgba(col[q.tono], 1);
+        ctx.fillText('→ ' + q.veredicto, x, y);
+      }
+      ctx.globalAlpha = 1;
+    }
 
     function marco(t) {
       ctx.clearRect(0, 0, W, H);
@@ -1153,6 +1314,8 @@ document.documentElement.classList.add('js');
         ctx.arc(px(n2), py(n2), (0.9 + n2.tam * 0.9) * pl * esc, 0, TAU);
         ctx.fill();
       }
+
+      chequeo(t);
 
       // Etiquetas: nombre y cantidad, con una guía corta hasta el cúmulo. Es
       // lo que convierte una mancha de colores en una lectura.
