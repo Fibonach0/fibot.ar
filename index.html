@@ -986,7 +986,9 @@ document.documentElement.classList.add('js');
     }
 
     // Un gradiente por punto y por cuadro tira los FPS; una imagen ya dibujada
-    // se copia y listo. Se usa SÓLO de noche.
+    // se copia y listo. De noche va en `lighter` (luz); sobre papel va normal
+    // y flojito, y hace de sombra — sin eso los puntos quedan planos y toda la
+    // versión clara se ve como un scatter de planilla.
     var halos = {};
     function halo(color) {
       if (halos[color]) return halos[color];
@@ -1005,6 +1007,7 @@ document.documentElement.classList.add('js');
 
     // ── armado: una sola vez, en coordenadas normalizadas ──
     var nodos = [], cumulos = [], puentes = [], mallas = [], porId = {};
+    var chispas = [], polvo = [];
     (function armar() {
       var radios = FAM.map(function (f) { return 4 + 0.9 * Math.sqrt(f.n); });
       var dists = [], acum = 6, extremo = 0;
@@ -1020,10 +1023,19 @@ document.documentElement.classList.add('js');
         var cx = Math.cos(ang) * dists[i] * k, cy = Math.sin(ang) * dists[i] * k;
         var rad = radios[i] * k;
         var desde = nodos.length;
-        cumulos.push({ id: f.id, cx: cx, cy: cy, r: rad, nombre: f.nombre, n: f.n,
-                       desde: desde, hasta: desde + f.n });
-
         var fr = rng(hash(f.id));
+        // Nada queda quieto: cada cúmulo deriva en una órbita chica y gira
+        // sobre sí mismo. Rígido —todo el cúmulo junto— para que la malla no
+        // se estire y siga leyéndose como una red.
+        cumulos.push({ id: f.id, cx: cx, cy: cy, r: rad, nombre: f.nombre, n: f.n,
+                       desde: desde, hasta: desde + f.n,
+                       dA: 0.024 + fr() * 0.032,
+                       w1: 0.00017 + fr() * 0.00023,
+                       w2: 0.00015 + fr() * 0.00025,
+                       p1: fr() * TAU, p2: fr() * TAU,
+                       rot0: fr() * TAU,
+                       rotVel: (fr() < 0.5 ? -1 : 1) * (0.000065 + fr() * 0.000115) });
+
         var asp = 0.72 + fr() * 0.5, rot = fr() * TAU;
         var cr = Math.cos(rot), sr = Math.sin(rot);
         var mez = MEZCLA[f.id];
@@ -1042,7 +1054,7 @@ document.documentElement.classList.add('js');
             if (u <= acu) { tono = TONOS[t]; break; }
           }
           nodos.push({
-            cx: cx, cy: cy,
+            cum: i, cx: cx, cy: cy,
             ox: px * cr - py * sr, oy: px * sr + py * cr,
             tono: tono, fase: r2() * TAU,
             vel: 0.4 + r2() * 0.9, tam: 0.75 + r2() * 0.6
@@ -1054,23 +1066,35 @@ document.documentElement.classList.add('js');
       // sin saber en qué posición quedó.
       cumulos.forEach(function (c, i) { porId[c.id] = i; });
 
-      // Malla interna: cada punto con su vecino más cercano. Es lo que hace
-      // que un cúmulo se lea como una red y no como un aerosol — y se calcula
-      // UNA vez, no en cada cuadro.
+      // Malla interna: cada punto con sus DOS vecinos más cercanos. Con uno
+      // solo salen pares sueltos —parejitas de puntos unidos por un palito—,
+      // que es peor que no dibujar nada: se lee aerosol, no red. Con dos, los
+      // caminos se encadenan y el cúmulo pasa a ser un grafo recorrible. Se
+      // calcula UNA vez, no en cada cuadro.
+      var vistas = {};
       cumulos.forEach(function (c) {
+        // El umbral va con la DENSIDAD: en un cúmulo de 267 los vecinos están
+        // seis veces más cerca que en uno de 17. Con un umbral fijo, o no se
+        // une nada o se une todo con todo.
+        var cerca = c.r * 2.4 / Math.sqrt(c.n), lim = cerca * cerca;
         for (var a = c.desde; a < c.hasta; a++) {
-          var mejor = -1, dm = 1e9;
+          var m1 = -1, d1 = 1e9, m2 = -1, d2 = 1e9;
           for (var b = c.desde; b < c.hasta; b++) {
             if (a === b) continue;
             var dx = nodos[a].ox - nodos[b].ox, dy = nodos[a].oy - nodos[b].oy;
             var d = dx * dx + dy * dy;
-            if (d < dm) { dm = d; mejor = b; }
+            if (d < d1) { d2 = d1; m2 = m1; d1 = d; m1 = b; }
+            else if (d < d2) { d2 = d; m2 = b; }
           }
-          // El umbral va con la DENSIDAD: en un cúmulo de 267 los vecinos
-          // están seis veces más cerca que en uno de 17. Con un umbral fijo,
-          // o no se une nada o se une todo con todo.
-          var cerca = c.r * 2.4 / Math.sqrt(c.n);
-          if (mejor >= 0 && dm < cerca * cerca) mallas.push([a, mejor]);
+          // La misma arista sale dos veces (de ida y de vuelta): dibujarla
+          // doble la engorda y encima duplica el trabajo de las chispas.
+          [[m1, d1], [m2, d2]].forEach(function (par) {
+            if (par[0] < 0 || par[1] >= lim) return;
+            var k = Math.min(a, par[0]) + ':' + Math.max(a, par[0]);
+            if (vistas[k]) return;
+            vistas[k] = 1;
+            mallas.push([a, par[0]]);
+          });
         }
       });
 
@@ -1080,6 +1104,27 @@ document.documentElement.classList.add('js');
           if ((a2i + b2) % 2) continue;        // no todos, o queda una telaraña
           puentes.push({ a: a2i, b: b2, off: (a2i * 7 + b2 * 13) % 10 / 10 });
         }
+      }
+
+      // Chispas: paquetes que viajan por la malla, saltando de arista en
+      // arista. Es lo que hace que un cúmulo se vea TRABAJANDO y no dibujado
+      // — la red se justifica porque algo circula por ella.
+      var fc = rng(hash('chispas'));
+      for (var ch = 0; ch < 170; ch++) {
+        chispas.push({ m: Math.floor(fc() * mallas.length),
+                       off: fc(),
+                       vel: 0.00040 + fc() * 0.00060 });
+      }
+
+      // Polvo: partículas de fondo, lentas y a distinta profundidad. No dicen
+      // nada; están para que el vacío entre cúmulos no se vea muerto.
+      var fp = rng(hash('polvo'));
+      for (var pv = 0; pv < 150; pv++) {
+        polvo.push({ x: fp(), y: fp(),
+                     vx: (fp() - 0.5) * 0.000020,
+                     vy: (fp() - 0.5) * 0.000020,
+                     z: 0.35 + fp() * 0.65,
+                     fase: fp() * TAU });
       }
     })();
 
@@ -1099,18 +1144,90 @@ document.documentElement.classList.add('js');
       // gráfico que salió así, no como uno compuesto.
       var x0 = 1e9, x1 = -1e9, y0 = 1e9, y1 = -1e9;
       cumulos.forEach(function (c) {
-        var arriba = c.r + 0.085;                  // el aire de la etiqueta
+        // Aire para la etiqueta arriba y —menos— abajo: cuando el panel tapa
+        // el nombre, se pasa al otro lado, y si no hay lugar reservado se va
+        // fuera del lienzo.
+        var arriba = c.r + 0.085, abajo = c.r + 0.055;
         x0 = Math.min(x0, c.cx * ASP - c.r); x1 = Math.max(x1, c.cx * ASP + c.r);
-        y0 = Math.min(y0, c.cy - arriba);    y1 = Math.max(y1, c.cy + c.r);
+        y0 = Math.min(y0, c.cy - arriba);    y1 = Math.max(y1, c.cy + abajo);
       });
-      var pad = 18 * esc;
-      R = Math.min((W - pad * 2) / (x1 - x0), (H - pad * 2) / (y1 - y0));
+      var pad = 18 * esc, phE = 132 * esc, mg = 14 * esc;
+
+      // En un teléfono el panel va a todo el ancho, así que no hay esquina
+      // libre que valga: es una banda. Se le reserva el lugar ANTES de encuadrar
+      // y el dibujo entra en lo que queda, en vez de quedar la mitad debajo.
+      var angostoM = W < 640;
+      var hUtil = H - (angostoM ? phE + 22 * esc : 0);
+
+      R = Math.min((W - pad * 2) / (x1 - x0), (hUtil - pad * 2) / (y1 - y0));
       CX = W / 2 - (x0 + x1) / 2 * R;
-      CY = H / 2 - (y0 + y1) / 2 * R;
+      CY = hUtil / 2 - (y0 + y1) / 2 * R;
+
+      if (angostoM) {
+        ESQ = { x: 12 * esc, y: H - phE - 10 * esc, abajo: true, der: false,
+                ancho: W - 24 * esc, tapa: 0 };
+        return true;
+      }
+
+      // Dónde va el panel: en la esquina que MENOS tapa. Los cúmulos se ubican
+      // por ángulo áureo, así que cuál esquina queda libre depende de la
+      // proporción de la caja — se mide, no se elige a ojo. Fijo abajo a la
+      // izquierda le caía justo encima a Documentos, y 96 papeles se veían
+      // como doce.
+      var pwE = Math.min(330 * esc, W * 0.34);
+      var candidatas = [[mg, H - phE - mg, 0], [W - pwE - mg, H - phE - mg, 1],
+                        [mg, mg, 0], [W - pwE - mg, mg, 1]];
+      ESQ = null;
+      candidatas.forEach(function (e) {
+        var tapa = 0;
+        cumulos.forEach(function (c) {
+          // La caja del cúmulo INCLUYE su etiqueta, que va arriba y afuera del
+          // círculo. Midiendo sólo el círculo, el panel se corría del cúmulo
+          // para caerle justo encima al nombre.
+          var cxp = CX + c.cx * ASP * R, cyp = CY + c.cy * R, rr = c.r * R;
+          var ax0 = cxp - rr, ax1 = cxp + rr;
+          var ay0 = cyp - rr - 34 * esc, ay1 = cyp + rr;
+          var ov = Math.max(0, Math.min(ax1, e[0] + pwE) - Math.max(ax0, e[0])) *
+                   Math.max(0, Math.min(ay1, e[1] + phE) - Math.max(ay0, e[1]));
+          // Pesado por cantidad: tapar 267 unidades duele más que tapar 17.
+          tapa += ov * Math.sqrt(c.n);
+        });
+        if (!ESQ || tapa < ESQ.tapa) {
+          ESQ = { x: e[0], y: e[1], abajo: e[1] > H / 2, der: !!e[2],
+                  ancho: pwE, tapa: tapa };
+        }
+      });
       return true;
     }
-    var px = function (n) { return CX + (n.cx * ASP + (n.ox || 0)) * R; };
-    var py = function (n) { return CY + (n.cy + (n.oy || 0)) * R; };
+    var ESQ = null;
+    // Dónde quedó el panel este cuadro. Las etiquetas lo consultan: la que cae
+    // debajo se apaga a medida que el panel aparece, en vez de quedar cortada
+    // por el borde. Media etiqueta tapada se lee como un error de dibujo.
+    var CAJA = null;
+    // `TA` es el tiempo del cuadro que se está dibujando. px()/py() lo leen,
+    // así que con cambiarlo se puede pedir la posición de HACE un rato — que
+    // es de donde salen las estelas, sin guardar ningún historial.
+    var TA = 0;
+    function deriva(c, t) {
+      return { x: c.dA * Math.sin(c.w1 * t + c.p1),
+               y: c.dA * Math.cos(c.w2 * t + c.p2) };
+    }
+    var px = function (n) {
+      if (n.cum === undefined) {                       // es un cúmulo
+        return CX + (n.cx + deriva(n, TA).x) * ASP * R;
+      }
+      var c = cumulos[n.cum], d = deriva(c, TA);
+      var a = c.rot0 + c.rotVel * TA, ca = Math.cos(a), sa = Math.sin(a);
+      return CX + ((c.cx + d.x) * ASP + (n.ox * ca - n.oy * sa)) * R;
+    };
+    var py = function (n) {
+      if (n.cum === undefined) {
+        return CY + (n.cy + deriva(n, TA).y) * R;
+      }
+      var c = cumulos[n.cum], d = deriva(c, TA);
+      var a = c.rot0 + c.rotVel * TA, ca = Math.cos(a), sa = Math.sin(a);
+      return CY + (c.cy + d.y + (n.ox * sa + n.oy * ca)) * R;
+    };
 
     /* ── el chequeo, ejecutándose ──────────────────────
        Cada ciclo agarra una unidad, le pregunta a tres cúmulos y saca una
@@ -1168,13 +1285,19 @@ document.documentElement.classList.add('js');
        contestó cada fuente antes de la conclusión. */
     function panel(q, cuantas, u, op, sx, sy) {
       var angosto = W < 640;
-      var pw = angosto ? W - 24 * esc : Math.min(330 * esc, W * 0.34);
+      var pw = angosto ? W - 24 * esc : (ESQ ? ESQ.ancho : Math.min(330 * esc, W * 0.34));
       var lh = 15 * esc, pad = 13 * esc;
       var filas = 2 + cuantas + (u > ENTRADA + q.consulta.length * PASO ? 2 : 0);
       var ph = pad * 2 + lh * filas;
-      var pxp = angosto ? 12 * esc : 14 * esc;
-      var pyp = H - ph - (angosto ? 10 * esc : 14 * esc);
+      // El alto cambia mientras se van sumando renglones; la esquina no. Por
+      // eso se ancla al borde que eligió medir() y se crece hacia adentro, en
+      // vez de recolocar la caja en cada cuadro.
+      var abajo = ESQ ? ESQ.abajo : true;
+      var pxp = angosto ? 12 * esc : (ESQ ? ESQ.x : 14 * esc);
+      var mgv = angosto ? 10 * esc : 14 * esc;
+      var pyp = abajo ? H - ph - mgv : mgv;
 
+      CAJA = { x: pxp, y: pyp, w: pw, h: ph, op: op };
       ctx.globalAlpha = op;
       ctx.fillStyle = rgba(col.fondo, papel ? 0.88 : 0.82);
       ctx.strokeStyle = rgba(col.texto, papel ? 0.16 : 0.12);
@@ -1183,11 +1306,14 @@ document.documentElement.classList.add('js');
       if (ctx.roundRect) ctx.roundRect(pxp, pyp, pw, ph, 8); else ctx.rect(pxp, pyp, pw, ph);
       ctx.fill(); ctx.stroke();
 
-      // Una guía desde el panel hasta la unidad que se está mirando.
+      // Una guía desde el panel hasta la unidad que se está mirando. Sale del
+      // borde que da para ese lado: si sale del otro, la línea cruza el propio
+      // panel y parece un tachón.
       ctx.strokeStyle = rgba(col.acento, 0.3);
       ctx.setLineDash([3, 4]);
       ctx.beginPath();
-      ctx.moveTo(pxp + pw, pyp + pad + lh * 0.6); ctx.lineTo(sx, sy);
+      ctx.moveTo(sx > pxp + pw / 2 ? pxp + pw : pxp, pyp + pad + lh * 0.6);
+      ctx.lineTo(sx, sy);
       ctx.stroke();
       ctx.setLineDash([]);
 
@@ -1236,28 +1362,78 @@ document.documentElement.classList.add('js');
     }
 
     function marco(t) {
+      TA = t;                       // sin esto la deriva y el giro no corren
+      CAJA = null;                  // se vuelve a poner sólo si el panel sale
       ctx.clearRect(0, 0, W, H);
 
+      // Polvo de fondo. Envuelve en los dos ejes, así que no hay que respawnear
+      // nada ni guardar estado: la posición sale del tiempo y ya.
+      for (var d0 = 0; d0 < polvo.length; d0++) {
+        var pv = polvo[d0];
+        var dx0 = ((pv.x + pv.vx * t) % 1 + 1) % 1;
+        var dy0 = ((pv.y + pv.vy * t) % 1 + 1) % 1;
+        var tit = 0.5 + 0.5 * Math.sin(pv.fase + t * 0.0006);
+        ctx.fillStyle = rgba(col.texto, (papel ? 0.17 : 0.13) * pv.z * tit);
+        ctx.beginPath();
+        ctx.arc(dx0 * W, dy0 * H, pv.z * 1.5 * esc, 0, TAU);
+        ctx.fill();
+      }
+
       // Un solo gas, del color de la marca, y muy tenue: la familia la dicen
-      // el lugar y la etiqueta, no el color.
+      // el lugar y la etiqueta, no el color. Respira, con un período distinto
+      // por cúmulo — si respiran todos juntos se ve un latido de pantalla.
       cumulos.forEach(function (c) {
-        var x = px(c), y = py(c), rr = c.r * R * 1.85;
+        var resp = 1 + 0.075 * Math.sin(t * 0.00042 + c.p1);
+        var x = px(c), y = py(c), rr = c.r * R * 1.85 * resp;
         var g = ctx.createRadialGradient(x, y, 0, x, y, rr);
-        g.addColorStop(0, rgba(col.acento, papel ? 0.055 : 0.10));
+        g.addColorStop(0, rgba(col.acento, (papel ? 0.095 : 0.10) * resp));
         g.addColorStop(1, rgba(col.acento, 0));
         ctx.fillStyle = g;
         ctx.beginPath(); ctx.arc(x, y, rr, 0, TAU); ctx.fill();
       });
 
       // Malla interna, en un solo trazo: 500 beginPath por cuadro cuestan.
-      ctx.strokeStyle = rgba(col.texto, papel ? 0.13 : 0.10);
-      ctx.lineWidth = papel ? 0.6 : 0.5;
+      // Las puntas se guardan acá porque las chispas las vuelven a necesitar
+      // enseguida, y px()/py() no son gratis a 477 nodos.
+      ctx.strokeStyle = rgba(col.texto, papel ? 0.24 : 0.16);
+      ctx.lineWidth = papel ? 0.8 : 0.65;
       ctx.beginPath();
       for (var m = 0; m < mallas.length; m++) {
         var a = nodos[mallas[m][0]], b = nodos[mallas[m][1]];
-        ctx.moveTo(px(a), py(a)); ctx.lineTo(px(b), py(b));
+        var ax0 = px(a), ay0 = py(a), bx0 = px(b), by0 = py(b);
+        mallas[m][2] = ax0; mallas[m][3] = ay0;
+        mallas[m][4] = bx0; mallas[m][5] = by0;
+        ctx.moveTo(ax0, ay0); ctx.lineTo(bx0, by0);
       }
       ctx.stroke();
+
+      // Chispas por la malla. Cada una recorre una arista y salta a otra: el
+      // salto sale de la parte entera del avance, así que no hay estado que
+      // mantener y el recorrido es distinto para cada una.
+      for (var ci = 0; ci < chispas.length; ci++) {
+        var sp = chispas[ci];
+        var avance = sp.off + t * sp.vel;
+        var e = mallas[(sp.m + Math.floor(avance)) % mallas.length];
+        var u0 = avance % 1;
+        // Trocito de arista encendido, no un punto: a esta escala un punto
+        // solo se pierde entre los nodos.
+        // La estela larga es lo que la distingue de un nodo naranja quieto: a
+        // esta escala un puntito más no se lee como movimiento, un trazo sí.
+        var u1 = Math.max(0, u0 - 0.55);
+        var vx = e[4] - e[2], vy = e[5] - e[3];
+        var hx = e[2] + vx * u0, hy = e[3] + vy * u0;
+        var gsp = ctx.createLinearGradient(e[2] + vx * u1, e[3] + vy * u1, hx, hy);
+        gsp.addColorStop(0, rgba(col.acento, 0));
+        gsp.addColorStop(1, rgba(col.acento, papel ? 0.85 : 0.9));
+        ctx.strokeStyle = gsp;
+        ctx.lineWidth = 2 * esc;
+        ctx.beginPath();
+        ctx.moveTo(e[2] + vx * u1, e[3] + vy * u1);
+        ctx.lineTo(hx, hy);
+        ctx.stroke();
+        ctx.fillStyle = rgba(col.acento, 1);
+        ctx.beginPath(); ctx.arc(hx, hy, 1.9 * esc, 0, TAU); ctx.fill();
+      }
 
       // Puentes: curvas, no rectas. Una recta entre dos nubes se lee como el
       // borde de una caja; una curva, como un recorrido.
@@ -1273,37 +1449,36 @@ document.documentElement.classList.add('js');
         ctx.moveTo(ax, ay); ctx.quadraticCurveTo(cxq, cyq, bx, by);
         ctx.stroke();
 
-        // El pulso: núcleo nítido con estela corta. Una bolita difusa sola
+        // Los pulsos: núcleo nítido con estela corta. Una bolita difusa sola
         // parece un defecto del dibujo; con estela se lee que va hacia algún
-        // lado.
-        var u = ((t / 5200) + p.off) % 1;
-        for (var s = 0; s < 5; s++) {
-          var uu = u - s * 0.018;
-          if (uu < 0) continue;
-          var iu = 1 - uu, q = {
-            x: iu * iu * ax + 2 * iu * uu * cxq + uu * uu * bx,
-            y: iu * iu * ay + 2 * iu * uu * cyq + uu * uu * by
-          };
-          ctx.fillStyle = rgba(col.acento, (papel ? 0.85 : 0.95) * (1 - s / 5));
-          ctx.beginPath();
-          ctx.arc(q.x, q.y, (2.2 - s * 0.32) * esc, 0, TAU);
-          ctx.fill();
+        // lado. Van TRES por puente, escalonados — con uno solo el puente pasa
+        // la mayor parte del tiempo vacío y se lee como una línea decorativa.
+        for (var k = 0; k < 3; k++) {
+          var u = ((t / 5200) + p.off + k / 3) % 1;
+          for (var s = 0; s < 7; s++) {
+            var uu = u - s * 0.016;
+            if (uu < 0) continue;
+            var iu = 1 - uu, qx = iu * iu * ax + 2 * iu * uu * cxq + uu * uu * bx,
+                qy = iu * iu * ay + 2 * iu * uu * cyq + uu * uu * by;
+            ctx.fillStyle = rgba(col.acento, (papel ? 0.85 : 0.95) * (1 - s / 7));
+            ctx.beginPath();
+            ctx.arc(qx, qy, (2.2 - s * 0.24) * esc, 0, TAU);
+            ctx.fill();
+          }
         }
       });
 
-      // Los puntos. De noche, luz; sobre papel, tinta.
-      if (!papel) {
-        ctx.globalCompositeOperation = 'lighter';
-        for (var i = 0; i < nodos.length; i++) {
-          var n = nodos[i];
-          var pulso = 0.7 + 0.3 * Math.sin(n.fase + t * 0.0011 * n.vel);
-          var s2 = (5 + n.tam * 5) * pulso * esc;
-          ctx.globalAlpha = 0.5 + pulso * 0.45;
-          ctx.drawImage(halo(col[n.tono]), px(n) - s2, py(n) - s2, s2 * 2, s2 * 2);
-        }
-        ctx.globalAlpha = 1;
-        ctx.globalCompositeOperation = 'source-over';
+      // Los puntos. De noche, luz; sobre papel, tinta con sombra.
+      if (!papel) ctx.globalCompositeOperation = 'lighter';
+      for (var i = 0; i < nodos.length; i++) {
+        var n = nodos[i];
+        var pulso = 0.7 + 0.3 * Math.sin(n.fase + t * 0.0011 * n.vel);
+        var s2 = (papel ? 3 + n.tam * 3 : 5 + n.tam * 5) * pulso * esc;
+        ctx.globalAlpha = papel ? 0.20 + pulso * 0.20 : 0.5 + pulso * 0.45;
+        ctx.drawImage(halo(col[n.tono]), px(n) - s2, py(n) - s2, s2 * 2, s2 * 2);
       }
+      ctx.globalAlpha = 1;
+      ctx.globalCompositeOperation = 'source-over';
       // El núcleo va SIEMPRE, y sólido. Es lo que hace que se vean puntos y no
       // manchas: un halo sin núcleo es una mancha.
       for (var i2 = 0; i2 < nodos.length; i2++) {
@@ -1315,16 +1490,71 @@ document.documentElement.classList.add('js');
         ctx.fill();
       }
 
+      // Algo cambió acá. Cada tanto un registro se toca —llegó un reporte,
+      // venció un papel— y el nodo se enciende con un anillo que se abre. Es
+      // el movimiento que dice que los datos ENTRAN, no que ya estaban.
+      var CADA = 380, VIDA = 1900, VIVOS = 6;
+      for (var ev = 0; ev < VIVOS; ev++) {
+        var turno = Math.floor(t / CADA) - ev;
+        if (turno < 0) continue;
+        var edad = t - turno * CADA;
+        if (edad > VIDA) continue;
+        var ne = nodos[hash('ev' + turno) % nodos.length];
+        var ue = edad / VIDA, desv = 1 - ue;
+        var ex = px(ne), ey = py(ne);
+        ctx.strokeStyle = rgba(col[ne.tono], 0.55 * desv * desv);
+        ctx.lineWidth = 1.4 * esc * desv;
+        ctx.beginPath();
+        ctx.arc(ex, ey, (3 + ue * 26) * esc, 0, TAU);
+        ctx.stroke();
+        ctx.fillStyle = rgba(col[ne.tono], 0.9 * desv);
+        ctx.beginPath();
+        ctx.arc(ex, ey, (1.4 + 1.6 * desv) * esc, 0, TAU);
+        ctx.fill();
+      }
+
       chequeo(t);
 
       // Etiquetas: nombre y cantidad, con una guía corta hasta el cúmulo. Es
       // lo que convierte una mancha de colores en una lectura.
-      cumulos.forEach(function (c) {
-        var x = px(c), y = py(c) - c.r * R - 16 * esc;
+      // La caja que ocupa una etiqueta. Se mide el texto, no el punto: el
+      // nombre es ancho y la cuenta va del lado de afuera.
+      function cajaEtiqueta(x, y, arriba) {
+        return { x: x - 46 * esc, y: arriba ? y - 26 * esc : y - 12 * esc,
+                 w: 92 * esc, h: 40 * esc };
+      }
+      function pisa(a, b) {
+        return b && a.x + a.w > b.x && a.x < b.x + b.w &&
+                    a.y + a.h > b.y && a.y < b.y + b.h;
+      }
+      var puestas = [];
+      function libre(caj) {
+        if (CAJA && CAJA.op > 0.02 && pisa(caj, CAJA)) return false;
+        for (var q = 0; q < puestas.length; q++) if (pisa(caj, puestas[q])) return false;
+        return true;
+      }
+
+      // Los cúmulos grandes eligen primero: si el que cede es el de 267, se
+      // pierde el rótulo más importante del cuadro.
+      cumulos.slice().sort(function (a, b) { return b.n - a.n; }).forEach(function (c) {
+        var x = px(c), cy = py(c);
+        var arriba = true, y = cy - c.r * R - 16 * esc;
+        // Si algo le cae encima —el panel u otra etiqueta— se pasa ABAJO del
+        // cúmulo. Es mejor que apagarla: un cúmulo sin nombre no se lee, y el
+        // panel está en pantalla la mayor parte del ciclo.
+        if (!libre(cajaEtiqueta(x, y, true))) {
+          var ab = cy + c.r * R + 28 * esc;
+          if (libre(cajaEtiqueta(x, ab, false)) && ab < H - 6 * esc) {
+            arriba = false; y = ab;
+          }
+        }
+        puestas.push(cajaEtiqueta(x, y, arriba));
+
         ctx.strokeStyle = rgba(col.texto, papel ? 0.28 : 0.22);
         ctx.lineWidth = 1;
         ctx.beginPath();
-        ctx.moveTo(x, y + 6 * esc); ctx.lineTo(x, y + 13 * esc);
+        if (arriba) { ctx.moveTo(x, y + 6 * esc); ctx.lineTo(x, y + 13 * esc); }
+        else        { ctx.moveTo(x, y - 20 * esc); ctx.lineTo(x, y - 13 * esc); }
         ctx.stroke();
 
         ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
@@ -1333,7 +1563,9 @@ document.documentElement.classList.add('js');
         ctx.fillText(c.nombre, x, y);
         ctx.font = (9.5 * esc).toFixed(1) + 'px ' + MONO;
         ctx.fillStyle = rgba(col.texto, 0.5);
-        ctx.fillText(String(c.n), x, y - 13 * esc);
+        // La cuenta va del lado de afuera, para que el nombre quede siempre
+        // pegado al cúmulo y la guía no cruce texto.
+        ctx.fillText(String(c.n), x, arriba ? y - 13 * esc : y + 13 * esc);
       });
     }
 
@@ -1478,11 +1710,16 @@ document.documentElement.classList.add('js');
         ctx.quadraticCurveTo(c.x, c.y, fin.x, fin.y);
         ctx.stroke();
 
-        var p = ((t + i * PER / 4) % PER) / PER;
-        // Acelera al acercarse: entra al motor, no flota hacia él.
-        var pe = p * p * (3 - 2 * p);
-        if (pe > 0.88) llegada = Math.max(llegada, (pe - 0.88) / 0.12);
-        pulso(p0, c, fin, pe, col.acento, 6, 2.4);
+        // Dos por cable, desfasados: con uno solo el cable pasa la mayor parte
+        // del tiempo vacío y se lee como una línea de adorno, no como un caño
+        // por el que entra algo.
+        for (var kk = 0; kk < 2; kk++) {
+          var p = ((t + i * PER / 4 + kk * PER / 8) % PER) / PER;
+          // Acelera al acercarse: entra al motor, no flota hacia él.
+          var pe = p * p * (3 - 2 * p);
+          if (pe > 0.88) llegada = Math.max(llegada, (pe - 0.88) / 0.12);
+          pulso(p0, c, fin, pe, col.acento, 6, 2.4);
+        }
       }
 
       // ── la salida ──
@@ -1508,6 +1745,24 @@ document.documentElement.classList.add('js');
         ctx.lineWidth = g2 * 3.5 * esc;
         ctx.beginPath();
         ctx.arc(b.x, b.y, b.r * (1.05 + g2 * 0.045) * vibra, 0, TAU);
+        ctx.stroke();
+      }
+
+      // Cada llegada abre un anillo. No es adorno: marca el instante en que un
+      // dato ENTRÓ, y es lo que ata el movimiento de los cables con el del
+      // núcleo — sin eso son dos animaciones sueltas en el mismo lienzo.
+      // Con cuatro cables de a dos pulsos, llega uno cada PER/8.
+      var CAD = PER / 8;
+      for (var k2 = 0; k2 < 3; k2++) {
+        var turno = Math.floor(t / CAD) - k2;
+        if (turno < 1) continue;
+        var edad2 = t - turno * CAD;
+        if (edad2 > 1150) continue;
+        var ue2 = edad2 / 1150, desv2 = 1 - ue2;
+        ctx.strokeStyle = rgba(col.acento, (papel ? 0.45 : 0.5) * desv2 * desv2);
+        ctx.lineWidth = 1.6 * esc * desv2;
+        ctx.beginPath();
+        ctx.arc(b.x, b.y, b.r * (1.02 + ue2 * 0.8), 0, TAU);
         ctx.stroke();
       }
 
@@ -1571,9 +1826,24 @@ document.documentElement.classList.add('js');
       // así que confiar en que entre es confiar en la suerte.
       bx = Math.min(bx, W - bw - 6);
 
+      // Acuse de recibo: cuando el pulso verde toca la burbuja, la burbuja se
+      // enciende. Sin esto el mensaje parece impreso ahí desde siempre, y todo
+      // el recorrido de la izquierda no termina en nada.
+      var desde = ((t - 1400) % 2100 + 2100) % 2100;
+      var pop = desde < 520 ? 1 - desde / 520 : 0;
+      if (pop > 0) {
+        var e2 = 5 * pop * esc;
+        ctx.strokeStyle = rgba(VERDE, 0.45 * pop);
+        ctx.lineWidth = (1 + 5 * pop) * esc;
+        ctx.beginPath();
+        if (ctx.roundRect) ctx.roundRect(bx - e2, by - e2, bw + e2 * 2, bh + e2 * 2, 12);
+        else ctx.rect(bx - e2, by - e2, bw + e2 * 2, bh + e2 * 2);
+        ctx.stroke();
+      }
+
       ctx.fillStyle = papel ? '#ffffff' : '#10241a';
-      ctx.strokeStyle = rgba(VERDE, papel ? 0.55 : 0.75);
-      ctx.lineWidth = 1.3;
+      ctx.strokeStyle = rgba(VERDE, (papel ? 0.55 : 0.75) + pop * 0.25);
+      ctx.lineWidth = 1.3 + pop * 0.8;
       ctx.beginPath();
       if (ctx.roundRect) ctx.roundRect(bx, by, bw, bh, 9);
       else ctx.rect(bx, by, bw, bh);
