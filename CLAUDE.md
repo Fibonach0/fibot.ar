@@ -5,10 +5,26 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Qué es
 
 La **home comercial de FiBOT** — una página estática servida por GitHub Pages en
-**https://www.fibot.ar**. Vende tres verticales de automatización por WhatsApp
-(flotas, farmacia, vencimientos) a PyMEs argentinas.
+**https://www.fibot.ar**. Vende automatización por WhatsApp a PyMEs argentinas,
+con cuatro verticales concretas hoy (flotas, farmacia, encomiendas,
+vencimientos) listadas en `#frentes`.
 
 **No hay build, ni bundler, ni dependencias.** Se edita `index.html` y se pushea.
+
+### El criterio que ordena el copy: generalizar el relato, no la prueba
+
+La página vende **un patrón** ("cruzar varias fuentes y contestar por
+WhatsApp"), no un rubro. Por eso el hero, "El enganche" y la nebulosa —lo
+primero que ve cualquiera— están escritos en genérico (sistema/planillas/
+papeles/gente, "Pedido 4471", "Caso 412"): si lideran con flota, encasillan
+el resto de la página antes de que el visitante llegue a `#frentes`, que es
+donde SÍ corresponde nombrar cada rubro con sus números reales (267 unidades,
++10.000 productos). Ídem los ejemplos de código (`FUENTES`, `CHEQUEOS`,
+`MSG` en el canvas del enganche, `MSG`/`CHEQUEOS` en la nebulosa): son
+genéricos a propósito, no flota disfrazada. Al sumar un rubro nuevo a
+`#frentes`, no lo repliques en el hero/enganche/nebulosa — esa genericidad es
+la que hace que sumar un quinto rubro mañana no requiera reescribir la mitad
+de la página.
 
 ## Verificar antes de entregar
 

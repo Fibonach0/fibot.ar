@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>FiBOT — Preguntale a tu empresa. Te contesta.</title>
-<meta name="description" content="Automatización por WhatsApp para PyMEs argentinas. Flotas, farmacia y control de vencimientos: la respuesta llega al único canal que tu gente ya tiene abierto.">
+<meta name="description" content="Automatización por WhatsApp para PyMEs argentinas: la respuesta a lo que tu gente pregunta todos los días llega al único canal que ya tiene abierto.">
 <link rel="canonical" href="https://www.fibot.ar/">
 <meta name="theme-color" content="#eae5dc" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#100f0d" media="(prefers-color-scheme: dark)">
@@ -15,7 +15,7 @@
 <meta property="og:site_name" content="FiBOT">
 <meta property="og:url" content="https://www.fibot.ar/">
 <meta property="og:title" content="FiBOT — Preguntale a tu empresa. Te contesta.">
-<meta property="og:description" content="Automatización por WhatsApp para PyMEs argentinas. Flotas, farmacia y control de vencimientos: la respuesta llega al único canal que tu gente ya tiene abierto.">
+<meta property="og:description" content="Automatización por WhatsApp para PyMEs argentinas: la respuesta a lo que tu gente pregunta todos los días llega al único canal que ya tiene abierto.">
 <meta property="og:image" content="https://www.fibot.ar/assets/og-fibot.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -27,9 +27,9 @@
   "@type": "ProfessionalService",
   "name": "FiBOT",
   "url": "https://www.fibot.ar/",
-  "description": "Automatización por WhatsApp para PyMEs argentinas. Flotas, farmacia y control de vencimientos: la respuesta llega al único canal que tu gente ya tiene abierto.",
+  "description": "Automatización por WhatsApp para PyMEs argentinas: la respuesta a lo que tu gente pregunta todos los días llega al único canal que ya tiene abierto.",
   "telephone": "+54-9-11-2852-4957",
-  "email": "ignacio.antu@gmail.com",
+  "email": "Ignacio@fibot.ar",
   "areaServed": { "@type": "Country", "name": "Argentina" },
   "parentOrganization": {
     "@type": "Organization",
@@ -280,6 +280,33 @@
   .sub b{color:var(--tinta);font-weight:400;
     border-bottom:1px solid var(--linea)}
 
+  /* ── la cuenta: costo de no tenerlo ───────────────────
+     Una fórmula, no una promesa: el visitante la corre con sus propios
+     números. El ejemplo de abajo es sólo eso, un ejemplo — lo dice el pie. */
+  .formula{display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+    margin-top:34px}
+  .termino{background:var(--hueso-2);border:1px solid var(--linea);
+    border-radius:8px;padding:12px 16px;font-family:var(--sans);
+    font-size:.92rem;text-align:center;line-height:1.3}
+  .termino b{display:block;font-size:.74rem;color:var(--tinta-2);
+    font-weight:400;margin-top:3px}
+  .termino.destacado{border-color:var(--bronce-vivo);background:var(--hueso)}
+  .op{font-family:var(--mono);font-size:1.3rem;color:var(--bronce-vivo);
+    font-weight:700}
+  .ejemplo{margin-top:28px;display:flex;align-items:baseline;gap:20px;
+    flex-wrap:wrap}
+  .ejemplo .cuenta{font-family:var(--mono);font-size:.95rem;
+    color:var(--tinta-2)}
+  .ejemplo .num{font-family:var(--mono);font-size:3rem;font-weight:800;
+    color:var(--bronce-vivo);letter-spacing:-.02em;line-height:1}
+  .ejemplo .detalle{font-size:.92rem;color:var(--tinta-2);max-width:26ch;
+    line-height:1.4}
+  .etiqueta-chica{font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--tinta-2);margin-top:20px}
+  .remate{font-size:1.1rem;font-weight:650;margin-top:22px;max-width:64ch;
+    line-height:1.4}
+  .remate b{font-weight:800;color:var(--bronce-vivo)}
+
   /* ── cómo arranca: línea de tiempo ────────────────────
      Estructura tomada del widget Steps de AstroWind (MIT): regla vertical,
      un punto por paso. Tres pasos numerados leen como un proceso; tres
@@ -386,14 +413,14 @@
             <div><b>FiBOT</b><small>en línea</small></div>
           </div>
           <div class="wa-cuerpo">
-            <div class="b out">¿Dónde está el 214?<span class="t">9:12</span></div>
-            <div class="b in"><strong>Interno 214</strong> — Ruta 3, km 412,
-              cerca de Azul. En movimiento a <span class="n">82 km/h</span>.
-              Chofer: Ruiz.<span class="t">9:12</span></div>
-            <div class="b out">¿y cuánto gastó este mes?<span class="t">9:13</span></div>
-            <div class="b in"><strong>1.847 litros</strong> en
-              <span class="n">6.320 km</span> — <span class="n">29,2 L/100km</span>.
-              Está <span class="n">4%</span> arriba de su promedio.<span class="t">9:13</span></div>
+            <div class="b out">¿Cómo viene el pedido 4471?<span class="t">9:12</span></div>
+            <div class="b in"><strong>Pedido 4471</strong> — en preparación,
+              depósito Central. Sale hoy a las <span class="n">15:00</span>.
+              Responsable: equipo de despacho.<span class="t">9:12</span></div>
+            <div class="b out">¿y cuántos quedan sin facturar este mes?<span class="t">9:13</span></div>
+            <div class="b in"><strong>38 pedidos</strong> sin facturar —
+              <span class="n">$2.140.000</span>. Está
+              <span class="n">6%</span> arriba del mes pasado.<span class="t">9:13</span></div>
           </div>
         </div>
       </div>
@@ -444,13 +471,13 @@
     <div class="txt">
       <p>Una vez cruzadas las fuentes, tu empresa deja de ser una pila de
         planillas. Pero lo que importa no es el dibujo: es lo que pasa abajo.
-        <b>Cada tanto FiBOT agarra una unidad y le pregunta a varias fuentes a
-        la vez</b> — dónde está, qué papel le vence, quién la maneja, si tiene
-        un trabajo abierto.</p>
-      <p><b>Una sola fuente miente.</b> El GPS dice “parado” y el chofer sabe
-        que está esperando carga; el papel figura al día y el taller lo tiene
-        hace dos días. Por eso la conclusión sale de cruzarlas, y por eso abajo
-        se ve la consulta entera y no sólo el resultado.</p>
+        <b>Cada tanto FiBOT agarra un caso y le pregunta a varias fuentes a la
+        vez</b> — en qué estado está, qué papel le vence, quién está a cargo,
+        si tiene una tarea abierta.</p>
+      <p><b>Una sola fuente miente.</b> El sistema dice “al día” y tu gente
+        sabe que en realidad está trabado; el papel figura vigente y en los
+        hechos venció hace dos días. Por eso la conclusión sale de cruzarlas, y
+        por eso abajo se ve la consulta entera y no sólo el resultado.</p>
     </div>
 
     <div class="nebu-caja">
@@ -508,7 +535,8 @@
           <span class="est">En producción</span>
           <p class="d">Dónde está cada camión, cuánto consumió, qué papeles
             vencen y cuál conviene mandar. Se conecta al GPS que ya tenés —
-            once plataformas — sin cambiar de proveedor ni migrar nada.</p>
+            once plataformas — sin cambiar de proveedor ni migrar nada. Hoy
+            sigue <b>267 unidades</b>, todos los días.</p>
         </div>
       </div>
       <div class="item">
@@ -520,8 +548,9 @@
             puede soltar la caja. FiBOT va en el bolsillo del farmacéutico y no
             se cae con lo demás: escribe el nombre del remedio y le vuelve
             precio, coberturas de obra social, equivalentes por droga y el
-            prospecto en PDF. No reemplaza al sistema de gestión; es lo que
-            sigue estando cuando el sistema no está.</p>
+            prospecto en PDF, sobre un catálogo de <b>+10.000 productos</b>
+            actualizado todo el tiempo. No reemplaza al sistema de gestión; es
+            lo que sigue estando cuando el sistema no está.</p>
 
           <div class="sub">
             <span class="et">Y el sistema, que es otra cosa</span>
@@ -532,6 +561,18 @@
               operación de todos los días. Van juntos o por separado, según de
               qué lado estés.</p>
           </div>
+        </div>
+      </div>
+      <div class="item">
+        <h3>Encomiendas</h3>
+        <div>
+          <span class="est">En producción</span>
+          <p class="d">Cada bulto con su propio QR, trazable desde que entra
+            hasta que se entrega. Nada se edita ni se borra: cada escaneo
+            queda registrado, y el estado se arma solo a partir de esa
+            historia. Funciona sin señal —se encola en el momento y sincroniza
+            apenas hay conexión, nunca al revés— porque el escaneo real pasa
+            justo donde no hay señal.</p>
         </div>
       </div>
       <div class="item">
@@ -556,6 +597,36 @@
   </div>
 </section>
 
+<section id="costo">
+  <div class="m rev">
+    <span class="mono" style="color:var(--tinta-2)">La cuenta que nadie hizo todavía</span>
+    <h2 class="display titulo" style="margin-top:14px">No hace falta un
+      estudio. Alcanza con la cuenta.</h2>
+    <p style="margin-top:18px;color:var(--tinta-2);max-width:60ch;
+      line-height:1.55">Minutos perdidos por consulta, veces que se repite
+      por día, días hábiles al mes. Esa cuenta la arman ustedes, con sus
+      propios números — nosotros no los tenemos, todavía. Pero ya sabemos
+      cómo se hace: la venimos haciendo en otros lados.</p>
+    <div class="formula">
+      <div class="termino">minutos perdidos<b>por consulta</b></div>
+      <span class="op">×</span>
+      <div class="termino">veces que se repite<b>por día</b></div>
+      <span class="op">×</span>
+      <div class="termino">días hábiles<b>al mes</b></div>
+      <span class="op">=</span>
+      <div class="termino destacado">horas perdidas<b>por mes</b></div>
+    </div>
+    <div class="ejemplo">
+      <p class="cuenta">8 min × 15 consultas × 22 días =</p>
+      <p class="num">44</p>
+      <p class="detalle">horas por mes — más de una semana de trabajo
+        completa, en preguntas que ya tenían respuesta en algún lado.</p>
+    </div>
+    <p class="etiqueta-chica">Números de referencia, no datos de ningún
+      cliente en particular</p>
+  </div>
+</section>
+
 <section id="arranca" style="background:var(--hueso-2)">
   <div class="m rev">
     <h2 class="display titulo">Cómo arranca, sin vueltas.</h2>
@@ -571,8 +642,8 @@
         <span class="cuando">Semanas 1 y 2</span>
         <h3>Un caso andando, no el sistema entero</h3>
         <p>Elegimos la pregunta que más se repite y la conectamos con lo que ya
-          tenés —el GPS, la planilla, el sistema de siempre—. A las dos semanas
-          hay algo funcionando en un grupo chico de gente real.</p>
+          tenés —el sistema de siempre, la planilla, lo que sea—. A las dos
+          semanas hay algo funcionando en un grupo chico de gente real.</p>
       </div>
       <div class="paso">
         <span class="cuando">Después</span>
@@ -585,18 +656,62 @@
   </div>
 </section>
 
+<section id="tecnico">
+  <div class="m rev">
+    <span class="mono" style="color:var(--tinta-2)">Para quien lo quiera auditar</span>
+    <h2 class="display titulo" style="margin-top:14px">Así está armado, en
+      cuatro puntos.</h2>
+    <div class="lista">
+      <div class="item">
+        <h3>Lenguaje</h3>
+        <div>
+          <p class="d">Se escribe como a una persona. Nada de comandos exactos
+            ni menú de opciones: la consulta se hace como a un compañero, y el
+            sistema entiende qué se necesita.</p>
+        </div>
+      </div>
+      <div class="item">
+        <h3>Integración</h3>
+        <div>
+          <p class="d">Por API, no por scraping. Se conecta a los sistemas que
+            ya usás —ERP, planillas, bases propias— por API o lectura directa.
+            Sin credenciales compartidas, sin tocar la fuente original.</p>
+        </div>
+      </div>
+      <div class="item">
+        <h3>Datos</h3>
+        <div>
+          <p class="d">Lee, nunca escribe. Acceso de sólo lectura a lo que se
+            autorice. No modifica un sistema existente salvo que se lo pida
+            explícitamente, con su propio permiso aparte.</p>
+        </div>
+      </div>
+      <div class="item">
+        <h3>Seguridad</h3>
+        <div>
+          <p class="d">Acceso por rol, todo con registro. Credenciales y
+            tokens nunca pasan por el chat — quedan fuera, como en cualquier
+            integración seria. Cada acceso queda registrado: quién, qué,
+            cuándo.</p>
+        </div>
+      </div>
+    </div>
+    <p class="remate">Cada uno de estos cuatro puntos se explica con más
+      detalle apenas haga falta. <b>Cuanto más lo pregunten, mejor.</b></p>
+  </div>
+</section>
+
 <section id="preguntas">
   <div class="m rev">
     <h2 class="display titulo">Lo que siempre nos preguntan.</h2>
     <div class="faq">
       <details open>
-        <summary>¿Tengo que cambiar mi GPS o mi sistema?
+        <summary>¿Tengo que cambiar de sistema?
           <svg viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
         </summary>
-        <p>No. Nos conectamos al que ya tenés: hay once plataformas mapeadas y
-          documentadas. Si la tuya no está en la lista se estudia, pero no
-          siempre se puede — y eso lo sabemos en la primera semana, no a los
-          seis meses.</p>
+        <p>No. Nos conectamos al que ya tenés — ERP, planillas, GPS, lo que
+          sea. Si el tuyo no está mapeado se estudia, pero no siempre se puede
+          — y eso lo sabemos en la primera semana, no a los seis meses.</p>
       </details>
       <details>
         <summary>¿Qué pasa si mi gente no lo usa?
@@ -656,13 +771,14 @@
         <h4>Qué hacemos</h4>
         <a href="#frentes">Flotas</a>
         <a href="#frentes">Farmacia</a>
+        <a href="#frentes">Encomiendas</a>
         <a href="#frentes">Vencímetro</a>
         <a href="#arranca">Cómo arranca</a>
       </div>
       <div>
         <h4>Hablar con alguien</h4>
         <a href="https://wa.me/5491128524957">+54 9 11 2852-4957</a>
-        <a href="mailto:ignacio.antu@gmail.com">Por mail</a>
+        <a href="mailto:Ignacio@fibot.ar">Por mail</a>
         <a href="https://www.xn--antua-rta.com.ar/">antuña.com.ar</a>
       </div>
     </div>
@@ -914,8 +1030,8 @@ document.documentElement.classList.add('js');
     var ctx = cv.getContext('2d');
     var AUREO = 2.399963229728653;
 
-    // Seis familias. Las cantidades son de una flota como la de Cantarini: la
-    // única que se publica en esta página es 267, el resto da la proporción.
+    // Seis familias, a modo de ejemplo. Las cantidades ilustran la proporción
+    // típica entre familias, no el tamaño real de ningún cliente puntual.
     var FAM = [
       { id: 'unidades',   nombre: 'Unidades',   n: 267 },
       { id: 'documentos', nombre: 'Documentos', n: 96 },
@@ -935,34 +1051,34 @@ document.documentElement.classList.add('js');
     };
     var TONOS = ['vivo', 'espera', 'alerta', 'quieto'];
 
-    /* Lo que el sistema hace de verdad: agarra una unidad y le pregunta a
-       varias fuentes a la vez. Una sola miente —el GPS dice "parado" y el
-       chofer sabe que está esperando carga— así que la conclusión sale de
-       cruzarlas, no de creerle a ninguna.
+    /* Lo que el sistema hace de verdad: agarra un caso y le pregunta a varias
+       fuentes a la vez. Una sola miente —el sistema dice "al día" y tu gente
+       sabe que está trabado— así que la conclusión sale de cruzarlas, no de
+       creerle a ninguna.
 
        Esto es eso, ejecutándose. No es el adorno de la sección: es la
        sección. */
     var CHEQUEOS = [
-      { unidad: 'Unidad 412', nodo: 37, veredicto: 'parada sin aviso · avisar al encargado',
+      { unidad: 'Caso 412', nodo: 37, veredicto: 'sin reportar · avisar al responsable',
         tono: 'alerta', consulta: [
           { cum: 'datos',      dice: '3 h sin reportar' },
-          { cum: 'personas',   dice: 'el chofer no informó' },
-          { cum: 'trabajos',   dice: 'sin orden abierta' } ] },
-      { unidad: 'Unidad 118', nodo: 122, veredicto: 'puede salir · la VTV vence en 9 días',
+          { cum: 'personas',   dice: 'el responsable no confirmó' },
+          { cum: 'trabajos',   dice: 'sin tarea abierta' } ] },
+      { unidad: 'Caso 118', nodo: 122, veredicto: 'puede seguir · el permiso vence en 9 días',
         tono: 'espera', consulta: [
-          { cum: 'datos',      dice: 'en ruta, hace 12 min' },
-          { cum: 'documentos', dice: 'VTV vence en 9 días' },
-          { cum: 'personas',   dice: 'chofer asignado' } ] },
-      { unidad: 'Unidad 233', nodo: 201, veredicto: 'en taller · no asignarle viaje',
+          { cum: 'datos',      dice: 'activo, hace 12 min' },
+          { cum: 'documentos', dice: 'permiso vence en 9 días' },
+          { cum: 'personas',   dice: 'responsable asignado' } ] },
+      { unidad: 'Caso 233', nodo: 201, veredicto: 'en revisión · no avanzar todavía',
         tono: 'quieto', consulta: [
           { cum: 'tickets',    dice: '2 tickets abiertos' },
-          { cum: 'trabajos',   dice: 'frenos, desde ayer' },
-          { cum: 'documentos', dice: 'seguro al día' } ] },
-      { unidad: 'Unidad 507', nodo: 88, veredicto: 'todo en orden',
+          { cum: 'trabajos',   dice: 'pendiente, desde ayer' },
+          { cum: 'documentos', dice: 'al día' } ] },
+      { unidad: 'Caso 507', nodo: 88, veredicto: 'todo en orden',
         tono: 'vivo', consulta: [
-          { cum: 'datos',      dice: 'en planta, hace 4 min' },
+          { cum: 'datos',      dice: 'activo, hace 4 min' },
           { cum: 'documentos', dice: 'papeles al día' },
-          { cum: 'personas',   dice: 'chofer en horario' } ] }
+          { cum: 'personas',   dice: 'responsable en horario' } ] }
     ];
     var CICLO = 8200, ENTRADA = 700, PASO = 950, CIERRE = 900;
 
