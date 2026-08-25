@@ -6,15 +6,12 @@
 <title>FiBOT — Preguntale a tu empresa. Te contesta.</title>
 <meta name="description" content="Automatización por WhatsApp para PyMEs argentinas: la respuesta a lo que tu gente pregunta todos los días llega al único canal que ya tiene abierto.">
 <link rel="canonical" href="https://www.fibot.ar/">
-<meta name="theme-color" content="#eae5dc" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#100f0d" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#0c0b0a">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 
-<!-- Sólo para la marca (el símbolo y el wordmark van en Space Grotesk, ver
-     assets/logo/). El resto del sitio sigue en --sans (system-ui). -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
 <meta property="og:type" content="website">
 <meta property="og:locale" content="es_AR">
@@ -48,1984 +45,839 @@
 
 <style>
   :root{
-    --hueso:#eae5dc;
-    --hueso-2:#e0d9cd;
-    --tinta:#14120f;
-    --tinta-2:#57514a;
-    --bronce:#8a5a2b;
-    --bronce-vivo:#b9762f;
-    --rojo-oro:#9c3d1e;
-    --linea:#c9c0b1;
+    --tinta:#0c0b0a;
+    --tinta-alt:#0f0e0c;
+    --hueso:#ece6db;
+    --tenue:#9a9082;
+    --tenue-2:#57514a;
+    --linea:#221f1b;
+    --linea-2:#2a2622;
+    --bronce:#E0A44C;
+    --bronce-h:#eebe7f;
+    --verde:#6FDCAE;
 
-    --sans:system-ui,-apple-system,"Segoe UI Variable","Segoe UI",Roboto,sans-serif;
+    --sans:'Space Grotesk',system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
     --serif:Georgia,"Iowan Old Style","Palatino Linotype",serif;
-    --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;
   }
-  @media (prefers-color-scheme:dark){
-    :root{--hueso:#100f0d;--hueso-2:#191713;--tinta:#ece6db;--tinta-2:#9a9082;
-      --linea:#2e2a24;--bronce:#c9903f;--bronce-vivo:#e0a44c;--rojo-oro:#d2683c}
-  }
-  :root[data-theme="dark"]{--hueso:#100f0d;--hueso-2:#191713;--tinta:#ece6db;
-    --tinta-2:#9a9082;--linea:#2e2a24;--bronce:#c9903f;--bronce-vivo:#e0a44c;
-    --rojo-oro:#d2683c}
-  :root[data-theme="light"]{--hueso:#eae5dc;--hueso-2:#e0d9cd;--tinta:#14120f;
-    --tinta-2:#57514a;--linea:#c9c0b1;--bronce:#8a5a2b;--bronce-vivo:#b9762f;
-    --rojo-oro:#9c3d1e}
-
   *{box-sizing:border-box}
-  /* Sin esto, los links del menú dejan el título tapado por la nav pegajosa. */
-  html{scroll-behavior:smooth;scroll-padding-top:78px}
-  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
-  body{margin:0;background:var(--hueso);color:var(--tinta);
-    font-family:var(--serif);font-size:17px;line-height:1.68;
-    -webkit-font-smoothing:antialiased}
-  .m{max-width:1140px;margin:0 auto;padding:0 28px}
-  a{color:inherit}
+  body{margin:0;background:var(--tinta);color:var(--hueso);font-family:var(--serif);
+    font-size:17px;line-height:1.68;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  a{color:var(--bronce);text-decoration:none}
+  a:hover{color:var(--hueso)}
+  ::selection{background:var(--bronce);color:var(--tinta)}
+  :focus-visible{outline:2px solid var(--bronce);outline-offset:3px}
 
-  .display{font-family:var(--sans);font-weight:800;letter-spacing:-.045em;
-    line-height:.94;text-wrap:balance}
-  .mono{font-family:var(--mono);font-size:.7rem;letter-spacing:.2em;
-    text-transform:uppercase}
+  .m{max-width:1180px;margin:0 auto;padding:0 28px}
 
-  /* ── nav pegajosa ─────────────────────────────────────
-     Estructura del header de HyperUI (MIT): marca · nav · CTA · hamburguesa.
-     El menú mobile es un <details>: se abre y cierra sin una línea de JS, así
-     que no queda roto si el script falla. */
-  .top{position:sticky;top:0;z-index:30;background:var(--hueso);
-    border-bottom:1px solid transparent;transition:border-color .2s}
-  .top.pegado{border-bottom-color:var(--linea)}
-  .top .m{display:flex;align-items:center;gap:24px;height:62px}
-  .marca{display:inline-flex;align-items:center;text-decoration:none}
-  .marca svg{height:26px;width:auto;display:block}
-  footer .marca svg{height:22px}
-  .nav-desk{margin-left:auto;display:flex;gap:26px;align-items:center}
-  .nav-desk a{font-family:var(--sans);font-size:.88rem;color:var(--tinta-2);
-    text-decoration:none;transition:color .15s}
-  .nav-desk a:hover{color:var(--tinta)}
-
-  .menu-mob{margin-left:auto;position:relative}
-  .menu-mob summary{list-style:none;cursor:pointer;padding:8px;
-    display:flex;align-items:center}
-  .menu-mob summary::-webkit-details-marker{display:none}
-  .menu-mob svg{width:22px;height:22px;stroke:var(--tinta);stroke-width:1.8;
-    fill:none}
-  .menu-mob .panel{position:absolute;right:0;top:calc(100% + 10px);
-    background:var(--hueso);border:1px solid var(--linea);min-width:220px;
-    padding:8px 0;box-shadow:0 16px 40px rgba(20,15,8,.18)}
-  .menu-mob .panel a{display:block;padding:11px 20px;font-family:var(--sans);
-    font-size:.95rem;text-decoration:none;color:var(--tinta)}
-  .menu-mob .panel a:hover{background:var(--hueso-2)}
-  @media (min-width:900px){.menu-mob{display:none}}
-  @media (max-width:899px){.nav-desk{display:none}}
-
-  /* ── revelado al entrar en pantalla ───────────────────
-     Sólo se esconde si el JS corrió (clase .js). Sin JS, o con movimiento
-     reducido, todo se ve: la animación nunca es la que "trae" el contenido.
-
-     Corto: la página tiene casi nueve pantallas en un teléfono, y con la
-     transición larga scrollear rápido dejaba bandas en blanco. Combinado con
-     el rootMargin de abajo, la sección ya terminó de aparecer para cuando
-     llega al viewport. */
-  .js .rev{opacity:0;transform:translateY(12px);
-    transition:opacity .4s ease,transform .4s cubic-bezier(.22,.61,.36,1)}
-  .js .rev.visible{opacity:1;transform:none}
+  @keyframes dibujo{to{stroke-dashoffset:0}}
+  @keyframes aparecer{from{opacity:0;transform:scale(.55)}to{opacity:1;transform:scale(1)}}
+  @keyframes subir{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+  @keyframes pulso{0%,100%{opacity:.22}50%{opacity:1}}
+  @keyframes caret{0%,49%{opacity:1}50%,100%{opacity:0}}
+  @keyframes entra{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:none}}
+  @keyframes entraCorto{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+  @keyframes crece{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+  @keyframes destello{0%{opacity:0}22%{opacity:.85}70%{opacity:.5}100%{opacity:0}}
+  .rev{animation:entra .7s cubic-bezier(.22,.61,.36,1) both;animation-timeline:view();animation-range:entry 0% cover 26%}
+  .rev-c{animation:entraCorto .6s cubic-bezier(.22,.61,.36,1) both;animation-timeline:view();animation-range:entry 0% cover 22%}
+  .regla{animation:crece .9s cubic-bezier(.22,.61,.36,1) both;animation-timeline:view();animation-range:entry 0% cover 20%;transform-origin:left}
   @media (prefers-reduced-motion:reduce){
-    .js .rev{opacity:1;transform:none;transition:none}
+    .rev,.rev-c,.regla{animation:none;opacity:1;transform:none}
   }
 
-  /* ── portada ───────────────────────────────────────── */
-  .portada{padding:clamp(40px,7vw,84px) 0 clamp(48px,6vw,72px)}
-  .portada .display{font-size:clamp(3rem,10.5vw,7.6rem);max-width:13ch}
-  .portada .display b{font-weight:800;color:var(--bronce-vivo)}
-  .abajo{display:grid;gap:clamp(28px,4vw,54px);margin-top:clamp(30px,4vw,52px);
-    grid-template-columns:1fr}
-  @media (min-width:980px){
-    .abajo{grid-template-columns:1.15fr .85fr;align-items:start}
-    .abajo .col2{padding-top:74px}
+  .fondo-grilla{position:absolute;inset:0;pointer-events:none;
+    background-image:linear-gradient(#ffffff08 1px,transparent 1px),linear-gradient(90deg,#ffffff08 1px,transparent 1px);
+    background-size:88px 88px;mask-image:linear-gradient(#000,#000 46%,transparent 92%);z-index:0}
+  .fondo-luz{position:absolute;border-radius:50%;filter:blur(20px);pointer-events:none}
+
+  .destello{position:fixed;z-index:5;pointer-events:none;font-family:var(--mono);
+    letter-spacing:.1em;color:rgba(224,164,76,.5);white-space:nowrap;animation:destello .17s linear both}
+
+  /* ── nav ───────────────────────────────────────────── */
+  .top{position:sticky;top:0;z-index:30;background:rgba(12,11,10,.82);
+    backdrop-filter:blur(14px) saturate(1.2);border-bottom:1px solid var(--linea)}
+  .top .m{height:68px;display:flex;align-items:center;gap:24px}
+  .marca{display:flex;align-items:center;gap:12px;text-decoration:none;color:var(--hueso)}
+  .marca svg{width:36px;height:22px;flex:none;display:block}
+  .marca span{font-family:var(--sans);font-weight:700;font-size:1.06rem;letter-spacing:-.03em}
+  .marca span b{font-weight:400}
+  .nav-desk{margin-left:auto;display:flex;align-items:center;gap:8px}
+  .nav-desk a{font-family:var(--sans);font-size:.88rem;color:var(--tenue);padding:9px 12px;
+    border-radius:2px;transition:color .18s,background .18s}
+  .nav-desk a:hover{color:var(--hueso);background:#ffffff0d}
+  @media (max-width:640px){
+    .marca span{display:none}
+    .nav-desk a:not(.btn){display:none}
   }
-  .lead{font-size:clamp(1.15rem,1.9vw,1.4rem);max-width:34ch;line-height:1.5}
-  .nota-margen{font-family:var(--sans);font-size:.83rem;color:var(--tinta-2);
-    border-left:2px solid var(--bronce);padding-left:14px;margin-top:26px;
-    max-width:30ch;line-height:1.5}
+  .btn{font-family:var(--sans);font-weight:500;color:var(--tinta);background:var(--bronce);
+    padding:10px 18px;border-radius:2px;transition:transform .18s,box-shadow .18s,background .18s;
+    display:inline-block;border:none;cursor:pointer}
+  .btn:hover{background:var(--bronce-h);color:var(--tinta);transform:translateY(-1px);
+    box-shadow:0 8px 22px rgba(224,164,76,.28)}
+  .nav-desk .btn{margin-left:10px;font-size:.88rem;padding:10px 18px}
+  .btn-grande{font-size:1.02rem;padding:16px 30px}
+  .btn-grande:hover{transform:translateY(-2px);box-shadow:0 14px 34px rgba(224,164,76,.3)}
+  .btn-ghost{font-family:var(--sans);font-size:.95rem;color:var(--hueso);padding:15px 22px;
+    border:1px solid var(--linea-2);border-radius:2px;transition:border-color .18s,background .18s}
+  .btn-ghost:hover{border-color:var(--bronce);background:#ffffff08}
 
-  .cta{display:inline-block;margin-top:30px;font-family:var(--sans);
-    font-weight:650;font-size:.98rem;color:var(--hueso);background:var(--tinta);
-    padding:14px 26px;text-decoration:none;transition:background .15s}
-  .cta:hover{background:var(--bronce)}
-  .cta:focus-visible{outline:2px solid var(--bronce-vivo);outline-offset:3px}
+  /* ── hero ──────────────────────────────────────────── */
+  header.portada{position:relative;padding:clamp(44px,7vw,96px) 0 clamp(40px,5vw,64px)}
+  .portada .grid{display:grid;gap:clamp(34px,5vw,68px);grid-template-columns:repeat(auto-fit,minmax(360px,1fr));align-items:start}
+  .eyebrow-punto{display:flex;align-items:center;gap:12px;margin-bottom:clamp(22px,2.6vw,32px)}
+  .eyebrow-punto i{width:7px;height:7px;background:var(--bronce);border-radius:50%;
+    box-shadow:0 0 0 4px rgba(224,164,76,.18);animation:pulso 2.4s infinite}
+  .mono{font-family:var(--mono);font-size:.7rem;letter-spacing:.22em;text-transform:uppercase;color:var(--bronce)}
+  .simbolo-hero{width:clamp(112px,12vw,156px);height:auto;display:block;margin-bottom:clamp(24px,3vw,36px)}
+  h1.display{font-family:var(--sans);font-weight:700;letter-spacing:-.05em;line-height:.9;
+    text-wrap:balance;font-size:clamp(3rem,7.8vw,5.8rem);margin:0;max-width:14ch}
+  h1.display em{font-style:normal;color:var(--bronce)}
+  .lead{font-size:clamp(1.14rem,1.7vw,1.38rem);max-width:37ch;line-height:1.52;margin:clamp(24px,2.8vw,34px) 0 0}
+  .nota-margen{font-family:var(--sans);font-size:.87rem;color:var(--tenue);border-left:2px solid var(--bronce);
+    padding-left:16px;margin:30px 0 0;max-width:33ch;line-height:1.55}
+  .cta-row{display:flex;flex-wrap:wrap;gap:14px;align-items:center;margin-top:36px}
 
-  /* ── WhatsApp ──────────────────────────────────────── */
-  .wa{background:#0b141a;border-radius:6px;overflow:hidden;
-    box-shadow:0 18px 44px rgba(20,15,8,.28);max-width:400px}
-  .wa-top{background:#202c33;padding:10px 14px;display:flex;align-items:center;
-    gap:11px}
-  .wa-av{width:36px;height:36px;border-radius:50%;background:#5b6b73;
-    display:grid;place-items:center;color:#e9edef;font-family:var(--sans);
-    font-weight:700;font-size:.82rem}
-  .wa-top b{color:#e9edef;font-family:var(--sans);font-size:.92rem;
-    font-weight:500;display:block;line-height:1.25}
-  .wa-top small{color:#8696a0;font-family:var(--sans);font-size:.72rem}
-  .wa-cuerpo{padding:14px 12px 18px;display:flex;flex-direction:column;gap:6px;
+  /* ── whatsapp mock ─────────────────────────────────── */
+  .wa-col{padding-top:clamp(0px,4vw,72px)}
+  .wa{background:#0b141a;border-radius:10px;overflow:hidden;
+    box-shadow:0 30px 80px rgba(0,0,0,.6),0 0 0 1px var(--linea);max-width:430px}
+  .wa-top{background:#202c33;padding:11px 14px;display:flex;align-items:center;gap:11px}
+  .wa-av{width:38px;height:38px;flex:none;border-radius:50%;overflow:hidden;display:grid;place-items:center}
+  .wa-top b{color:#e9edef;font-family:var(--sans);font-size:.95rem;font-weight:500;display:block;line-height:1.25}
+  .wa-top small{color:var(--bronce);font-family:var(--sans);font-size:.72rem}
+  .wa-rubro{font-family:var(--mono);font-size:.62rem;color:#8696a0;letter-spacing:.1em;margin-left:auto}
+  .wa-cuerpo{padding:16px 12px 12px;display:flex;flex-direction:column;gap:7px;min-height:368px;
     background-color:#0b141a;
     background-image:radial-gradient(circle at 20% 30%,rgba(255,255,255,.022) 1px,transparent 1px),
       radial-gradient(circle at 70% 65%,rgba(255,255,255,.022) 1px,transparent 1px);
     background-size:38px 38px,52px 52px}
-  .b{max-width:82%;padding:6px 9px 5px;border-radius:8px;
-    font-family:var(--sans);font-size:.875rem;line-height:1.4}
-  .b .t{font-size:.63rem;color:#ffffff8c;float:right;margin:6px 0 -2px 8px;
-    font-variant-numeric:tabular-nums}
-  .b.out{align-self:flex-end;background:#005c4b;color:#e9edef;
-    border-top-right-radius:2px}
-  .b.in{align-self:flex-start;background:#202c33;color:#e9edef;
-    border-top-left-radius:2px}
-  .b.out .t::after{content:" ✓✓";color:#53bdeb;letter-spacing:-1px}
-  .b strong{font-weight:600}
+  .b{max-width:84%;padding:7px 10px 6px;border-radius:9px;font-family:var(--sans);
+    font-size:.89rem;line-height:1.45;animation:subir .32s ease both}
+  .b.out{align-self:flex-end;background:#005c4b;color:#e9edef;border-top-right-radius:2px}
+  .b.in{align-self:flex-start;background:#202c33;color:#e9edef;border-top-left-radius:2px}
+  .b.aviso{border-left:3px solid var(--bronce)}
+  .b .t{font-size:.62rem;color:#ffffff8c;float:right;margin:7px 0 -2px 8px}
+  .b strong{font-weight:700}
   .b .n{font-variant-numeric:tabular-nums}
+  .escribiendo{align-self:flex-start;padding:12px 14px;border-radius:9px;border-top-left-radius:2px;
+    background:#202c33;display:flex;gap:5px;align-items:center}
+  .escribiendo i{width:6px;height:6px;border-radius:50%;background:#8696a0;animation:pulso 1.1s infinite}
+  .escribiendo i:nth-child(2){animation-delay:.18s}
+  .escribiendo i:nth-child(3){animation-delay:.36s}
+  .wa-input{margin-top:auto;display:flex;align-items:center;gap:9px;background:#202c33;
+    border-radius:20px;padding:10px 14px}
+  .wa-input span{font-family:var(--sans);font-size:.85rem;color:#8696a0;flex:1}
+  .wa-input .caret{display:inline-block;width:1.5px;height:.95em;background:var(--bronce);
+    vertical-align:-2px;margin-left:1px;animation:caret 1.1s steps(1) infinite}
+  .wa-nota{font-family:var(--mono);font-size:.63rem;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--tenue-2);margin:16px 0 0}
 
   /* ── franja de cifras ──────────────────────────────── */
-  .franja{border-top:1px solid var(--linea);border-bottom:1px solid var(--linea);
-    padding:clamp(26px,3.4vw,40px) 0}
-  .franja .m{display:flex;gap:clamp(28px,5vw,72px);flex-wrap:wrap;
-    align-items:baseline}
-  .cif{display:flex;align-items:baseline;gap:11px}
-  .cif .v{font-family:var(--sans);font-weight:800;
-    font-size:clamp(1.9rem,3.4vw,2.7rem);letter-spacing:-.045em;
-    color:var(--bronce-vivo);font-variant-numeric:tabular-nums;line-height:1}
-  .cif .k{font-family:var(--sans);font-size:.86rem;color:var(--tinta-2);
-    max-width:17ch;line-height:1.32}
-
-  /* ── el enganche: cerebro + fuentes ───────────────────
-     El lienzo dibuja el diagrama; el texto de al lado NO lo repite, lo
-     explica. Si el canvas no carga, la sección sigue diciendo algo. */
-  .enganche{background:var(--tinta);color:var(--hueso);overflow:hidden}
-  .enganche .mono{color:var(--bronce-vivo)}
-  .enganche h2{color:var(--hueso)}
-  .enganche .txt{display:grid;gap:clamp(20px,3vw,48px);margin-top:26px;
-    grid-template-columns:1fr}
-  @media (min-width:880px){.enganche .txt{grid-template-columns:1fr 1fr}}
-  .enganche p{color:color-mix(in oklab,var(--hueso) 68%,var(--tinta));
-    max-width:46ch;margin:0}
-  .enganche p b{color:var(--hueso);font-weight:400;
-    border-bottom:1px solid var(--bronce)}
-  .lienzo-caja{margin-top:clamp(26px,3.5vw,44px);position:relative}
-  .lienzo{display:block;width:100%;height:clamp(400px,44vw,500px)}
-  @media (max-width:760px){.lienzo{height:560px}}
-  /* max-width:none porque .enganche p lo limita a 46ch y acá partía el pie
-     en dos líneas justo en la mitad de una frase. */
-  .enganche .lienzo-pie{font-family:var(--mono);font-size:.63rem;letter-spacing:.15em;
-    text-transform:uppercase;margin-top:14px;max-width:none;
-    color:color-mix(in oklab,var(--hueso) 45%,var(--tinta))}
-
-  /* ── la nebulosa ──────────────────────────────────────
-     Versión de home de la pantalla /neuronas del panel de flota. Allá cada
-     punto es una cosa real del cliente y se puede tocar; acá no hay datos de
-     nadie, así que es una REPRESENTACIÓN y el pie lo dice. Dibujar 500 puntos
-     dando a entender que son reales sería justo lo que esa pantalla no hace. */
-  .nebu{background:var(--tinta);color:var(--hueso)}
-  .nebu .mono{color:var(--bronce-vivo)}
-  .nebu h2{color:var(--hueso)}
-  .nebu .txt{display:grid;gap:clamp(20px,3vw,48px);margin-top:26px;
-    grid-template-columns:1fr}
-  @media (min-width:880px){.nebu .txt{grid-template-columns:1fr 1fr}}
-  .nebu p{color:color-mix(in oklab,var(--hueso) 68%,var(--tinta));
-    max-width:46ch;margin:0}
-  .nebu p b{color:var(--hueso);font-weight:400;
-    border-bottom:1px solid var(--bronce)}
-  .nebu-caja{margin-top:clamp(26px,3.5vw,44px)}
-  .nebulosa{display:block;width:100%;height:clamp(380px,40vw,470px);
-    border-radius:4px}
-  @media (max-width:760px){.nebulosa{height:380px}}
-
-  /* La leyenda va en HTML y no dibujada en el canvas: así se puede leer,
-     seleccionar y la lee un lector de pantalla. */
-  .nebu-pie{display:flex;gap:10px 26px;flex-wrap:wrap;margin-top:16px;
-    font-family:var(--sans);font-size:.76rem;
-    color:color-mix(in oklab,var(--hueso) 55%,var(--tinta))}
-  .nebu-pie span{display:flex;align-items:center;gap:7px}
-  .nebu-pie i{width:8px;height:8px;border-radius:50%;flex:none}
-  /* Con `.nebu-nota` a secas pierde por especificidad contra `.nebu p`, que la
-     limita a 46ch, y el pie se parte en cuatro líneas. Ya pasó igual en el
-     panel del Vencímetro. */
-  .nebu .nebu-nota{font-family:var(--mono);font-size:.63rem;letter-spacing:.14em;
-    text-transform:uppercase;margin-top:18px;max-width:none;
-    color:color-mix(in oklab,var(--hueso) 42%,var(--tinta))}
+  .franja{position:relative;border-top:1px solid var(--linea);border-bottom:1px solid var(--linea);background:var(--tinta-alt)}
+  .franja .m{padding:clamp(34px,4vw,52px) 28px;display:grid;gap:18px;grid-template-columns:repeat(auto-fit,minmax(228px,1fr))}
+  .cif{display:flex;flex-direction:column;gap:10px;padding:24px 22px 20px;border:1px solid var(--linea-2);
+    border-radius:8px;background:#ffffff05;transition:border-color .2s,background .2s}
+  .cif:hover{border-color:var(--bronce);background:#ffffff0a}
+  .cif .v{font-family:var(--sans);font-weight:700;font-size:clamp(2rem,3.6vw,2.9rem);letter-spacing:-.05em;
+    color:var(--bronce);line-height:1;font-variant-numeric:tabular-nums}
+  .cif .k{font-family:var(--sans);font-size:.9rem;color:#c4bcaf;line-height:1.45}
+  .cif .f{font-family:var(--mono);font-size:.63rem;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--tenue-2);margin-top:auto;padding-top:6px}
 
   /* ── secciones ─────────────────────────────────────── */
-  section{padding:clamp(56px,7vw,92px) 0}
-  .titulo{font-size:clamp(2rem,4.3vw,3.1rem);max-width:16ch}
-  .dos{display:grid;gap:clamp(26px,4vw,60px);margin-top:34px;
-    grid-template-columns:1fr}
-  @media (min-width:880px){.dos{grid-template-columns:.92fr 1.08fr}}
-  .dos p{max-width:44ch}
+  section{position:relative;padding:clamp(62px,7.5vw,104px) 0}
+  section.alt{background:var(--tinta-alt);border-top:1px solid var(--linea);border-bottom:1px solid var(--linea)}
+  .titulo{font-family:var(--sans);font-weight:700;letter-spacing:-.05em;line-height:.96;
+    font-size:clamp(2.1rem,4.6vw,3.4rem);margin:18px 0 0;text-wrap:balance}
+  .titulo em{font-style:normal;color:var(--bronce)}
+  .bajada{max-width:52ch;margin:22px 0 0;color:var(--tenue)}
+  .bajada strong{color:var(--hueso);font-weight:400;border-bottom:1px solid var(--bronce)}
+  .dos{display:grid;gap:clamp(26px,4vw,64px);margin-top:38px;grid-template-columns:repeat(auto-fit,minmax(320px,1fr))}
+  .dos p{max-width:46ch;margin:0}
   .dos p+p{margin-top:1em}
 
-  .lista{border-top:1px solid var(--linea);margin-top:44px}
-  .item{border-bottom:1px solid var(--linea);padding:26px 0;
-    display:grid;gap:8px 34px;grid-template-columns:1fr}
-  @media (min-width:820px){
-    .item{grid-template-columns:minmax(0,auto) 1fr;align-items:start}
+  /* ── motor: espiral ────────────────────────────────── */
+  .motor-grid{margin-top:clamp(36px,4.5vw,60px);display:grid;gap:clamp(28px,4vw,56px);
+    grid-template-columns:repeat(auto-fit,minmax(330px,1fr));align-items:center}
+  .espiral-nota{font-family:var(--mono);font-size:.63rem;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--tenue-2);margin:16px 0 0}
+  .motor-pasos{display:flex;flex-direction:column;gap:0}
+  .motor-paso{display:grid;grid-template-columns:2.6em 1fr;gap:14px;padding:16px 0;
+    border-top:1px solid var(--linea);transition:background .18s}
+  .motor-paso:hover{background:#ffffff08}
+  .motor-paso:last-child{border-bottom:1px solid var(--linea)}
+  .motor-paso.final{background:#ffffff05}
+  .motor-paso .num{font-family:var(--mono);font-size:.72rem;color:var(--bronce);padding-top:4px}
+  .motor-paso h3{font-family:var(--sans);font-weight:500;font-size:1.02rem;margin:0 0 3px}
+  .motor-paso.final h3{color:var(--bronce)}
+  .motor-paso p{margin:0;color:var(--tenue);font-size:.95rem;max-width:44ch}
+
+  /* ── frentes ───────────────────────────────────────── */
+  .lista{border-top:1px solid var(--linea);margin-top:30px}
+  .item{border-bottom:1px solid var(--linea);padding:28px 0;display:grid;gap:10px 34px;
+    grid-template-columns:minmax(0,10.5em) 1fr;transition:padding-left .2s}
+  .item:hover{padding-left:12px}
+  @media (max-width:560px){
+    .item{grid-template-columns:1fr;gap:10px}
   }
-  .item h3{font-family:var(--sans);font-weight:800;letter-spacing:-.03em;
-    font-size:clamp(1.5rem,2.7vw,2.1rem);margin:0;min-width:7.5em}
-  .item .d{color:var(--tinta-2);max-width:52ch;margin:0}
-  .item .est{font-family:var(--mono);font-size:.66rem;letter-spacing:.16em;
-    text-transform:uppercase;color:var(--bronce);display:block;margin-bottom:4px}
-  .item.tenue h3{font-weight:400;color:var(--tinta-2);
-    font-family:var(--serif);letter-spacing:0}
+  .item h3{font-family:var(--sans);font-weight:700;letter-spacing:-.03em;font-size:clamp(1.4rem,2.5vw,2rem);margin:0}
+  .item.tenue h3{font-family:var(--serif);font-weight:400;color:var(--tenue)}
+  .item .d{color:var(--tenue);max-width:54ch;margin:0}
+  .item .est{font-family:var(--mono);font-size:.63rem;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--tenue-2);display:block;margin-top:10px}
 
-  /* Capa de abajo de un ítem: lo que rodea al producto sin ser el producto.
-     Va colgando con una regla al costado en vez de como ítem propio, porque
-     una quinta fila igual a las otras diría que son cinco cosas del mismo
-     rango, y no lo son. */
-  .sub{margin-top:18px;padding-left:16px;border-left:2px solid var(--bronce);
-    max-width:52ch}
-  .sub .et{font-family:var(--mono);font-size:.62rem;letter-spacing:.16em;
-    text-transform:uppercase;color:var(--tinta-2);display:block;
-    margin-bottom:6px}
-  .sub p{margin:0;color:var(--tinta-2);font-size:.95rem;line-height:1.6}
-  .sub b{color:var(--tinta);font-weight:400;
-    border-bottom:1px solid var(--linea)}
+  /* ── la cuenta ─────────────────────────────────────── */
+  .formula{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:34px}
+  .termino{background:#ffffff05;border:1px solid var(--linea-2);border-radius:8px;padding:12px 16px;
+    font-family:var(--sans);font-size:.92rem;text-align:center;line-height:1.3}
+  .termino b{display:block;font-size:.74rem;color:var(--tenue);font-weight:400;margin-top:3px}
+  .termino.destacado{border-color:var(--bronce)}
+  .op{font-family:var(--mono);font-size:1.3rem;color:var(--bronce);font-weight:700}
+  .ejemplo{margin-top:28px;display:flex;align-items:baseline;gap:20px;flex-wrap:wrap}
+  .ejemplo .cuenta{font-family:var(--mono);font-size:.95rem;color:var(--tenue)}
+  .ejemplo .num{font-family:var(--sans);font-size:3rem;font-weight:700;color:var(--bronce);
+    letter-spacing:-.02em;line-height:1}
+  .ejemplo .detalle{font-size:.92rem;color:var(--tenue);max-width:26ch;line-height:1.4}
+  .etiqueta-chica{font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--tenue-2);margin-top:20px}
+  .remate{font-size:1.1rem;font-weight:500;font-family:var(--sans);margin-top:22px;max-width:64ch;line-height:1.4}
+  .remate b{font-weight:700;color:var(--bronce)}
 
-  /* ── la cuenta: costo de no tenerlo ───────────────────
-     Una fórmula, no una promesa: el visitante la corre con sus propios
-     números. El ejemplo de abajo es sólo eso, un ejemplo — lo dice el pie. */
-  .formula{display:flex;align-items:center;gap:14px;flex-wrap:wrap;
-    margin-top:34px}
-  .termino{background:var(--hueso-2);border:1px solid var(--linea);
-    border-radius:8px;padding:12px 16px;font-family:var(--sans);
-    font-size:.92rem;text-align:center;line-height:1.3}
-  .termino b{display:block;font-size:.74rem;color:var(--tinta-2);
-    font-weight:400;margin-top:3px}
-  .termino.destacado{border-color:var(--bronce-vivo);background:var(--hueso)}
-  .op{font-family:var(--mono);font-size:1.3rem;color:var(--bronce-vivo);
-    font-weight:700}
-  .ejemplo{margin-top:28px;display:flex;align-items:baseline;gap:20px;
-    flex-wrap:wrap}
-  .ejemplo .cuenta{font-family:var(--mono);font-size:.95rem;
-    color:var(--tinta-2)}
-  .ejemplo .num{font-family:var(--mono);font-size:3rem;font-weight:800;
-    color:var(--bronce-vivo);letter-spacing:-.02em;line-height:1}
-  .ejemplo .detalle{font-size:.92rem;color:var(--tinta-2);max-width:26ch;
-    line-height:1.4}
-  .etiqueta-chica{font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;
-    text-transform:uppercase;color:var(--tinta-2);margin-top:20px}
-  .remate{font-size:1.1rem;font-weight:650;margin-top:22px;max-width:64ch;
-    line-height:1.4}
-  .remate b{font-weight:800;color:var(--bronce-vivo)}
+  /* ── arranca ───────────────────────────────────────── */
+  .pasos{margin-top:46px;display:grid;gap:34px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+  .paso{border-top:2px solid var(--linea-2);padding-top:20px;max-width:44ch}
+  .paso.actual{border-top-color:var(--bronce)}
+  .paso .cuando{font-family:var(--mono);font-size:.66rem;letter-spacing:.18em;text-transform:uppercase;
+    color:var(--tenue);display:block;margin-bottom:10px}
+  .paso.actual .cuando{color:var(--bronce)}
+  .paso h3{font-family:var(--sans);font-weight:700;letter-spacing:-.025em;font-size:1.26rem;margin:0 0 8px}
+  .paso p{margin:0;color:var(--tenue)}
 
-  /* ── cómo arranca: línea de tiempo ────────────────────
-     Estructura tomada del widget Steps de AstroWind (MIT): regla vertical,
-     un punto por paso. Tres pasos numerados leen como un proceso; tres
-     tarjetas iguales leen como un folleto. */
-  .pasos{margin-top:40px;position:relative;padding-left:32px}
-  .pasos::before{content:"";position:absolute;left:5px;top:10px;bottom:14px;
-    width:1px;background:var(--linea)}
-  .paso{position:relative;padding-bottom:34px;max-width:54ch}
-  .paso:last-child{padding-bottom:0}
-  .paso::before{content:"";position:absolute;left:-32px;top:9px;width:11px;
-    height:11px;border-radius:50%;background:var(--hueso);
-    border:2px solid var(--bronce-vivo);box-sizing:border-box}
-  .paso h3{font-family:var(--sans);font-weight:800;letter-spacing:-.025em;
-    font-size:1.22rem;margin:0 0 4px}
-  .paso .cuando{font-family:var(--mono);font-size:.64rem;letter-spacing:.16em;
-    text-transform:uppercase;color:var(--bronce);display:block;margin-bottom:6px}
-  .paso p{margin:0;color:var(--tinta-2)}
-
-  /* ── preguntas: <details> nativo, patrón de HyperUI ─── */
-  .faq{margin-top:36px;border-top:1px solid var(--linea)}
+  /* ── faq ───────────────────────────────────────────── */
+  .faq{margin-top:42px;border-top:1px solid var(--linea)}
   .faq details{border-bottom:1px solid var(--linea)}
-  .faq summary{list-style:none;cursor:pointer;display:flex;
-    justify-content:space-between;align-items:center;gap:20px;padding:20px 0;
-    font-family:var(--sans);font-weight:650;font-size:1.03rem}
+  .faq summary{cursor:pointer;padding:22px 0;font-family:var(--sans);font-weight:500;font-size:1.05rem;
+    list-style:none;transition:color .18s}
   .faq summary::-webkit-details-marker{display:none}
-  .faq summary:focus-visible{outline:2px solid var(--bronce-vivo);
-    outline-offset:3px}
-  .faq svg{width:18px;height:18px;flex:none;stroke:var(--bronce);
-    stroke-width:2;fill:none;transition:transform .25s}
-  .faq details[open] svg{transform:rotate(180deg)}
-  .faq p{margin:0 0 22px;color:var(--tinta-2);max-width:60ch}
+  .faq summary:hover{color:var(--bronce)}
+  .faq p{margin:0 0 24px;color:var(--tenue);max-width:62ch}
 
   /* ── cierre ────────────────────────────────────────── */
-  .cierre{background:var(--tinta);color:var(--hueso)}
-  .cierre .titulo{max-width:19ch}
-  .cierre p{color:#a89f92;max-width:46ch;margin-top:18px}
-  .cierre .cta{background:var(--bronce-vivo);color:#17110a;margin-top:28px}
-  .cierre .cta:hover{background:var(--hueso);color:var(--tinta)}
+  .cierre{background:linear-gradient(180deg,var(--tinta-alt),#131110);border-top:1px solid var(--linea);
+    padding:clamp(70px,8.5vw,124px) 0}
+  .cierre .m{display:grid;gap:clamp(34px,5vw,74px);grid-template-columns:repeat(auto-fit,minmax(300px,1fr));align-items:center}
+  .cierre .titulo{margin:0;max-width:20ch}
+  .cierre .simbolo-fondo{width:min(100%,320px);height:auto;justify-self:end}
 
-  footer{padding:clamp(40px,5vw,64px) 0 44px;font-family:var(--sans);
-    font-size:.87rem;color:var(--tinta-2);border-top:1px solid var(--linea)}
-  .pie-cols{display:grid;gap:30px 40px;grid-template-columns:1fr}
-  @media (min-width:760px){.pie-cols{grid-template-columns:1.4fr 1fr 1fr}}
-  .pie-cols h4{font-family:var(--mono);font-size:.66rem;letter-spacing:.18em;
-    text-transform:uppercase;color:var(--tinta-2);margin:0 0 12px;
-    font-weight:400}
-  .pie-cols a{color:var(--tinta);text-decoration:none;display:block;
-    padding:3px 0}
-  .pie-cols a:hover{color:var(--bronce-vivo)}
-  .pie-cols .marca{font-size:1.15rem}
-  .pie-cols p{margin:10px 0 0;max-width:32ch;line-height:1.5}
-  .pie-legal{margin-top:34px;padding-top:20px;border-top:1px solid var(--linea);
-    display:flex;gap:18px;flex-wrap:wrap;font-size:.8rem}
+  /* ── footer ────────────────────────────────────────── */
+  footer{padding:clamp(48px,5.5vw,72px) 0 48px;font-family:var(--sans);font-size:.89rem;
+    color:var(--tenue);border-top:1px solid var(--linea)}
+  .pie-cols{display:grid;gap:32px 40px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+  .pie-cols svg{width:200px;height:auto;display:block}
+  .pie-cols p{margin:16px 0 0;max-width:32ch;line-height:1.55}
+  .pie-cols h4{font-family:var(--mono);font-size:.66rem;letter-spacing:.2em;text-transform:uppercase;
+    color:var(--tenue-2);margin:0 0 14px;font-weight:400}
+  .pie-cols a{color:var(--hueso);display:block;padding:4px 0;transition:color .16s}
+  .pie-cols a:hover{color:var(--bronce)}
+  .pie-legal{margin-top:40px;padding-top:22px;border-top:1px solid var(--linea);display:flex;gap:18px;
+    flex-wrap:wrap;font-family:var(--mono);font-size:.7rem;letter-spacing:.08em;color:var(--tenue-2)}
   .pie-legal span:last-child{margin-left:auto}
-  .pie-legal a{color:var(--bronce)}
 </style>
 </head>
 <body>
-<div class="top">
-  <div class="m">
-    <a class="marca" href="#" aria-label="FiBOT">
-      <svg viewBox="-7 -7 2647 814" role="img" aria-hidden="true">
-        <g fill="none" stroke="#100F0D" stroke-width="14">
-          <rect x="0" y="0" width="800" height="800"></rect>
-          <rect x="800" y="0" width="500" height="500"></rect>
-          <rect x="1000" y="500" width="300" height="300"></rect>
-          <rect x="800" y="600" width="200" height="200"></rect>
-          <rect x="900" y="500" width="100" height="100"></rect>
-        </g>
-        <rect x="800" y="500" width="100" height="100" fill="#12A06F"></rect>
-        <text x="400" y="400" text-anchor="middle" dominant-baseline="central" font-family="Space Grotesk, Helvetica, Arial, sans-serif" font-weight="700" font-size="440" letter-spacing="-22" fill="#100F0D">Fi</text>
-        <text x="1560" y="410" dominant-baseline="central" font-family="Space Grotesk, Helvetica, Arial, sans-serif" font-size="330" letter-spacing="-10" fill="#100F0D"><tspan font-weight="400">Fi</tspan><tspan font-weight="700">BOT</tspan></text>
-      </svg>
-    </a>
 
-    <nav class="nav-desk">
-      <a href="#frentes">Qué hacemos</a>
-      <a href="#arranca">Cómo arranca</a>
-      <a href="#preguntas">Preguntas</a>
-      <a href="https://wa.me/5491128524957">Escribinos</a>
-    </nav>
+<div style="position:relative;overflow-x:hidden;overflow-y:clip">
+  <div class="fondo-grilla" aria-hidden="true"></div>
+  <div id="destellos" aria-hidden="true"></div>
+  <div class="fondo-luz" aria-hidden="true" style="top:-260px;right:-180px;width:760px;height:760px;
+    background:radial-gradient(circle,rgba(224,164,76,.13),rgba(224,164,76,0) 68%)"></div>
+  <div class="fondo-luz" aria-hidden="true" style="top:1100px;left:-260px;width:620px;height:620px;
+    background:radial-gradient(circle,rgba(224,164,76,.09),rgba(224,164,76,0) 70%)"></div>
 
-    <details class="menu-mob">
-      <summary aria-label="Abrir menú">
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path stroke-linecap="round" d="M4 6h16M4 12h16M4 18h16"/>
+  <div class="top">
+    <div class="m" style="display:flex;align-items:center;gap:24px">
+      <a class="marca" href="#top" aria-label="FiBOT">
+        <svg viewBox="-10 -10 1320 820" role="img" aria-hidden="true">
+          <g fill="none" stroke="#ece6db" stroke-width="30">
+            <rect x="0" y="0" width="800" height="800"></rect>
+            <rect x="800" y="0" width="500" height="500"></rect>
+            <rect x="1000" y="500" width="300" height="300"></rect>
+            <rect x="800" y="600" width="200" height="200"></rect>
+            <rect x="900" y="500" width="100" height="100"></rect>
+          </g>
+          <rect x="800" y="500" width="100" height="100" fill="#6FDCAE"></rect>
+          <text x="400" y="400" text-anchor="middle" dominant-baseline="central" font-family="Space Grotesk, sans-serif" font-weight="700" font-size="440" letter-spacing="-22" fill="#ece6db">Fi</text>
         </svg>
-      </summary>
-      <div class="panel">
-        <a href="#frentes">Qué hacemos</a>
+        <span>Fi<b>BOT</b></span>
+      </a>
+      <nav class="nav-desk">
+        <a href="#idea">La idea</a>
+        <a href="#motor">El motor</a>
         <a href="#arranca">Cómo arranca</a>
-        <a href="#preguntas">Preguntas</a>
-        <a href="https://wa.me/5491128524957">Escribinos</a>
-      </div>
-    </details>
+        <a class="btn" href="https://wa.me/5491128524957">Escribir</a>
+      </nav>
+    </div>
   </div>
-</div>
 
-<header class="portada">
-  <div class="m">
-    <h1 class="display">Preguntale a tu<br>empresa. <b>Te contesta.</b></h1>
-
-    <div class="abajo">
+  <header id="top" class="portada">
+    <div class="m grid">
       <div>
-        <p class="lead">Tu gente ya se pasa el día escribiendo por WhatsApp.
-          FiBOT trabaja ahí adentro: contesta lo que hoy alguien tiene que ir a
-          buscar, y avisa lo que a nadie le toca mirar.</p>
-        <p class="nota-margen">No es un dashboard. Un dashboard espera que
-          entres. A los seis meses no entra nadie, y eso lo sabemos porque nos
-          pasó antes de construir esto.</p>
+        <div class="eyebrow-punto"><i></i><span class="mono">Automatización por WhatsApp · AR</span></div>
+        <svg class="simbolo-hero" viewBox="-14 -14 1328 828" aria-label="FiBOT">
+          <g fill="none" stroke="#ece6db" stroke-width="14">
+            <rect x="0" y="0" width="800" height="800" style="stroke-dasharray:3200;stroke-dashoffset:3200;animation:dibujo .9s cubic-bezier(.65,.05,.36,1) .15s forwards"></rect>
+            <rect x="800" y="0" width="500" height="500" style="stroke-dasharray:2000;stroke-dashoffset:2000;animation:dibujo .7s cubic-bezier(.65,.05,.36,1) .75s forwards"></rect>
+            <rect x="1000" y="500" width="300" height="300" style="stroke-dasharray:1200;stroke-dashoffset:1200;animation:dibujo .55s cubic-bezier(.65,.05,.36,1) 1.2s forwards"></rect>
+            <rect x="800" y="600" width="200" height="200" style="stroke-dasharray:800;stroke-dashoffset:800;animation:dibujo .45s cubic-bezier(.65,.05,.36,1) 1.55s forwards"></rect>
+            <rect x="900" y="500" width="100" height="100" style="stroke-dasharray:400;stroke-dashoffset:400;animation:dibujo .35s cubic-bezier(.65,.05,.36,1) 1.85s forwards"></rect>
+          </g>
+          <rect x="800" y="500" width="100" height="100" fill="#6FDCAE" style="opacity:0;transform-origin:850px 550px;animation:aparecer .5s cubic-bezier(.2,1.4,.4,1) 2.15s forwards"></rect>
+          <text x="400" y="400" text-anchor="middle" dominant-baseline="central" font-family="Space Grotesk, sans-serif" font-weight="700" font-size="440" letter-spacing="-22" fill="#ece6db" style="opacity:0;animation:aparecer .55s ease 2.35s forwards;transform-origin:400px 400px">Fi</text>
+        </svg>
+        <h1 class="display">Preguntale a tu empresa. <em>Te contesta.</em></h1>
+        <p class="lead">Tu gente ya se pasa el día escribiendo por WhatsApp. FiBOT trabaja ahí adentro: contesta lo que hoy alguien tiene que ir a buscar, y avisa lo que a nadie le toca mirar.</p>
+        <p class="nota-margen">No es un dashboard. Un dashboard espera que entres. A los seis meses no entra nadie, y eso lo sabemos porque nos pasó antes de construir esto.</p>
+        <div class="cta-row">
+          <a class="btn btn-grande" href="https://wa.me/5491128524957">Escribinos por WhatsApp</a>
+          <a class="btn-ghost" href="#motor">Ver cómo funciona</a>
+        </div>
       </div>
 
-      <div class="col2">
+      <div class="wa-col">
         <div class="wa">
           <div class="wa-top">
-            <div class="wa-av">Fi</div>
-            <div><b>FiBOT</b><small>en línea</small></div>
+            <div class="wa-av">
+              <svg viewBox="0 0 1000 1000" style="width:38px;height:38px;border-radius:50%">
+                <rect x="0" y="0" width="1000" height="1000" fill="#100F0D"></rect>
+                <g transform="translate(146 350) scale(0.545)">
+                  <g fill="none" stroke="#ece6db" stroke-width="20">
+                    <rect x="0" y="0" width="800" height="800"></rect>
+                    <rect x="800" y="0" width="500" height="500"></rect>
+                    <rect x="1000" y="500" width="300" height="300"></rect>
+                    <rect x="800" y="600" width="200" height="200"></rect>
+                    <rect x="900" y="500" width="100" height="100"></rect>
+                  </g>
+                  <rect x="800" y="500" width="100" height="100" fill="#6FDCAE"></rect>
+                  <text x="400" y="400" text-anchor="middle" dominant-baseline="central" font-family="Space Grotesk, sans-serif" font-weight="700" font-size="440" letter-spacing="-22" fill="#ece6db">Fi</text>
+                </g>
+              </svg>
+            </div>
+            <div style="flex:1">
+              <b>FiBOT</b>
+              <small id="wa-estado">en línea</small>
+            </div>
+            <span class="wa-rubro">EJEMPLO</span>
           </div>
-          <div class="wa-cuerpo">
-            <div class="b out">¿Cómo viene el pedido 4471?<span class="t">9:12</span></div>
-            <div class="b in"><strong>Pedido 4471</strong> — en preparación,
-              depósito Central. Sale hoy a las <span class="n">15:00</span>.
-              Responsable: equipo de despacho.<span class="t">9:12</span></div>
-            <div class="b out">¿y cuántos quedan sin facturar este mes?<span class="t">9:13</span></div>
-            <div class="b in"><strong>38 pedidos</strong> sin facturar —
-              <span class="n">$2.140.000</span>. Está
-              <span class="n">6%</span> arriba del mes pasado.<span class="t">9:13</span></div>
-          </div>
+          <div class="wa-cuerpo" id="wa-cuerpo"></div>
+        </div>
+        <p class="wa-nota">Conversación de ejemplo · números y nombres ilustrativos</p>
+      </div>
+    </div>
+  </header>
+
+  <div class="franja" data-cifras="true">
+    <div class="m">
+      <div class="cif rev-c">
+        <span class="v" data-hasta="250">250</span>
+        <span class="k">unidades con telemetría activa, monitoreadas por WhatsApp las 24 horas</span>
+        <span class="f">Telemetría de flota</span>
+      </div>
+      <div class="cif rev-c">
+        <span class="v" data-hasta="390000">390000</span>
+        <span class="k">posiciones geográficas procesadas automáticamente, sin carga manual</span>
+        <span class="f">Procesamiento GPS</span>
+      </div>
+      <div class="cif rev-c">
+        <span class="v" data-hasta="10000">10000</span>
+        <span class="k">productos monitoreados —precio, cobertura, equivalencias y variedad— siempre actualizados</span>
+        <span class="f">Catálogo en vivo</span>
+      </div>
+      <div class="cif rev-c">
+        <span class="v" data-hasta="90">90</span>
+        <span class="k">funciones e integraciones corriendo en segundo plano, todo el tiempo</span>
+        <span class="f">Automatización</span>
+      </div>
+    </div>
+  </div>
+
+  <section id="idea">
+    <div class="m">
+      <span class="mono rev-c" style="display:block">01 — La idea</span>
+      <h2 class="titulo rev">Lo difícil no es el dato. Es que alguien lo mire.</h2>
+      <div class="regla" style="height:1px;background:linear-gradient(90deg,var(--bronce),var(--linea-2));margin:34px 0 0"></div>
+      <div class="dos">
+        <div class="rev">
+          <p>Casi todo el software para empresas muere igual: se compra con entusiasmo, se carga a medias, y a los seis meses lo abre una sola persona. El dato existe. Nadie lo ve.</p>
+          <p>Nosotros invertimos el planteo. La información sale a buscar a la persona por el único canal que tiene abierto de verdad, y no hay que aprender nada ni instalar nada.</p>
+        </div>
+        <div class="rev">
+          <p style="color:var(--tenue)">Eso tiene un costo que preferimos decir de entrada: <strong style="color:var(--hueso);font-weight:400;border-bottom:1px solid var(--bronce)">no todo se automatiza.</strong> Si lo que te preguntan cambia todos los días y nunca se repite, un bot no te va a servir y te lo vamos a decir en la primera charla.</p>
+          <p style="color:var(--tenue)">Lo que sí funciona es lo aburrido: la pregunta que alguien hace catorce veces por semana, y el papel que se vence mientras nadie mira.</p>
         </div>
       </div>
     </div>
-  </div>
-</header>
+  </section>
 
-<div class="franja">
-  <div class="m">
-    <div class="cif"><span class="v" data-hasta="90">90</span>+
-      <span class="k">funciones e integraciones corriendo en producción</span></div>
-    <div class="cif"><span class="v" data-hasta="10000">10.000</span>+
-      <span class="k">datos que se actualizan solos, todo el día</span></div>
-    <div class="cif"><span class="v" data-hasta="4">4</span>
-      <span class="k">fuentes cruzadas, porque una sola miente</span></div>
-  </div>
-</div>
+  <section id="motor" class="alt">
+    <div class="m">
+      <span class="mono rev-c" style="display:block">02 — El motor</span>
+      <h2 class="titulo rev">Una pregunta. Cuatro lugares de donde sale la respuesta.</h2>
+      <p class="bajada rev">Ninguna fuente sola dice la verdad completa. El sistema sabe qué hay que hacer pero no siempre dónde está cada cosa. La planilla sabe qué se pagó, no qué falta. Y tu gente sabe lo que no queda escrito en ningún lado. <strong>Cruzarlas es el trabajo.</strong></p>
 
-<section class="enganche">
-  <div class="m rev">
-    <span class="mono">El enganche</span>
-    <h2 class="display titulo" style="margin-top:14px">Una pregunta.
-      Cuatro lugares de donde sale la respuesta.</h2>
-    <div class="txt">
-      <p>Ninguna fuente sola dice la verdad completa. El sistema sabe qué hay
-        que hacer pero no siempre dónde está cada cosa. La planilla sabe qué se
-        pagó, no qué falta. Los papeles dicen una fecha. Y tu gente sabe lo que
-        no queda escrito en ningún lado.</p>
-      <p><b>Cruzarlas es el trabajo.</b> Lo que llega por WhatsApp es una sola
-        respuesta, en una línea, sin que nadie tenga que abrir cuatro cosas
-        distintas y sacar la cuenta de memoria.</p>
-    </div>
-
-    <div class="lienzo-caja">
-      <canvas class="lienzo" role="img" aria-label="Diagrama: cuatro fuentes de
-        datos —el sistema de la empresa, las planillas, los papeles y lo que
-        sabe tu gente— confluyen en FiBOT, que responde por WhatsApp."></canvas>
-    </div>
-    <p class="lienzo-pie">Tu sistema · Planillas · Papeles · Tu gente → FiBOT → WhatsApp</p>
-  </div>
-</section>
-
-<section class="nebu">
-  <div class="m rev">
-    <span class="mono">Cuando ya está adentro</span>
-    <h2 class="display titulo" style="margin-top:14px">Y entonces empieza
-      a preguntar solo.</h2>
-    <div class="txt">
-      <p>Una vez cruzadas las fuentes, tu empresa deja de ser una pila de
-        planillas. Pero lo que importa no es el dibujo: es lo que pasa abajo.
-        <b>Cada tanto FiBOT agarra un caso y le pregunta a varias fuentes a la
-        vez</b> — en qué estado está, qué papel le vence, quién está a cargo,
-        si tiene una tarea abierta.</p>
-      <p><b>Una sola fuente miente.</b> El sistema dice “al día” y tu gente
-        sabe que en realidad está trabado; el papel figura vigente y en los
-        hechos venció hace dos días. Por eso la conclusión sale de cruzarlas, y
-        por eso abajo se ve la consulta entera y no sólo el resultado.</p>
-    </div>
-
-    <div class="nebu-caja">
-      <canvas class="nebulosa" role="img" aria-label="Representación del
-        servicio de un cliente: seis cúmulos de puntos —unidades, personas,
-        documentos, tickets, datos y trabajos programados—, con el color
-        indicando el estado. Cada tanto se ejecuta un chequeo: se marca una
-        unidad, se consultan tres cúmulos y se escribe qué contestó cada uno
-        antes de la conclusión."></canvas>
-      <div class="nebu-pie">
-        <span><i style="background:#3ddc97"></i>se movió hoy</span>
-        <span><i style="background:#e0a44c"></i>esperando algo</span>
-        <span><i style="background:#e2564a"></i>hay que hacer algo</span>
-        <span><i style="background:#8b8377"></i>existe y no pasa nada</span>
-        <span><i style="background:#4aa8ff"></i>infraestructura</span>
-      </div>
-    </div>
-    <p class="nebu-nota">Los chequeos de abajo son de ejemplo · La pantalla real
-      existe en el panel, y ahí cada punto es una cosa con nombre que se puede tocar</p>
-  </div>
-</section>
-
-<section>
-  <div class="m rev">
-    <h2 class="display titulo">Lo difícil no es el dato. Es que alguien lo mire.</h2>
-    <div class="dos">
-      <div>
-        <p>Casi todo el software para PyMEs argentinas muere igual: se compra
-          con entusiasmo, se carga a medias, y a los seis meses lo abre una sola
-          persona. El dato existe. Nadie lo ve.</p>
-        <p>Nosotros invertimos el planteo. La información sale a buscar a la
-          persona por el único canal que tiene abierto de verdad, y no hay que
-          aprender nada ni instalar nada.</p>
-      </div>
-      <div>
-        <p>Eso tiene un costo que preferimos decir de entrada: <strong>no todo
-          se automatiza.</strong> Si lo que te preguntan cambia todos los días y
-          nunca se repite, un bot no te va a servir y te lo vamos a decir en la
-          primera charla.</p>
-        <p>Lo que sí funciona es lo aburrido: la pregunta que alguien hace
-          catorce veces por semana, y el papel que se vence mientras nadie
-          mira.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section id="frentes" style="padding-top:0">
-  <div class="m rev">
-    <span class="mono" style="color:var(--tinta-2)">Lo que hacemos</span>
-    <div class="lista">
-      <div class="item">
-        <h3>Flotas</h3>
+      <div class="motor-grid rev">
         <div>
-          <span class="est">En producción</span>
-          <p class="d">Dónde está cada camión, cuánto consumió, qué papeles
-            vencen y cuál conviene mandar. Se conecta al GPS que ya tenés —
-            once plataformas — sin cambiar de proveedor ni migrar nada. Hoy
-            sigue <b>267 unidades</b>, todos los días.</p>
-        </div>
-      </div>
-      <div class="item">
-        <h3>Farmacia</h3>
-        <div>
-          <span class="est">En producción</span>
-          <p class="d">En el mostrador hay una computadora, y anda bien —
-            hasta que se corta la luz, se cae el sistema, o hay cola y nadie
-            puede soltar la caja. FiBOT va en el bolsillo del farmacéutico y no
-            se cae con lo demás: escribe el nombre del remedio y le vuelve
-            precio, coberturas de obra social, equivalentes por droga y el
-            prospecto en PDF, sobre un catálogo de <b>+10.000 productos</b>
-            actualizado todo el tiempo. No reemplaza al sistema de gestión; es
-            lo que sigue estando cuando el sistema no está.</p>
-
-          <div class="sub">
-            <span class="et">Y el sistema, que es otra cosa</span>
-            <p>Aparte del bot están la <b>gestión de farmacia</b> y la
-              <b>gestión de droguería</b>: dos sistemas parecidos apuntados a
-              lados distintos del mostrador, que hablan con FiBOT. El bot
-              contesta en el momento y no depende de nada; el sistema lleva la
-              operación de todos los días. Van juntos o por separado, según de
-              qué lado estés.</p>
-          </div>
-        </div>
-      </div>
-      <div class="item">
-        <h3>Encomiendas</h3>
-        <div>
-          <span class="est">En producción</span>
-          <p class="d">Cada bulto con su propio QR, trazable desde que entra
-            hasta que se entrega. Nada se edita ni se borra: cada escaneo
-            queda registrado, y el estado se arma solo a partir de esa
-            historia. Funciona sin señal —se encola en el momento y sincroniza
-            apenas hay conexión, nunca al revés— porque el escaneo real pasa
-            justo donde no hay señal.</p>
-        </div>
-      </div>
-      <div class="item">
-        <h3>Vencímetro</h3>
-        <div>
-          <span class="est">Nuevo</span>
-          <p class="d">Todo lo que vence en un solo lugar, avisando a quien tiene
-            que resolverlo. VTV, seguros, habilitaciones, matafuegos, ART,
-            contratos. Arranca desde una planilla que ya tengas.</p>
-        </div>
-      </div>
-      <div class="item tenue">
-        <h3>Y lo tuyo</h3>
-        <div>
-          <span class="est">A medida</span>
-          <p class="d">Si hay un dato que vive en una planilla y alguien pregunta
-            por él todos los días, ese es el candidato. Empezamos por un caso, no
-            por todo.</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section id="costo">
-  <div class="m rev">
-    <span class="mono" style="color:var(--tinta-2)">La cuenta que nadie hizo todavía</span>
-    <h2 class="display titulo" style="margin-top:14px">No hace falta un
-      estudio. Alcanza con la cuenta.</h2>
-    <p style="margin-top:18px;color:var(--tinta-2);max-width:60ch;
-      line-height:1.55">Minutos perdidos por consulta, veces que se repite
-      por día, días hábiles al mes. Esa cuenta la arman ustedes, con sus
-      propios números — nosotros no los tenemos, todavía. Pero ya sabemos
-      cómo se hace: la venimos haciendo en otros lados.</p>
-    <div class="formula">
-      <div class="termino">minutos perdidos<b>por consulta</b></div>
-      <span class="op">×</span>
-      <div class="termino">veces que se repite<b>por día</b></div>
-      <span class="op">×</span>
-      <div class="termino">días hábiles<b>al mes</b></div>
-      <span class="op">=</span>
-      <div class="termino destacado">horas perdidas<b>por mes</b></div>
-    </div>
-    <div class="ejemplo">
-      <p class="cuenta">8 min × 15 consultas × 22 días =</p>
-      <p class="num">44</p>
-      <p class="detalle">horas por mes — más de una semana de trabajo
-        completa, en preguntas que ya tenían respuesta en algún lado.</p>
-    </div>
-    <p class="etiqueta-chica">Números de referencia, no datos de ningún
-      cliente en particular</p>
-  </div>
-</section>
-
-<section id="arranca" style="background:var(--hueso-2)">
-  <div class="m rev">
-    <h2 class="display titulo">Cómo arranca, sin vueltas.</h2>
-    <div class="pasos">
-      <div class="paso">
-        <span class="cuando">Día 1 · 30 minutos</span>
-        <h3>Una charla, y nada más que eso</h3>
-        <p>Nos contás qué le preguntan a tu gente todos los días y con qué lo
-          resuelven hoy. De ahí sale si esto sirve o no. Si no sirve, se termina
-          ahí y no cuesta nada.</p>
-      </div>
-      <div class="paso">
-        <span class="cuando">Semanas 1 y 2</span>
-        <h3>Un caso andando, no el sistema entero</h3>
-        <p>Elegimos la pregunta que más se repite y la conectamos con lo que ya
-          tenés —el sistema de siempre, la planilla, lo que sea—. A las dos
-          semanas hay algo funcionando en un grupo chico de gente real.</p>
-      </div>
-      <div class="paso">
-        <span class="cuando">Después</span>
-        <h3>Se suma lo que el uso pida</h3>
-        <p>El segundo caso lo elige la gente usando el primero, no una reunión de
-          planificación. Lo que nadie pregunta no se construye — y ahí es donde
-          la mayoría de los proyectos se van de presupuesto.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section id="tecnico">
-  <div class="m rev">
-    <span class="mono" style="color:var(--tinta-2)">Para quien lo quiera auditar</span>
-    <h2 class="display titulo" style="margin-top:14px">Así está armado, en
-      cuatro puntos.</h2>
-    <div class="lista">
-      <div class="item">
-        <h3>Lenguaje</h3>
-        <div>
-          <p class="d">Se escribe como a una persona. Nada de comandos exactos
-            ni menú de opciones: la consulta se hace como a un compañero, y el
-            sistema entiende qué se necesita.</p>
-        </div>
-      </div>
-      <div class="item">
-        <h3>Integración</h3>
-        <div>
-          <p class="d">Por API, no por scraping. Se conecta a los sistemas que
-            ya usás —ERP, planillas, bases propias— por API o lectura directa.
-            Sin credenciales compartidas, sin tocar la fuente original.</p>
-        </div>
-      </div>
-      <div class="item">
-        <h3>Datos</h3>
-        <div>
-          <p class="d">Lee, nunca escribe. Acceso de sólo lectura a lo que se
-            autorice. No modifica un sistema existente salvo que se lo pida
-            explícitamente, con su propio permiso aparte.</p>
-        </div>
-      </div>
-      <div class="item">
-        <h3>Seguridad</h3>
-        <div>
-          <p class="d">Acceso por rol, todo con registro. Credenciales y
-            tokens nunca pasan por el chat — quedan fuera, como en cualquier
-            integración seria. Cada acceso queda registrado: quién, qué,
-            cuándo.</p>
-        </div>
-      </div>
-    </div>
-    <p class="remate">Cada uno de estos cuatro puntos se explica con más
-      detalle apenas haga falta. <b>Cuanto más lo pregunten, mejor.</b></p>
-  </div>
-</section>
-
-<section id="preguntas">
-  <div class="m rev">
-    <h2 class="display titulo">Lo que siempre nos preguntan.</h2>
-    <div class="faq">
-      <details open>
-        <summary>¿Tengo que cambiar de sistema?
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
-        </summary>
-        <p>No. Nos conectamos al que ya tenés — ERP, planillas, GPS, lo que
-          sea. Si el tuyo no está mapeado se estudia, pero no siempre se puede
-          — y eso lo sabemos en la primera semana, no a los seis meses.</p>
-      </details>
-      <details>
-        <summary>¿Qué pasa si mi gente no lo usa?
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
-        </summary>
-        <p>Es la pregunta correcta, y la razón por la que esto vive en WhatsApp y
-          no en una app. Igual medimos el uso desde el primer día: cuántas
-          consultas, de cuánta gente distinta. Si a las cuatro semanas escribe
-          una sola persona, el problema no era la herramienta y te lo decimos.</p>
-      </details>
-      <details>
-        <summary>¿Cuánto sale?
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
-        </summary>
-        <p>No publicamos lista porque el primer caso define el alcance y las
-          diferencias son grandes. Lo que sí: en la primera charla sale un
-          número cerrado, no un rango ni un “depende”.</p>
-      </details>
-      <details>
-        <summary>¿Dónde quedan mis datos?
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
-        </summary>
-        <p>En una base propia de tu empresa, separada de la de cualquier otro
-          cliente. Ninguna consulta de uno toca los datos de otro, y eso no es
-          una promesa comercial: son proyectos distintos.</p>
-      </details>
-      <details>
-        <summary>¿Y si mañana los quiero dejar?
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
-        </summary>
-        <p>Te llevás tus datos exportados y se apaga. No hay permanencia ni
-          contrato largo. Preferimos que te quedes porque lo usás, que es además
-          la única forma en la que esto nos conviene a nosotros.</p>
-      </details>
-    </div>
-  </div>
-</section>
-
-<section class="cierre">
-  <div class="m rev">
-    <h2 class="display titulo">Contanos qué le preguntan a tu gente todos los días.</h2>
-    <p>Si es siempre lo mismo, probablemente lo pueda contestar un bot. Si no, te
-      lo decimos: vender lo que no sirve es mal negocio para los dos.</p>
-    <a class="cta" href="https://wa.me/5491128524957">Escribinos por WhatsApp</a>
-  </div>
-</section>
-
-<footer>
-  <div class="m">
-    <div class="pie-cols">
-      <div>
-        <span class="marca" aria-label="FiBOT">
-          <svg viewBox="-7 -7 2647 814" role="img" aria-hidden="true">
-            <g fill="none" stroke="#100F0D" stroke-width="14">
+          <svg id="espiral-svg" viewBox="-20 -20 1340 840" role="img" aria-label="La espiral del logo abriéndose desde el cuadrado más chico hacia el más grande: fuentes, ingesta, normalización, reglas y la respuesta que sale por WhatsApp.">
+            <g fill="none" stroke="var(--linea-2)" stroke-width="14">
               <rect x="0" y="0" width="800" height="800"></rect>
               <rect x="800" y="0" width="500" height="500"></rect>
               <rect x="1000" y="500" width="300" height="300"></rect>
               <rect x="800" y="600" width="200" height="200"></rect>
               <rect x="900" y="500" width="100" height="100"></rect>
             </g>
-            <rect x="800" y="500" width="100" height="100" fill="#12A06F"></rect>
-            <text x="400" y="400" text-anchor="middle" dominant-baseline="central" font-family="Space Grotesk, Helvetica, Arial, sans-serif" font-weight="700" font-size="440" letter-spacing="-22" fill="#100F0D">Fi</text>
-            <text x="1560" y="410" dominant-baseline="central" font-family="Space Grotesk, Helvetica, Arial, sans-serif" font-size="330" letter-spacing="-10" fill="#100F0D"><tspan font-weight="400">Fi</tspan><tspan font-weight="700">BOT</tspan></text>
+            <path id="espiral-trazo" d="M1000,600 A100,100 0 0 0 900,500 A100,100 0 0 0 800,600 A200,200 0 0 0 1000,800 A300,300 0 0 0 1300,500 A500,500 0 0 0 800,0 A800,800 0 0 0 0,800" fill="none" stroke="var(--bronce)" stroke-width="20" stroke-linecap="round" stroke-dasharray="3200" stroke-dashoffset="3200" style="filter:drop-shadow(0 0 14px rgba(224,164,76,.45))"></path>
+            <circle id="espiral-punto" cx="1000" cy="600" r="20" fill="var(--bronce)" opacity="0"></circle>
+            <g id="espiral-g3" opacity="0" style="transition:opacity .3s">
+              <text x="1036" y="576" font-size="40" font-family="JetBrains Mono, monospace" fill="#9a9082" letter-spacing="3">03</text>
+              <text x="1036" y="626" font-size="30" font-family="JetBrains Mono, monospace" fill="#9a9082" letter-spacing="3">NORMALIZA</text>
+            </g>
+            <g id="espiral-g4" opacity="0" style="transition:opacity .3s">
+              <text x="852" y="86" font-size="46" font-family="JetBrains Mono, monospace" fill="#9a9082" letter-spacing="3">04</text>
+              <text x="852" y="140" font-size="46" font-family="JetBrains Mono, monospace" fill="#9a9082" letter-spacing="3">REGLAS</text>
+              <text x="852" y="300" font-size="58" font-family="Space Grotesk, sans-serif" fill="#ece6db">umbrales</text>
+              <text x="852" y="370" font-size="58" font-family="Space Grotesk, sans-serif" fill="#ece6db">y avisos</text>
+            </g>
+            <g id="espiral-g5" opacity="0" style="transition:opacity .3s">
+              <text x="146" y="556" font-size="40" font-family="JetBrains Mono, monospace" fill="#9a9082" letter-spacing="3">05 · LA RESPUESTA</text>
+              <text x="146" y="646" font-size="62" font-family="Space Grotesk, sans-serif" fill="#ece6db">una línea, sin abrir</text>
+              <text x="146" y="726" font-size="62" font-family="Space Grotesk, sans-serif" fill="#ece6db">cuatro cosas distintas</text>
+            </g>
+            <g id="espiral-g6" opacity="0" style="transition:opacity .35s">
+              <rect x="0" y="700" width="100" height="100" fill="var(--bronce)"></rect>
+              <text x="50" y="765" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="40" fill="#0c0b0a" font-weight="500">WA</text>
+            </g>
           </svg>
-        </span>
-        <p>Automatización por WhatsApp para empresas que ya tienen los datos y
-          no los están mirando.</p>
-      </div>
-      <div>
-        <h4>Qué hacemos</h4>
-        <a href="#frentes">Flotas</a>
-        <a href="#frentes">Farmacia</a>
-        <a href="#frentes">Encomiendas</a>
-        <a href="#frentes">Vencímetro</a>
-        <a href="#arranca">Cómo arranca</a>
-      </div>
-      <div>
-        <h4>Hablar con alguien</h4>
-        <a href="https://wa.me/5491128524957">+54 9 11 2852-4957</a>
-        <a href="mailto:Ignacio@fibot.ar">Por mail</a>
-        <a href="https://www.xn--antua-rta.com.ar/">antuña.com.ar</a>
+          <p class="espiral-nota">La espiral se abre: del dato suelto a la respuesta</p>
+        </div>
+
+        <div class="motor-pasos">
+          <div class="motor-paso">
+            <span class="num">01</span>
+            <div>
+              <h3>Fuentes</h3>
+              <p>El sistema que ya tenés, la planilla de siempre, y lo que reporta tu gente. Nada se migra.</p>
+            </div>
+          </div>
+          <div class="motor-paso">
+            <span class="num">02</span>
+            <div>
+              <h3>Ingesta</h3>
+              <p>Webhooks donde la plataforma los ofrece, consulta periódica donde no. Once plataformas de GPS ya mapeadas, entre otras fuentes.</p>
+            </div>
+          </div>
+          <div class="motor-paso">
+            <span class="num">03</span>
+            <div>
+              <h3>Normalización</h3>
+              <p>Formatos distintos entran; sale una sola tabla, en una base propia de tu empresa, separada de las demás.</p>
+            </div>
+          </div>
+          <div class="motor-paso">
+            <span class="num">04</span>
+            <div>
+              <h3>Reglas</h3>
+              <p>Lo que se pregunta se contesta; lo que vence avisa solo, sin que nadie tenga que preguntar.</p>
+            </div>
+          </div>
+          <div class="motor-paso final">
+            <span class="num">05</span>
+            <div>
+              <h3>Por WhatsApp / mail</h3>
+              <p>El cuadrado más grande de la espiral, y el cuadradito por donde sale: una línea, en el único canal que tu gente ya tiene abierto.</p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-    <div class="pie-legal">
-      <span>FiBOT — de <a href="https://www.xn--antua-rta.com.ar/">AntuñA</a>,
-        por Ignacio Antuña</span>
-      <span>Buenos Aires, Argentina</span>
+  </section>
+
+  <section id="frentes">
+    <div class="m">
+      <span class="mono rev-c" style="display:block">03 — Donde ya corre</span>
+      <div class="lista">
+        <div class="item rev-c">
+          <h3>Flotas</h3>
+          <div>
+            <p class="d">Dónde está cada camión, cuánto consumió, qué papeles vencen y cuál conviene mandar. Se conecta al GPS que ya tenés, sin cambiar de proveedor ni migrar nada.</p>
+            <span class="est">En producción · 267 unidades</span>
+          </div>
+        </div>
+        <div class="item rev-c">
+          <h3>Farmacia</h3>
+          <div>
+            <p class="d">En el mostrador hay una computadora, y anda bien — hasta que se corta la luz, se cae el sistema, o hay cola y nadie puede soltar la caja. FiBOT va en el bolsillo del farmacéutico: escribe el nombre del remedio y le vuelve precio, coberturas de obra social, equivalentes por droga y el prospecto en PDF.</p>
+            <span class="est">En producción · +10.000 productos</span>
+          </div>
+        </div>
+        <div class="item rev-c">
+          <h3>Encomiendas</h3>
+          <div>
+            <p class="d">Cada bulto con su propio QR, trazable desde que entra hasta que se entrega. Nada se edita ni se borra: cada escaneo queda registrado, y el estado se arma solo a partir de esa historia. Funciona sin señal — se encola y sincroniza apenas hay conexión.</p>
+            <span class="est">En producción</span>
+          </div>
+        </div>
+        <div class="item rev-c">
+          <h3>Vencímetro</h3>
+          <div>
+            <p class="d">Todo lo que vence en un solo lugar, avisando a quien tiene que resolverlo. VTV, seguros, habilitaciones, matafuegos, ART, contratos. Arranca desde una planilla que ya tengas.</p>
+            <span class="est">Nuevo · arranca desde tu planilla</span>
+          </div>
+        </div>
+        <div class="item tenue rev-c">
+          <h3>Y lo tuyo</h3>
+          <div>
+            <p class="d">Si hay un dato que vive en una planilla y alguien pregunta por él todos los días, ese es el candidato. Empezamos por un caso, no por todo.</p>
+            <span class="est">A medida · un caso por vez</span>
+          </div>
+        </div>
+      </div>
     </div>
-  </div>
-</footer>
+  </section>
+
+  <section id="costo" class="alt">
+    <div class="m">
+      <span class="mono rev-c" style="display:block">La cuenta que nadie hizo todavía</span>
+      <h2 class="titulo rev" style="font-size:clamp(2rem,4vw,3rem)">No hace falta un estudio. Alcanza con la cuenta.</h2>
+      <p class="bajada rev">Minutos perdidos por consulta, veces que se repite por día, días hábiles al mes. Esa cuenta la arman ustedes, con sus propios números — nosotros no los tenemos, todavía. Pero ya sabemos cómo se hace: la venimos haciendo en otros lados.</p>
+      <div class="formula rev">
+        <div class="termino">minutos perdidos<b>por consulta</b></div>
+        <span class="op">×</span>
+        <div class="termino">veces que se repite<b>por día</b></div>
+        <span class="op">×</span>
+        <div class="termino">días hábiles<b>al mes</b></div>
+        <span class="op">=</span>
+        <div class="termino destacado">horas perdidas<b>por mes</b></div>
+      </div>
+      <div class="ejemplo rev-c">
+        <p class="cuenta">8 min × 15 consultas × 22 días =</p>
+        <p class="num">44</p>
+        <p class="detalle">horas por mes — más de una semana de trabajo completa, en preguntas que ya tenían respuesta en algún lado.</p>
+      </div>
+      <p class="etiqueta-chica">Números de referencia, no datos de ningún cliente en particular</p>
+    </div>
+  </section>
+
+  <section id="arranca">
+    <div class="m">
+      <span class="mono rev-c" style="display:block">04 — Cómo arranca</span>
+      <h2 class="titulo rev">Cómo arranca, sin vueltas.</h2>
+      <div class="pasos">
+        <div class="paso actual rev">
+          <span class="cuando">Día 1 · 30 minutos</span>
+          <h3>Una charla, y nada más que eso</h3>
+          <p>Nos contás qué le preguntan a tu gente todos los días y con qué lo resuelven hoy. De ahí sale si esto sirve o no. Si no sirve, se termina ahí y no cuesta nada.</p>
+        </div>
+        <div class="paso rev">
+          <span class="cuando">Semanas 1 y 2</span>
+          <h3>Un caso andando, no el sistema entero</h3>
+          <p>Elegimos la pregunta que más se repite y la conectamos con lo que ya tenés —el sistema de siempre, la planilla, lo que sea—. A las dos semanas hay algo funcionando en un grupo chico de gente real.</p>
+        </div>
+        <div class="paso rev">
+          <span class="cuando">Después</span>
+          <h3>Se suma lo que el uso pida</h3>
+          <p>El segundo caso lo elige la gente usando el primero, no una reunión de planificación. Lo que nadie pregunta no se construye — y ahí es donde la mayoría de los proyectos se van de presupuesto.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="tecnico" class="alt">
+    <div class="m">
+      <span class="mono rev-c" style="display:block">Para quien lo quiera auditar</span>
+      <h2 class="titulo rev" style="font-size:clamp(2rem,4vw,3rem)">Así está armado, en cuatro puntos.</h2>
+      <div class="lista">
+        <div class="item rev-c">
+          <h3>Lenguaje</h3>
+          <div><p class="d">Se escribe como a una persona. Nada de comandos exactos ni menú de opciones: la consulta se hace como a un compañero, y el sistema entiende qué se necesita.</p></div>
+        </div>
+        <div class="item rev-c">
+          <h3>Integración</h3>
+          <div><p class="d">Por API, no por scraping. Se conecta a los sistemas que ya usás —ERP, planillas, bases propias— por API o lectura directa. Sin credenciales compartidas, sin tocar la fuente original.</p></div>
+        </div>
+        <div class="item rev-c">
+          <h3>Datos</h3>
+          <div><p class="d">Lee, nunca escribe. Acceso de sólo lectura a lo que se autorice. No modifica un sistema existente salvo que se lo pida explícitamente, con su propio permiso aparte.</p></div>
+        </div>
+        <div class="item rev-c">
+          <h3>Seguridad</h3>
+          <div><p class="d">Acceso por rol, todo con registro. Credenciales y tokens nunca pasan por el chat — quedan fuera, como en cualquier integración seria. Cada acceso queda registrado: quién, qué, cuándo.</p></div>
+        </div>
+      </div>
+      <p class="remate rev-c">Cada uno de estos cuatro puntos se explica con más detalle apenas haga falta. <b>Cuanto más lo pregunten, mejor.</b></p>
+    </div>
+  </section>
+
+  <section id="preguntas">
+    <div class="m">
+      <span class="mono rev-c" style="display:block">05 — Preguntas</span>
+      <h2 class="titulo rev">Lo que siempre nos preguntan.</h2>
+      <div class="faq rev">
+        <details open>
+          <summary>¿Tengo que cambiar de sistema?</summary>
+          <p>No. Nos conectamos al que ya tenés — ERP, planillas, GPS, lo que sea. Si el tuyo no está mapeado se estudia, pero no siempre se puede — y eso lo sabemos en la primera semana, no a los seis meses.</p>
+        </details>
+        <details>
+          <summary>¿Qué pasa si mi gente no lo usa?</summary>
+          <p>Es la pregunta correcta, y la razón por la que esto vive en WhatsApp y no en una app. Igual medimos el uso desde el primer día: cuántas consultas, de cuánta gente distinta. Si a las cuatro semanas escribe una sola persona, el problema no era la herramienta y te lo decimos.</p>
+        </details>
+        <details>
+          <summary>¿Cuánto sale?</summary>
+          <p>No publicamos lista porque el primer caso define el alcance y las diferencias son grandes. Lo que sí: en la primera charla sale un número cerrado, no un rango ni un "depende".</p>
+        </details>
+        <details>
+          <summary>¿Dónde quedan mis datos?</summary>
+          <p>En una base propia de tu empresa, separada de la de cualquier otro cliente. Ninguna consulta de uno toca los datos de otro, y eso no es una promesa comercial: son proyectos distintos.</p>
+        </details>
+        <details>
+          <summary>¿Y si mañana los quiero dejar?</summary>
+          <p>Te llevás tus datos exportados y se apaga. No hay permanencia ni contrato largo. Preferimos que te quedes porque lo usás, que es además la única forma en la que esto nos conviene a nosotros.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <section class="cierre">
+    <div class="m">
+      <div class="rev">
+        <h2 class="titulo">Contanos qué le preguntan a tu gente todos los días.</h2>
+        <p class="bajada">Si es siempre lo mismo, probablemente lo pueda contestar un bot. Si no, te lo decimos: vender lo que no sirve es mal negocio para los dos.</p>
+        <div class="cta-row">
+          <a class="btn btn-grande" href="https://wa.me/5491128524957">Escribinos por WhatsApp</a>
+          <span class="mono" style="color:var(--tenue-2)">+54 9 11 2852-4957</span>
+        </div>
+      </div>
+      <svg class="simbolo-fondo" viewBox="-14 -14 1328 828" aria-hidden="true">
+        <g fill="none" stroke="var(--linea-2)" stroke-width="14">
+          <rect x="0" y="0" width="800" height="800"></rect>
+          <rect x="800" y="0" width="500" height="500"></rect>
+          <rect x="1000" y="500" width="300" height="300"></rect>
+          <rect x="800" y="600" width="200" height="200"></rect>
+          <rect x="900" y="500" width="100" height="100"></rect>
+        </g>
+        <rect x="800" y="500" width="100" height="100" fill="#6FDCAE"></rect>
+        <text x="400" y="400" text-anchor="middle" dominant-baseline="central" font-family="Space Grotesk, sans-serif" font-weight="700" font-size="440" letter-spacing="-22" fill="var(--linea-2)">Fi</text>
+      </svg>
+    </div>
+  </section>
+
+  <footer>
+    <div class="m">
+      <div class="pie-cols">
+        <div>
+          <svg viewBox="-14 -14 2674 828" aria-label="FiBOT">
+            <g fill="none" stroke="#ece6db" stroke-width="14">
+              <rect x="0" y="0" width="800" height="800"></rect>
+              <rect x="800" y="0" width="500" height="500"></rect>
+              <rect x="1000" y="500" width="300" height="300"></rect>
+              <rect x="800" y="600" width="200" height="200"></rect>
+              <rect x="900" y="500" width="100" height="100"></rect>
+            </g>
+            <rect x="800" y="500" width="100" height="100" fill="#6FDCAE"></rect>
+            <text x="400" y="400" text-anchor="middle" dominant-baseline="central" font-family="Space Grotesk, sans-serif" font-weight="700" font-size="440" letter-spacing="-22" fill="#ece6db">Fi</text>
+            <text x="1560" y="410" dominant-baseline="central" font-family="Space Grotesk, sans-serif" font-size="330" letter-spacing="-10" fill="#ece6db"><tspan font-weight="400">Fi</tspan><tspan font-weight="700">BOT</tspan></text>
+          </svg>
+          <p>Automatización por WhatsApp para empresas que ya tienen los datos y no los están mirando.</p>
+        </div>
+        <div>
+          <h4>Ir a</h4>
+          <a href="#idea">La idea</a>
+          <a href="#motor">El motor</a>
+          <a href="#frentes">Dónde corre</a>
+          <a href="#arranca">Cómo arranca</a>
+        </div>
+        <div>
+          <h4>Hablar con alguien</h4>
+          <a href="https://wa.me/5491128524957">+54 9 11 2852-4957</a>
+          <a href="mailto:Ignacio@fibot.ar">Por mail</a>
+          <a href="https://www.xn--antua-rta.com.ar/">antuña.com.ar</a>
+        </div>
+      </div>
+      <div class="pie-legal">
+        <span>FiBOT — de <a href="https://www.xn--antua-rta.com.ar/">AntuñA</a>, por Ignacio Antuña</span>
+        <span>Buenos Aires, Argentina</span>
+      </div>
+    </div>
+  </footer>
+</div>
 
 <script>
-document.documentElement.classList.add('js');
-
 (function () {
+  var quieto = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  /* ── utilidades comunes de los dos dibujos ────────────
-     Están afuera porque antes cada función tenía su copia de rgba() y de
-     luz(), y una de las dos se olvidó de FUENTE: eso tiró "FUENTE is not
-     defined" en cada cuadro hasta que se notó. */
-  var SANS = 'system-ui,-apple-system,"Segoe UI",Roboto,sans-serif';
-  var MONO = 'ui-monospace,SFMono-Regular,Menlo,Consolas,monospace';
-  var TAU = 6.283185307179586;
-
-  function rgba(hex, a) {
-    var h = String(hex).replace('#', '').trim();
-    if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
-    var n = parseInt(h, 16);
-    if (h.length !== 6 || isNaN(n)) return 'rgba(150,140,125,' + a + ')';
-    return 'rgba(' + ((n >> 16) & 255) + ',' + ((n >> 8) & 255) + ',' +
-           (n & 255) + ',' + a + ')';
-  }
-  function luz(hex) {
-    var h = String(hex).replace('#', '').trim();
-    if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
-    var n = parseInt(h, 16);
-    if (h.length !== 6 || isNaN(n)) return 0;
-    return (0.2126 * ((n >> 16) & 255) + 0.7152 * ((n >> 8) & 255) +
-            0.0722 * (n & 255)) / 255;
-  }
-  // FNV-1a: el mismo dibujo en cada carga y en cada navegador. Que el gráfico
-  // cambie solo entre visitas es lo que lo hace parecer un protector de
-  // pantalla en vez de una lectura de algo.
-  function hash(s) {
-    var h = 2166136261;
-    for (var i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); }
-    return h >>> 0;
-  }
-  function rng(a) {
-    return function () {
-      a |= 0; a = a + 0x6D2B79F5 | 0;
-      var t = Math.imul(a ^ a >>> 15, 1 | a);
-      t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
-      return ((t ^ t >>> 14) >>> 0) / 4294967296;
-    };
-  }
-  // Un canvas con dpr aplicado. Sin esto, en un teléfono cada punto de 2px se
-  // dibuja borroso: es la mitad de por qué un canvas se ve barato.
-  function medirLienzo(cv, ctx) {
-    var r = cv.getBoundingClientRect();
-    var dpr = Math.min(window.devicePixelRatio || 1, 2.5);
-    if (!r.width || !r.height) return null;
-    cv.width = Math.round(r.width * dpr);
-    cv.height = Math.round(r.height * dpr);
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    return { w: r.width, h: r.height };
-  }
-  // Motor de animación compartido: arranca sólo si el dibujo está en pantalla
-  // y se apaga cuando no. Antes estaba duplicado en las dos funciones.
-  function animar(cv, marco, medir, colores, quieto, hayIO, cuadroFijo) {
-    var corriendo = false, id = 0, t0 = performance.now();
-    function bucle(t) { marco(t - t0); id = requestAnimationFrame(bucle); }
-    function arrancar() {
-      if (corriendo || quieto) return;
-      corriendo = true; id = requestAnimationFrame(bucle);
-    }
-    function frenar() { corriendo = false; if (id) cancelAnimationFrame(id); }
-
-    colores();
-    if (!medir()) return;
-    marco(quieto ? cuadroFijo : 0);
-
-    if (hayIO && !quieto) {
-      new IntersectionObserver(function (es) {
-        es[0].isIntersecting ? arrancar() : frenar();
-      }, { threshold: 0.05 }).observe(cv);
-    } else if (!quieto) { arrancar(); }
-
-    var reMedir = function () {
-      if (medir()) marco(quieto ? cuadroFijo : performance.now() - t0);
-    };
-    if (window.ResizeObserver) new ResizeObserver(reMedir).observe(cv);
-    else window.addEventListener('resize', reMedir);
-
-    var reColor = function () { colores(); reMedir(); };
-    new MutationObserver(reColor).observe(document.documentElement,
-      { attributes: true, attributeFilter: ['data-theme', 'class', 'style'] });
-    if (window.matchMedia) {
-      var mq = window.matchMedia('(prefers-color-scheme: dark)');
-      mq.addEventListener ? mq.addEventListener('change', reColor)
-                          : mq.addListener(reColor);
-    }
-  }
-
-
-  var quieto = window.matchMedia &&
-               window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var hayIO = !!window.IntersectionObserver;
-
-  /* ── cifras que se suman ──────────────────────────────
-     El número final ya está en el HTML: el script lo pisa, nunca lo genera.
-     Un contador que no arranca y deja un cero es peor que no animar nada. */
+  /* ── cifras que se suman (mismo patrón que ya usaba el sitio) ── */
   var cifras = document.querySelectorAll('.cif .v[data-hasta]');
-  if (cifras.length && hayIO && !quieto) {
+  if (cifras.length && window.IntersectionObserver && !quieto) {
     cifras.forEach(function (el) {
-      // Reservar el ancho final antes de vaciarlo: si no, la franja entera se
-      // corre sola mientras el número pasa de 1 a 3 dígitos.
       el.style.display = 'inline-block';
       el.style.minWidth = el.getBoundingClientRect().width + 'px';
       el.textContent = '0';
     });
-
     var obsCif = new IntersectionObserver(function (es) {
       es.forEach(function (e) {
         if (!e.isIntersecting) return;
-        obsCif.unobserve(e.target);          // una sola vez, no en cada scroll
+        obsCif.unobserve(e.target);
         var el = e.target;
         var hasta = parseInt(el.dataset.hasta, 10);
-        var dura = 900 + Math.min(hasta, 300);   // los grandes tardan más
+        var dura = 900 + Math.min(hasta / 100, 500);
         var t0 = null;
         (function paso(t) {
           if (t0 === null) t0 = t;
           var p = Math.min(((t || 0) - t0) / dura, 1);
-          var suave = 1 - Math.pow(1 - p, 3);    // easeOutCubic: frena al final
-          el.textContent = Math.round(hasta * suave).toLocaleString('es-AR');
+          var suave = 1 - Math.pow(1 - p, 3);
+          el.textContent = Math.round(hasta * suave).toLocaleString('es-AR') + (p >= 1 ? '+' : '');
           if (p < 1) requestAnimationFrame(paso);
         })(performance.now());
       });
-    }, { threshold: 0.6 });
-    cifras.forEach(function (el) { obsCif.observe(el); });
+    }, { threshold: 0.5 });
+    document.querySelectorAll('[data-cifras] .cif').forEach(function (c) { obsCif.observe(c.querySelector('.v')); });
+  } else {
+    cifras.forEach(function (el) { el.textContent = Number(el.dataset.hasta).toLocaleString('es-AR') + '+'; });
   }
 
-  /* ── revelado de secciones ───────────────────────────
-     Va por scroll y NO por IntersectionObserver, a propósito.
-
-     Con el observer, una sección que nunca llegó a intersectar no se entera
-     nunca: si saltás de golpe al fondo —un swipe fuerte en el teléfono, un
-     enlace con ancla, recargar con la página ya scrolleada— las secciones del
-     medio pasan de "abajo del viewport" a "arriba del viewport" sin un solo
-     cuadro adentro, y quedan invisibles PARA SIEMPRE. Al volver a subir te
-     encontrás bloques en blanco que ocupan lugar y no muestran nada.
-
-     La regla acá es posicional, no de eventos: se revela todo lo que quedó
-     por encima de la línea del viewport, se haya visto o no. Un salto no se
-     puede "perder" nada. */
-  var revs = [].slice.call(document.querySelectorAll('.rev'));
-  if (revs.length) {
-    if (quieto) {
-      revs.forEach(function (el) { el.classList.add('visible'); });
-    } else {
-      var pendiente = false;
-      var revelar = function () {
-        pendiente = false;
-        var linea = window.innerHeight + 300;   // 300px de anticipo: para
-        revs = revs.filter(function (el) {      // cuando la ves, ya terminó
-          if (el.getBoundingClientRect().top >= linea) return true;
-          el.classList.add('visible');
-          return false;
-        });
-        // Cuando no queda nada por revelar, el listener se saca solo.
-        if (!revs.length) window.removeEventListener('scroll', alScroll);
-      };
-      var alScroll = function () {
-        if (pendiente) return;                  // un chequeo por cuadro
-        pendiente = true;
-        requestAnimationFrame(revelar);
-      };
-      window.addEventListener('scroll', alScroll, { passive: true });
-      window.addEventListener('resize', alScroll, { passive: true });
-      revelar();
-    }
-  }
-
-  /* ── la nav se separa del fondo recién cuando hay scroll ──
-     Con un centinela en vez de un listener de scroll: no corre en cada píxel. */
-  var top = document.querySelector('.top');
-  if (top && hayIO) {
-    var centinela = document.createElement('div');
-    centinela.setAttribute('aria-hidden', 'true');
-    top.parentNode.insertBefore(centinela, top);
-    new IntersectionObserver(function (es) {
-      top.classList.toggle('pegado', !es[0].isIntersecting);
-    }).observe(centinela);
-  }
-
-  /* ── el menú mobile se cierra al elegir algo ─────────
-     Es un <details>: sin esto queda abierto tapando la sección a la que
-     acabás de saltar. */
-  var menu = document.querySelector('.menu-mob');
-  if (menu) {
-    menu.querySelectorAll('.panel a').forEach(function (a) {
-      a.addEventListener('click', function () { menu.open = false; });
-    });
-    document.addEventListener('click', function (e) {
-      if (menu.open && !menu.contains(e.target)) menu.open = false;
-    });
-  }
-
-  /* ── el enganche ─────────────────────────────────────
-     La nube de puntos es el CEREBRO, no el fondo. Un campo de partículas
-     detrás del texto no dice nada; acá cada punto está adentro del nodo que
-     procesa, y las cuatro fuentes se ven llegando. Es el gráfico de la cifra
-     "4 fuentes cruzadas", no decoración. */
-  var lienzo = document.querySelector('.lienzo');
-  if (lienzo && lienzo.getContext) enganche(lienzo, quieto, hayIO);
-
-  /* ── la nebulosa ─────────────────────────────────────
-     Versión de home de /neuronas. Se traen las tres ideas que la hacen legible
-     allá, y una decisión propia de acá:
-
-       · la posición sale de un hash de la clave, no del azar, así el dibujo es
-         el mismo en cada carga y se puede mirar dos veces
-       · el color dice el ESTADO y no la familia, así el rojo es rojo en todas
-         partes; la familia la dice el lugar
-       · el radio de cada cúmulo va con la RAÍZ de su cantidad, o sea área
-         proporcional: si no, el de 267 aplasta al de 17
-
-     Y lo de acá: los datos son inventados y el pie lo dice. En el panel cada
-     punto es una cosa real con nombre. */
-  var neb = document.querySelector('.nebulosa');
-  if (neb && neb.getContext) nebulosa(neb, quieto, hayIO);
-  /* ── la nebulosa ──────────────────────────────────────
-     Versión de home de /neuronas: el servicio de un cliente, todo junto.
-
-     La decisión que ordena el dibujo: **el color dice el ESTADO, nunca la
-     familia.** La familia la dice el lugar y la etiqueta. Antes cada familia
-     tenía además su propio color y los dos sistemas competían — seis tonos
-     saturados repartidos al azar es exactamente lo que hace que un gráfico se
-     lea como ruido en vez de como información.
-
-     Y hay dos dibujos, no uno con la opacidad bajada:
-
-       · sobre fondo oscuro, luz: núcleo nítido + halo, sumando (`lighter`)
-       · sobre papel, TINTA: discos sólidos y líneas finas, sin halo
-
-     Fingir brillo sobre crema da grises sucios. Es la otra mitad de por qué
-     esto se veía barato. */
-  function nebulosa(cv, quieto, hayIO) {
-    var ctx = cv.getContext('2d');
-    var AUREO = 2.399963229728653;
-
-    // Seis familias, a modo de ejemplo. Las cantidades ilustran la proporción
-    // típica entre familias, no el tamaño real de ningún cliente puntual.
-    var FAM = [
-      { id: 'unidades',   nombre: 'Unidades',   n: 267 },
-      { id: 'documentos', nombre: 'Documentos', n: 96 },
-      { id: 'tickets',    nombre: 'Tickets',    n: 41 },
-      { id: 'personas',   nombre: 'Personas',   n: 34 },
-      { id: 'datos',      nombre: 'Datos',      n: 22 },
-      { id: 'trabajos',   nombre: 'Trabajos',   n: 17 }
+  /* ── chat de ejemplo del hero: se arma solo, una vez ──────────
+     Ejemplos genéricos a propósito (pedido/facturación, no un rubro
+     puntual) — ver CLAUDE.md, "generalizar el relato, no la prueba". */
+  var cuerpo = document.getElementById('wa-cuerpo');
+  var estadoEl = document.getElementById('wa-estado');
+  if (cuerpo) {
+    var MENSAJES = [
+      { lado: 'out', texto: '¿Cómo viene el pedido 4471?', hora: '9:12' },
+      { lado: 'in', html: '<strong>Pedido 4471</strong> — en preparación, depósito Central. Sale hoy a las <span class="n">15:00</span>. Responsable: equipo de despacho.', hora: '9:12' },
+      { lado: 'out', texto: '¿y cuántos quedan sin facturar este mes?', hora: '9:13' },
+      { lado: 'in', html: '<strong>38 pedidos</strong> sin facturar — <span class="n">$2.140.000</span>. Está <span class="n">6%</span> arriba del mes pasado.', hora: '9:13' },
+      { lado: 'in', aviso: true, html: 'Aviso: el <strong>pedido 233</strong> lleva 2 días sin actualizar. Nadie lo revisó todavía.', hora: '9:14' }
     ];
-    // Proporción de estados por familia: los papeles vencen, las tablas no.
-    var MEZCLA = {
-      unidades:   [0.50, 0.22, 0.09, 0.19],
-      documentos: [0.10, 0.30, 0.14, 0.46],
-      tickets:    [0.30, 0.34, 0.24, 0.12],
-      personas:   [0.55, 0.10, 0.02, 0.33],
-      datos:      [0.86, 0.06, 0.02, 0.06],
-      trabajos:   [0.70, 0.10, 0.05, 0.15]
-    };
-    var TONOS = ['vivo', 'espera', 'alerta', 'quieto'];
 
-    /* Lo que el sistema hace de verdad: agarra un caso y le pregunta a varias
-       fuentes a la vez. Una sola miente —el sistema dice "al día" y tu gente
-       sabe que está trabado— así que la conclusión sale de cruzarlas, no de
-       creerle a ninguna.
-
-       Esto es eso, ejecutándose. No es el adorno de la sección: es la
-       sección. */
-    var CHEQUEOS = [
-      { unidad: 'Caso 412', nodo: 37, veredicto: 'sin reportar · avisar al responsable',
-        tono: 'alerta', consulta: [
-          { cum: 'datos',      dice: '3 h sin reportar' },
-          { cum: 'personas',   dice: 'el responsable no confirmó' },
-          { cum: 'trabajos',   dice: 'sin tarea abierta' } ] },
-      { unidad: 'Caso 118', nodo: 122, veredicto: 'puede seguir · el permiso vence en 9 días',
-        tono: 'espera', consulta: [
-          { cum: 'datos',      dice: 'activo, hace 12 min' },
-          { cum: 'documentos', dice: 'permiso vence en 9 días' },
-          { cum: 'personas',   dice: 'responsable asignado' } ] },
-      { unidad: 'Caso 233', nodo: 201, veredicto: 'en revisión · no avanzar todavía',
-        tono: 'quieto', consulta: [
-          { cum: 'tickets',    dice: '2 tickets abiertos' },
-          { cum: 'trabajos',   dice: 'pendiente, desde ayer' },
-          { cum: 'documentos', dice: 'al día' } ] },
-      { unidad: 'Caso 507', nodo: 88, veredicto: 'todo en orden',
-        tono: 'vivo', consulta: [
-          { cum: 'datos',      dice: 'activo, hace 4 min' },
-          { cum: 'documentos', dice: 'papeles al día' },
-          { cum: 'personas',   dice: 'responsable en horario' } ] }
-    ];
-    var CICLO = 8200, ENTRADA = 700, PASO = 950, CIERRE = 900;
-
-    var col = {}, papel = true;
-    function colores() {
-      var cs = getComputedStyle(document.documentElement);
-      var g = function (n, f) { return (cs.getPropertyValue(n) || '').trim() || f; };
-      var fondo = g('--tinta', '#14120f');
-      papel = luz(fondo) > 0.5;
-      col = {
-        fondo: fondo, texto: g('--hueso', '#eae5dc'),
-        acento: g('--bronce-vivo', '#b9762f'),
-        // Sobre papel los estados van más oscuros y menos saturados: los mismos
-        // tonos que brillan sobre negro, sobre crema son pasteles ilegibles.
-        vivo:   papel ? '#1d7a51' : '#3ddc97',
-        espera: papel ? '#9a6410' : '#e0a44c',
-        alerta: papel ? '#b0382a' : '#e2564a',
-        quieto: papel ? '#9d9385' : '#7d7568'
-      };
-      halos = {};
+    function burbuja(m) {
+      var div = document.createElement('div');
+      div.className = 'b ' + m.lado + (m.aviso ? ' aviso' : '');
+      var check = m.lado === 'out' ? ' ✓✓' : '';
+      div.innerHTML = (m.texto || m.html) + '<span class="t">' + m.hora + check + '</span>';
+      return div;
+    }
+    function escribiendoEl() {
+      var div = document.createElement('div');
+      div.className = 'escribiendo';
+      div.innerHTML = '<i></i><i></i><i></i>';
+      return div;
+    }
+    var timers = [];
+    function t(ms, fn) { timers.push(setTimeout(fn, ms)); }
+    function tipearEn(el, texto, cb) {
+      var i = 0;
+      (function paso() {
+        i++;
+        el.textContent = texto.slice(0, i);
+        if (i < texto.length) t(70 + Math.random() * 90, paso); else if (cb) cb();
+      })();
     }
 
-    // Un gradiente por punto y por cuadro tira los FPS; una imagen ya dibujada
-    // se copia y listo. De noche va en `lighter` (luz); sobre papel va normal
-    // y flojito, y hace de sombra — sin eso los puntos quedan planos y toda la
-    // versión clara se ve como un scatter de planilla.
-    var halos = {};
-    function halo(color) {
-      if (halos[color]) return halos[color];
-      var R = 22, c = document.createElement('canvas');
-      c.width = c.height = R * 2;
-      var g = c.getContext('2d');
-      var gr = g.createRadialGradient(R, R, 0, R, R, R);
-      gr.addColorStop(0, rgba(color, 0.55));
-      gr.addColorStop(0.35, rgba(color, 0.14));
-      gr.addColorStop(1, rgba(color, 0));
-      g.fillStyle = gr;
-      g.fillRect(0, 0, R * 2, R * 2);
-      halos[color] = c;
-      return c;
-    }
+    var inputSpan = document.createElement('span');
+    var inputTexto = document.createElement('span');
+    var caret = document.createElement('span');
+    caret.className = 'caret';
+    var inputWrap = document.createElement('div');
+    inputWrap.className = 'wa-input';
+    var flechita = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    flechita.setAttribute('viewBox', '0 0 24 24');
+    flechita.setAttribute('style', 'width:18px;height:18px;fill:#E0A44C;flex:none');
+    flechita.innerHTML = '<path d="M3 20.5v-17l19 8.5-19 8.5z"></path>';
+    inputSpan.appendChild(inputTexto);
+    inputSpan.appendChild(caret);
+    inputWrap.appendChild(inputSpan);
+    inputWrap.appendChild(flechita);
 
-    // ── armado: una sola vez, en coordenadas normalizadas ──
-    var nodos = [], cumulos = [], puentes = [], mallas = [], porId = {};
-    var chispas = [], polvo = [];
-    (function armar() {
-      var radios = FAM.map(function (f) { return 4 + 0.9 * Math.sqrt(f.n); });
-      var dists = [], acum = 6, extremo = 0;
-      for (var i = 0; i < FAM.length; i++) {
-        dists[i] = acum + radios[i];
-        acum = dists[i] + radios[i] * 0.25 + 2;
-        extremo = Math.max(extremo, dists[i] + radios[i] * 1.15);
-      }
-      var k = extremo > 0 ? 0.9 / extremo : 1;
-
-      FAM.forEach(function (f, i) {
-        var ang = i * AUREO;
-        var cx = Math.cos(ang) * dists[i] * k, cy = Math.sin(ang) * dists[i] * k;
-        var rad = radios[i] * k;
-        var desde = nodos.length;
-        var fr = rng(hash(f.id));
-        // Nada queda quieto: cada cúmulo deriva en una órbita chica y gira
-        // sobre sí mismo. Rígido —todo el cúmulo junto— para que la malla no
-        // se estire y siga leyéndose como una red.
-        cumulos.push({ id: f.id, cx: cx, cy: cy, r: rad, nombre: f.nombre, n: f.n,
-                       desde: desde, hasta: desde + f.n,
-                       dA: 0.024 + fr() * 0.032,
-                       w1: 0.00017 + fr() * 0.00023,
-                       w2: 0.00015 + fr() * 0.00025,
-                       p1: fr() * TAU, p2: fr() * TAU,
-                       rot0: fr() * TAU,
-                       rotVel: (fr() < 0.5 ? -1 : 1) * (0.000065 + fr() * 0.000115) });
-
-        var asp = 0.72 + fr() * 0.5, rot = fr() * TAU;
-        var cr = Math.cos(rot), sr = Math.sin(rot);
-        var mez = MEZCLA[f.id];
-
-        for (var j = 0; j < f.n; j++) {
-          var r2 = rng(hash(f.id + '|' + j));
-          // Exponente 0.55 ≈ raíz: única forma de repartir parejo dentro de un
-          // círculo. Más alto y la densidad se dispara al centro.
-          var rr = Math.pow(r2(), 0.55) * rad;
-          if (r2() < 0.14) rr *= 1.3;      // el borde deshilachado
-          var a2 = r2() * TAU;
-          var px = Math.cos(a2) * rr, py = Math.sin(a2) * rr * asp;
-          var u = r2(), acu = 0, tono = 'quieto';
-          for (var t = 0; t < TONOS.length; t++) {
-            acu += mez[t];
-            if (u <= acu) { tono = TONOS[t]; break; }
-          }
-          nodos.push({
-            cum: i, cx: cx, cy: cy,
-            ox: px * cr - py * sr, oy: px * sr + py * cr,
-            tono: tono, fase: r2() * TAU,
-            vel: 0.4 + r2() * 0.9, tam: 0.75 + r2() * 0.6
-          });
-        }
-      });
-
-      // El cúmulo por id, para que un chequeo pueda decir "consultá Documentos"
-      // sin saber en qué posición quedó.
-      cumulos.forEach(function (c, i) { porId[c.id] = i; });
-
-      // Malla interna: cada punto con sus DOS vecinos más cercanos. Con uno
-      // solo salen pares sueltos —parejitas de puntos unidos por un palito—,
-      // que es peor que no dibujar nada: se lee aerosol, no red. Con dos, los
-      // caminos se encadenan y el cúmulo pasa a ser un grafo recorrible. Se
-      // calcula UNA vez, no en cada cuadro.
-      var vistas = {};
-      cumulos.forEach(function (c) {
-        // El umbral va con la DENSIDAD: en un cúmulo de 267 los vecinos están
-        // seis veces más cerca que en uno de 17. Con un umbral fijo, o no se
-        // une nada o se une todo con todo.
-        var cerca = c.r * 2.4 / Math.sqrt(c.n), lim = cerca * cerca;
-        for (var a = c.desde; a < c.hasta; a++) {
-          var m1 = -1, d1 = 1e9, m2 = -1, d2 = 1e9;
-          for (var b = c.desde; b < c.hasta; b++) {
-            if (a === b) continue;
-            var dx = nodos[a].ox - nodos[b].ox, dy = nodos[a].oy - nodos[b].oy;
-            var d = dx * dx + dy * dy;
-            if (d < d1) { d2 = d1; m2 = m1; d1 = d; m1 = b; }
-            else if (d < d2) { d2 = d; m2 = b; }
-          }
-          // La misma arista sale dos veces (de ida y de vuelta): dibujarla
-          // doble la engorda y encima duplica el trabajo de las chispas.
-          [[m1, d1], [m2, d2]].forEach(function (par) {
-            if (par[0] < 0 || par[1] >= lim) return;
-            var k = Math.min(a, par[0]) + ':' + Math.max(a, par[0]);
-            if (vistas[k]) return;
-            vistas[k] = 1;
-            mallas.push([a, par[0]]);
-          });
-        }
-      });
-
-      // Puentes: lo que dice que esto es un servicio y no seis listas sueltas.
-      for (var a2i = 0; a2i < cumulos.length; a2i++) {
-        for (var b2 = a2i + 1; b2 < cumulos.length; b2++) {
-          if ((a2i + b2) % 2) continue;        // no todos, o queda una telaraña
-          puentes.push({ a: a2i, b: b2, off: (a2i * 7 + b2 * 13) % 10 / 10 });
-        }
-      }
-
-      // Chispas: paquetes que viajan por la malla, saltando de arista en
-      // arista. Es lo que hace que un cúmulo se vea TRABAJANDO y no dibujado
-      // — la red se justifica porque algo circula por ella.
-      var fc = rng(hash('chispas'));
-      for (var ch = 0; ch < 170; ch++) {
-        chispas.push({ m: Math.floor(fc() * mallas.length),
-                       off: fc(),
-                       vel: 0.00040 + fc() * 0.00060 });
-      }
-
-      // Polvo: partículas de fondo, lentas y a distinta profundidad. No dicen
-      // nada; están para que el vacío entre cúmulos no se vea muerto.
-      var fp = rng(hash('polvo'));
-      for (var pv = 0; pv < 150; pv++) {
-        polvo.push({ x: fp(), y: fp(),
-                     vx: (fp() - 0.5) * 0.000020,
-                     vy: (fp() - 0.5) * 0.000020,
-                     z: 0.35 + fp() * 0.65,
-                     fase: fp() * TAU });
-      }
-    })();
-
-    var W = 0, H = 0, CX = 0, CY = 0, R = 1, ASP = 1, esc = 1;
-    function medir() {
-      var m = medirLienzo(cv, ctx);
-      if (!m) return false;
-      W = m.w; H = m.h;
-      esc = Math.min(1.25, Math.max(0.8, W / 900));
-      // En una caja ancha los cúmulos se separan en horizontal; cada uno sigue
-      // redondo porque esto no toca los desplazamientos.
-      ASP = Math.max(1, Math.min(2.4, (W / H) / 1.3));
-
-      // Encuadre: se mide lo que ocupa el dibujo y se ajusta a la caja, en vez
-      // de confiar en que entre. Sin esto la composición queda pegada arriba
-      // con la mitad de abajo vacía — y ESO es lo que hace que se vea como un
-      // gráfico que salió así, no como uno compuesto.
-      var x0 = 1e9, x1 = -1e9, y0 = 1e9, y1 = -1e9;
-      cumulos.forEach(function (c) {
-        // Aire para la etiqueta arriba y —menos— abajo: cuando el panel tapa
-        // el nombre, se pasa al otro lado, y si no hay lugar reservado se va
-        // fuera del lienzo.
-        var arriba = c.r + 0.085, abajo = c.r + 0.055;
-        x0 = Math.min(x0, c.cx * ASP - c.r); x1 = Math.max(x1, c.cx * ASP + c.r);
-        y0 = Math.min(y0, c.cy - arriba);    y1 = Math.max(y1, c.cy + abajo);
-      });
-      var pad = 18 * esc, phE = 132 * esc, mg = 14 * esc;
-
-      // En un teléfono el panel va a todo el ancho, así que no hay esquina
-      // libre que valga: es una banda. Se le reserva el lugar ANTES de encuadrar
-      // y el dibujo entra en lo que queda, en vez de quedar la mitad debajo.
-      var angostoM = W < 640;
-      var hUtil = H - (angostoM ? phE + 22 * esc : 0);
-
-      R = Math.min((W - pad * 2) / (x1 - x0), (hUtil - pad * 2) / (y1 - y0));
-      CX = W / 2 - (x0 + x1) / 2 * R;
-      CY = hUtil / 2 - (y0 + y1) / 2 * R;
-
-      if (angostoM) {
-        ESQ = { x: 12 * esc, y: H - phE - 10 * esc, abajo: true, der: false,
-                ancho: W - 24 * esc, tapa: 0 };
-        return true;
-      }
-
-      // Dónde va el panel: en la esquina que MENOS tapa. Los cúmulos se ubican
-      // por ángulo áureo, así que cuál esquina queda libre depende de la
-      // proporción de la caja — se mide, no se elige a ojo. Fijo abajo a la
-      // izquierda le caía justo encima a Documentos, y 96 papeles se veían
-      // como doce.
-      var pwE = Math.min(330 * esc, W * 0.34);
-      var candidatas = [[mg, H - phE - mg, 0], [W - pwE - mg, H - phE - mg, 1],
-                        [mg, mg, 0], [W - pwE - mg, mg, 1]];
-      ESQ = null;
-      candidatas.forEach(function (e) {
-        var tapa = 0;
-        cumulos.forEach(function (c) {
-          // La caja del cúmulo INCLUYE su etiqueta, que va arriba y afuera del
-          // círculo. Midiendo sólo el círculo, el panel se corría del cúmulo
-          // para caerle justo encima al nombre.
-          var cxp = CX + c.cx * ASP * R, cyp = CY + c.cy * R, rr = c.r * R;
-          var ax0 = cxp - rr, ax1 = cxp + rr;
-          var ay0 = cyp - rr - 34 * esc, ay1 = cyp + rr;
-          var ov = Math.max(0, Math.min(ax1, e[0] + pwE) - Math.max(ax0, e[0])) *
-                   Math.max(0, Math.min(ay1, e[1] + phE) - Math.max(ay0, e[1]));
-          // Pesado por cantidad: tapar 267 unidades duele más que tapar 17.
-          tapa += ov * Math.sqrt(c.n);
-        });
-        if (!ESQ || tapa < ESQ.tapa) {
-          ESQ = { x: e[0], y: e[1], abajo: e[1] > H / 2, der: !!e[2],
-                  ancho: pwE, tapa: tapa };
-        }
-      });
-      return true;
-    }
-    var ESQ = null;
-    // Dónde quedó el panel este cuadro. Las etiquetas lo consultan: la que cae
-    // debajo se apaga a medida que el panel aparece, en vez de quedar cortada
-    // por el borde. Media etiqueta tapada se lee como un error de dibujo.
-    var CAJA = null;
-    // `TA` es el tiempo del cuadro que se está dibujando. px()/py() lo leen,
-    // así que con cambiarlo se puede pedir la posición de HACE un rato — que
-    // es de donde salen las estelas, sin guardar ningún historial.
-    var TA = 0;
-    function deriva(c, t) {
-      return { x: c.dA * Math.sin(c.w1 * t + c.p1),
-               y: c.dA * Math.cos(c.w2 * t + c.p2) };
-    }
-    var px = function (n) {
-      if (n.cum === undefined) {                       // es un cúmulo
-        return CX + (n.cx + deriva(n, TA).x) * ASP * R;
-      }
-      var c = cumulos[n.cum], d = deriva(c, TA);
-      var a = c.rot0 + c.rotVel * TA, ca = Math.cos(a), sa = Math.sin(a);
-      return CX + ((c.cx + d.x) * ASP + (n.ox * ca - n.oy * sa)) * R;
-    };
-    var py = function (n) {
-      if (n.cum === undefined) {
-        return CY + (n.cy + deriva(n, TA).y) * R;
-      }
-      var c = cumulos[n.cum], d = deriva(c, TA);
-      var a = c.rot0 + c.rotVel * TA, ca = Math.cos(a), sa = Math.sin(a);
-      return CY + (c.cy + d.y + (n.ox * sa + n.oy * ca)) * R;
-    };
-
-    /* ── el chequeo, ejecutándose ──────────────────────
-       Cada ciclo agarra una unidad, le pregunta a tres cúmulos y saca una
-       conclusión. Las líneas y los renglones aparecen de a uno y en el mismo
-       orden: se ve la consulta, no el resultado ya cocinado. */
-    function chequeo(t) {
-      var q = CHEQUEOS[Math.floor(t / CICLO) % CHEQUEOS.length];
-      var u = t % CICLO;
-      var vivo = Math.min(1, u / 260);
-      var salida = u > CICLO - CIERRE ? 1 - (u - (CICLO - CIERRE)) / CIERRE : 1;
-      var op = vivo * salida;
-      if (op <= 0.01) return;
-
-      var sujeto = nodos[q.nodo % nodos.length];
-      var sx = px(sujeto), sy = py(sujeto);
-      var cuantas = 0;
-      for (var i = 0; i < q.consulta.length; i++) {
-        if (u > ENTRADA + i * PASO) cuantas = i + 1;
-      }
-
-      // Las líneas de consulta: se dibujan creciendo hacia el cúmulo, así se
-      // ve que la pregunta VA, no que el vínculo ya estaba.
-      for (var j = 0; j < cuantas; j++) {
-        var c = cumulos[porId[q.consulta[j].cum]];
-        if (!c) continue;
-        var avance = Math.min(1, (u - (ENTRADA + j * PASO)) / 420);
-        var ex = sx + (px(c) - sx) * avance, ey = sy + (py(c) - sy) * avance;
-        ctx.strokeStyle = rgba(col.acento, (papel ? 0.6 : 0.5) * op);
-        ctx.lineWidth = 1.3;
-        ctx.setLineDash([4, 3]);
-        ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(ex, ey); ctx.stroke();
-        ctx.setLineDash([]);
-        if (avance >= 1) {
-          ctx.strokeStyle = rgba(col.acento, 0.55 * op);
-          ctx.lineWidth = 1.2;
-          ctx.beginPath();
-          ctx.arc(px(c), py(c), c.r * R + 7 * esc, 0, TAU);
-          ctx.stroke();
-        }
-      }
-
-      // El sujeto, marcado: un anillo que late.
-      var late = 1 + 0.12 * Math.sin(u * 0.006);
-      ctx.strokeStyle = rgba(col.acento, 0.9 * op);
-      ctx.lineWidth = 1.6;
-      ctx.beginPath(); ctx.arc(sx, sy, 9 * esc * late, 0, TAU); ctx.stroke();
-      ctx.fillStyle = rgba(col.acento, 0.95 * op);
-      ctx.beginPath(); ctx.arc(sx, sy, 2.6 * esc, 0, TAU); ctx.fill();
-
-      panel(q, cuantas, u, op, sx, sy);
-    }
-
-    /* El renglón por renglón. Es la parte que hace que esto se lea como una
-       consulta y no como un gráfico bonito: se ve QUÉ preguntó y QUÉ le
-       contestó cada fuente antes de la conclusión. */
-    function panel(q, cuantas, u, op, sx, sy) {
-      var angosto = W < 640;
-      var pw = angosto ? W - 24 * esc : (ESQ ? ESQ.ancho : Math.min(330 * esc, W * 0.34));
-      var lh = 15 * esc, pad = 13 * esc;
-      var filas = 2 + cuantas + (u > ENTRADA + q.consulta.length * PASO ? 2 : 0);
-      var ph = pad * 2 + lh * filas;
-      // El alto cambia mientras se van sumando renglones; la esquina no. Por
-      // eso se ancla al borde que eligió medir() y se crece hacia adentro, en
-      // vez de recolocar la caja en cada cuadro.
-      var abajo = ESQ ? ESQ.abajo : true;
-      var pxp = angosto ? 12 * esc : (ESQ ? ESQ.x : 14 * esc);
-      var mgv = angosto ? 10 * esc : 14 * esc;
-      var pyp = abajo ? H - ph - mgv : mgv;
-
-      CAJA = { x: pxp, y: pyp, w: pw, h: ph, op: op };
-      ctx.globalAlpha = op;
-      ctx.fillStyle = rgba(col.fondo, papel ? 0.88 : 0.82);
-      ctx.strokeStyle = rgba(col.texto, papel ? 0.16 : 0.12);
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      if (ctx.roundRect) ctx.roundRect(pxp, pyp, pw, ph, 8); else ctx.rect(pxp, pyp, pw, ph);
-      ctx.fill(); ctx.stroke();
-
-      // Una guía desde el panel hasta la unidad que se está mirando. Sale del
-      // borde que da para ese lado: si sale del otro, la línea cruza el propio
-      // panel y parece un tachón.
-      ctx.strokeStyle = rgba(col.acento, 0.3);
-      ctx.setLineDash([3, 4]);
-      ctx.beginPath();
-      ctx.moveTo(sx > pxp + pw / 2 ? pxp + pw : pxp, pyp + pad + lh * 0.6);
-      ctx.lineTo(sx, sy);
-      ctx.stroke();
-      ctx.setLineDash([]);
-
-      var x = pxp + pad, y = pyp + pad + lh * 0.75;
-      ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
-      ctx.font = (8.5 * esc).toFixed(1) + 'px ' + MONO;
-      ctx.fillStyle = rgba(col.texto, 0.45);
-      ctx.fillText('CHEQUEO EN CURSO', x, y);
-      y += lh;
-      ctx.font = '600 ' + (11.5 * esc).toFixed(1) + 'px ' + SANS;
-      ctx.fillStyle = rgba(col.texto, 0.95);
-      ctx.fillText(q.unidad, x, y);
-
-      ctx.font = (10 * esc).toFixed(1) + 'px ' + MONO;
-      for (var i = 0; i < cuantas; i++) {
-        y += lh;
-        var c = cumulos[porId[q.consulta[i].cum]];
-        var nom = c ? c.nombre : q.consulta[i].cum;
-        ctx.fillStyle = rgba(col.texto, 0.5);
-        ctx.fillText(nom, x, y);
-        var dice = q.consulta[i].dice;
-        ctx.fillStyle = rgba(col.texto, 0.88);
-        var wd = ctx.measureText(dice).width;
-        ctx.fillText(dice, pxp + pw - pad - wd, y);
-        // Los puntitos que unen la fuente con lo que contestó: sin ellos, en
-        // el ancho de un teléfono no se sabe qué dato es de quién.
-        var desde = x + ctx.measureText(nom).width + 6 * esc;
-        var hasta = pxp + pw - pad - wd - 6 * esc;
-        if (hasta > desde) {
-          ctx.fillStyle = rgba(col.texto, 0.22);
-          for (var d = desde; d < hasta; d += 4 * esc) ctx.fillText('.', d, y);
-        }
-      }
-
-      if (u > ENTRADA + q.consulta.length * PASO) {
-        y += lh * 0.65;
-        ctx.strokeStyle = rgba(col.texto, 0.16);
-        ctx.beginPath();
-        ctx.moveTo(x, y); ctx.lineTo(pxp + pw - pad, y); ctx.stroke();
-        y += lh;
-        ctx.font = '600 ' + (11 * esc).toFixed(1) + 'px ' + SANS;
-        ctx.fillStyle = rgba(col[q.tono], 1);
-        ctx.fillText('→ ' + q.veredicto, x, y);
-      }
-      ctx.globalAlpha = 1;
-    }
-
-    function marco(t) {
-      TA = t;                       // sin esto la deriva y el giro no corren
-      CAJA = null;                  // se vuelve a poner sólo si el panel sale
-      ctx.clearRect(0, 0, W, H);
-
-      // Polvo de fondo. Envuelve en los dos ejes, así que no hay que respawnear
-      // nada ni guardar estado: la posición sale del tiempo y ya.
-      for (var d0 = 0; d0 < polvo.length; d0++) {
-        var pv = polvo[d0];
-        var dx0 = ((pv.x + pv.vx * t) % 1 + 1) % 1;
-        var dy0 = ((pv.y + pv.vy * t) % 1 + 1) % 1;
-        var tit = 0.5 + 0.5 * Math.sin(pv.fase + t * 0.0006);
-        ctx.fillStyle = rgba(col.texto, (papel ? 0.17 : 0.13) * pv.z * tit);
-        ctx.beginPath();
-        ctx.arc(dx0 * W, dy0 * H, pv.z * 1.5 * esc, 0, TAU);
-        ctx.fill();
-      }
-
-      // Un solo gas, del color de la marca, y muy tenue: la familia la dicen
-      // el lugar y la etiqueta, no el color. Respira, con un período distinto
-      // por cúmulo — si respiran todos juntos se ve un latido de pantalla.
-      cumulos.forEach(function (c) {
-        var resp = 1 + 0.075 * Math.sin(t * 0.00042 + c.p1);
-        var x = px(c), y = py(c), rr = c.r * R * 1.85 * resp;
-        var g = ctx.createRadialGradient(x, y, 0, x, y, rr);
-        g.addColorStop(0, rgba(col.acento, (papel ? 0.095 : 0.10) * resp));
-        g.addColorStop(1, rgba(col.acento, 0));
-        ctx.fillStyle = g;
-        ctx.beginPath(); ctx.arc(x, y, rr, 0, TAU); ctx.fill();
-      });
-
-      // Malla interna, en un solo trazo: 500 beginPath por cuadro cuestan.
-      // Las puntas se guardan acá porque las chispas las vuelven a necesitar
-      // enseguida, y px()/py() no son gratis a 477 nodos.
-      ctx.strokeStyle = rgba(col.texto, papel ? 0.24 : 0.16);
-      ctx.lineWidth = papel ? 0.8 : 0.65;
-      ctx.beginPath();
-      for (var m = 0; m < mallas.length; m++) {
-        var a = nodos[mallas[m][0]], b = nodos[mallas[m][1]];
-        var ax0 = px(a), ay0 = py(a), bx0 = px(b), by0 = py(b);
-        mallas[m][2] = ax0; mallas[m][3] = ay0;
-        mallas[m][4] = bx0; mallas[m][5] = by0;
-        ctx.moveTo(ax0, ay0); ctx.lineTo(bx0, by0);
-      }
-      ctx.stroke();
-
-      // Chispas por la malla. Cada una recorre una arista y salta a otra: el
-      // salto sale de la parte entera del avance, así que no hay estado que
-      // mantener y el recorrido es distinto para cada una.
-      for (var ci = 0; ci < chispas.length; ci++) {
-        var sp = chispas[ci];
-        var avance = sp.off + t * sp.vel;
-        var e = mallas[(sp.m + Math.floor(avance)) % mallas.length];
-        var u0 = avance % 1;
-        // Trocito de arista encendido, no un punto: a esta escala un punto
-        // solo se pierde entre los nodos.
-        // La estela larga es lo que la distingue de un nodo naranja quieto: a
-        // esta escala un puntito más no se lee como movimiento, un trazo sí.
-        var u1 = Math.max(0, u0 - 0.55);
-        var vx = e[4] - e[2], vy = e[5] - e[3];
-        var hx = e[2] + vx * u0, hy = e[3] + vy * u0;
-        var gsp = ctx.createLinearGradient(e[2] + vx * u1, e[3] + vy * u1, hx, hy);
-        gsp.addColorStop(0, rgba(col.acento, 0));
-        gsp.addColorStop(1, rgba(col.acento, papel ? 0.85 : 0.9));
-        ctx.strokeStyle = gsp;
-        ctx.lineWidth = 2 * esc;
-        ctx.beginPath();
-        ctx.moveTo(e[2] + vx * u1, e[3] + vy * u1);
-        ctx.lineTo(hx, hy);
-        ctx.stroke();
-        ctx.fillStyle = rgba(col.acento, 1);
-        ctx.beginPath(); ctx.arc(hx, hy, 1.9 * esc, 0, TAU); ctx.fill();
-      }
-
-      // Puentes: curvas, no rectas. Una recta entre dos nubes se lee como el
-      // borde de una caja; una curva, como un recorrido.
-      puentes.forEach(function (p) {
-        var A = cumulos[p.a], B = cumulos[p.b];
-        var ax = px(A), ay = py(A), bx = px(B), by = py(B);
-        var mx = (ax + bx) / 2, my = (ay + by) / 2;
-        var dx = bx - ax, dy = by - ay;
-        var cxq = mx - dy * 0.13, cyq = my + dx * 0.13;   // panza hacia afuera
-        ctx.strokeStyle = rgba(col.texto, papel ? 0.16 : 0.11);
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.moveTo(ax, ay); ctx.quadraticCurveTo(cxq, cyq, bx, by);
-        ctx.stroke();
-
-        // Los pulsos: núcleo nítido con estela corta. Una bolita difusa sola
-        // parece un defecto del dibujo; con estela se lee que va hacia algún
-        // lado. Van TRES por puente, escalonados — con uno solo el puente pasa
-        // la mayor parte del tiempo vacío y se lee como una línea decorativa.
-        for (var k = 0; k < 3; k++) {
-          var u = ((t / 5200) + p.off + k / 3) % 1;
-          for (var s = 0; s < 7; s++) {
-            var uu = u - s * 0.016;
-            if (uu < 0) continue;
-            var iu = 1 - uu, qx = iu * iu * ax + 2 * iu * uu * cxq + uu * uu * bx,
-                qy = iu * iu * ay + 2 * iu * uu * cyq + uu * uu * by;
-            ctx.fillStyle = rgba(col.acento, (papel ? 0.85 : 0.95) * (1 - s / 7));
-            ctx.beginPath();
-            ctx.arc(qx, qy, (2.2 - s * 0.24) * esc, 0, TAU);
-            ctx.fill();
-          }
-        }
-      });
-
-      // Los puntos. De noche, luz; sobre papel, tinta con sombra.
-      if (!papel) ctx.globalCompositeOperation = 'lighter';
-      for (var i = 0; i < nodos.length; i++) {
-        var n = nodos[i];
-        var pulso = 0.7 + 0.3 * Math.sin(n.fase + t * 0.0011 * n.vel);
-        var s2 = (papel ? 3 + n.tam * 3 : 5 + n.tam * 5) * pulso * esc;
-        ctx.globalAlpha = papel ? 0.20 + pulso * 0.20 : 0.5 + pulso * 0.45;
-        ctx.drawImage(halo(col[n.tono]), px(n) - s2, py(n) - s2, s2 * 2, s2 * 2);
-      }
-      ctx.globalAlpha = 1;
-      ctx.globalCompositeOperation = 'source-over';
-      // El núcleo va SIEMPRE, y sólido. Es lo que hace que se vean puntos y no
-      // manchas: un halo sin núcleo es una mancha.
-      for (var i2 = 0; i2 < nodos.length; i2++) {
-        var n2 = nodos[i2];
-        var pl = 0.72 + 0.28 * Math.sin(n2.fase + t * 0.0011 * n2.vel);
-        ctx.fillStyle = rgba(col[n2.tono], papel ? 0.5 + pl * 0.5 : 0.85);
-        ctx.beginPath();
-        ctx.arc(px(n2), py(n2), (0.9 + n2.tam * 0.9) * pl * esc, 0, TAU);
-        ctx.fill();
-      }
-
-      // Algo cambió acá. Cada tanto un registro se toca —llegó un reporte,
-      // venció un papel— y el nodo se enciende con un anillo que se abre. Es
-      // el movimiento que dice que los datos ENTRAN, no que ya estaban.
-      var CADA = 380, VIDA = 1900, VIVOS = 6;
-      for (var ev = 0; ev < VIVOS; ev++) {
-        var turno = Math.floor(t / CADA) - ev;
-        if (turno < 0) continue;
-        var edad = t - turno * CADA;
-        if (edad > VIDA) continue;
-        var ne = nodos[hash('ev' + turno) % nodos.length];
-        var ue = edad / VIDA, desv = 1 - ue;
-        var ex = px(ne), ey = py(ne);
-        ctx.strokeStyle = rgba(col[ne.tono], 0.55 * desv * desv);
-        ctx.lineWidth = 1.4 * esc * desv;
-        ctx.beginPath();
-        ctx.arc(ex, ey, (3 + ue * 26) * esc, 0, TAU);
-        ctx.stroke();
-        ctx.fillStyle = rgba(col[ne.tono], 0.9 * desv);
-        ctx.beginPath();
-        ctx.arc(ex, ey, (1.4 + 1.6 * desv) * esc, 0, TAU);
-        ctx.fill();
-      }
-
-      chequeo(t);
-
-      // Etiquetas: nombre y cantidad, con una guía corta hasta el cúmulo. Es
-      // lo que convierte una mancha de colores en una lectura.
-      // La caja que ocupa una etiqueta. Se mide el texto, no el punto: el
-      // nombre es ancho y la cuenta va del lado de afuera.
-      function cajaEtiqueta(x, y, arriba) {
-        return { x: x - 46 * esc, y: arriba ? y - 26 * esc : y - 12 * esc,
-                 w: 92 * esc, h: 40 * esc };
-      }
-      function pisa(a, b) {
-        return b && a.x + a.w > b.x && a.x < b.x + b.w &&
-                    a.y + a.h > b.y && a.y < b.y + b.h;
-      }
-      var puestas = [];
-      function libre(caj) {
-        if (CAJA && CAJA.op > 0.02 && pisa(caj, CAJA)) return false;
-        for (var q = 0; q < puestas.length; q++) if (pisa(caj, puestas[q])) return false;
-        return true;
-      }
-
-      // Los cúmulos grandes eligen primero: si el que cede es el de 267, se
-      // pierde el rótulo más importante del cuadro.
-      cumulos.slice().sort(function (a, b) { return b.n - a.n; }).forEach(function (c) {
-        var x = px(c), cy = py(c);
-        var arriba = true, y = cy - c.r * R - 16 * esc;
-        // Si algo le cae encima —el panel u otra etiqueta— se pasa ABAJO del
-        // cúmulo. Es mejor que apagarla: un cúmulo sin nombre no se lee, y el
-        // panel está en pantalla la mayor parte del ciclo.
-        if (!libre(cajaEtiqueta(x, y, true))) {
-          var ab = cy + c.r * R + 28 * esc;
-          if (libre(cajaEtiqueta(x, ab, false)) && ab < H - 6 * esc) {
-            arriba = false; y = ab;
-          }
-        }
-        puestas.push(cajaEtiqueta(x, y, arriba));
-
-        ctx.strokeStyle = rgba(col.texto, papel ? 0.28 : 0.22);
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        if (arriba) { ctx.moveTo(x, y + 6 * esc); ctx.lineTo(x, y + 13 * esc); }
-        else        { ctx.moveTo(x, y - 20 * esc); ctx.lineTo(x, y - 13 * esc); }
-        ctx.stroke();
-
-        ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
-        ctx.font = '600 ' + (11.5 * esc).toFixed(1) + 'px ' + SANS;
-        ctx.fillStyle = rgba(col.texto, papel ? 0.92 : 0.88);
-        ctx.fillText(c.nombre, x, y);
-        ctx.font = (9.5 * esc).toFixed(1) + 'px ' + MONO;
-        ctx.fillStyle = rgba(col.texto, 0.5);
-        // La cuenta va del lado de afuera, para que el nombre quede siempre
-        // pegado al cúmulo y la guía no cruce texto.
-        ctx.fillText(String(c.n), x, arriba ? y - 13 * esc : y + 13 * esc);
-      });
-    }
-
-    animar(cv, marco, medir, colores, quieto, hayIO, 2400);
-  }
-
-  /* ── el enganche ──────────────────────────────────────
-     Las cuatro fuentes entrando, el motor, y lo que sale por WhatsApp.
-
-     Dos cosas que lo sacan de parecer un fondo animado:
-
-       · el núcleo tiene ESTRUCTURA — dos anillos y sus radios, girando en
-         sentidos opuestos. Una nube de puntos unidos por cercanía es una
-         maraña: se ve enredo, no mecanismo. Y era al azar, así que además
-         cambiaba en cada carga.
-       · lo que sale tiene CONTENIDO — la burbuja lleva un mensaje de verdad.
-         Un rectángulo vacío se lee como un lugar donde todavía no pusieron
-         nada. */
-  function enganche(cv, quieto, hayIO) {
-    var ctx = cv.getContext('2d');
-    var W = 0, H = 0, vert = false, N = null, esc = 1;
-    var col = {}, papel = true;
-
-    var FUENTES = [
-      { t: 'Tu sistema', s: 'el de siempre' },
-      { t: 'Planillas',  s: 'las que ya usás' },
-      { t: 'Papeles',    s: 'los que se vencen' },
-      { t: 'Tu gente',   s: 'lo que nadie anota' }
-    ];
-    var VERDE = '#25d366';
-    // Un mensaje real, del tipo que manda de verdad. Sin esto la burbuja es
-    // un cuadrado vacío.
-    var MSG = ['Pedido 412 sin actualizar', 'hace 3 h · último estado: en preparación'];
-
-    // El motor: dos anillos y sus radios, determinista.
-    var ANILLOS = [{ n: 18, r: 1.0, vel: 0.000055 },
-                   { n: 11, r: 0.62, vel: -0.00009 }];
-    var motor = [], vinculos = [];
-    (function armar() {
-      ANILLOS.forEach(function (an, ai) {
-        var base = motor.length;
-        var fr = rng(hash('anillo' + ai));
-        for (var i = 0; i < an.n; i++) {
-          motor.push({ a: i / an.n * TAU + fr() * 0.12, r: an.r,
-                       vel: an.vel, ph: fr() * TAU, anillo: ai });
-        }
-        for (var j = 0; j < an.n; j++) {           // el anillo cerrado
-          vinculos.push([base + j, base + (j + 1) % an.n]);
-        }
-      });
-      // Los radios: cada nodo del anillo chico con dos del grande.
-      var g0 = 0, g1 = ANILLOS[0].n;
-      for (var k = 0; k < ANILLOS[1].n; k++) {
-        var idx = g1 + k;
-        var destino = Math.round(k / ANILLOS[1].n * ANILLOS[0].n);
-        vinculos.push([idx, g0 + destino % ANILLOS[0].n]);
-        vinculos.push([idx, g0 + (destino + 1) % ANILLOS[0].n]);
-      }
-    })();
-
-    function colores() {
-      var cs = getComputedStyle(document.documentElement);
-      var g = function (n, f) { return (cs.getPropertyValue(n) || '').trim() || f; };
-      col.fondo  = g('--tinta', '#14120f');
-      col.texto  = g('--hueso', '#eae5dc');
-      col.acento = g('--bronce-vivo', '#b9762f');
-      papel = luz(col.fondo) > 0.5;
-    }
-
-    function medir() {
-      var m = medirLienzo(cv, ctx);
-      if (!m) return false;
-      W = m.w; H = m.h;
-      vert = W < 720;
-      esc = Math.min(1.2, Math.max(0.85, W / 1000));
-      var f = [];
-      if (vert) {
-        [[0.26, 0.08], [0.74, 0.08], [0.26, 0.23], [0.74, 0.23]]
-          .forEach(function (p) { f.push({ x: W * p[0], y: H * p[1] }); });
-        N = { f: f, b: { x: W * 0.5, y: H * 0.55, r: Math.min(W, H) * 0.19 },
-              w: { x: W * 0.5, y: H * 0.87 } };
-      } else {
-        for (var i = 0; i < 4; i++) f.push({ x: W * 0.17, y: H * (0.17 + i * 0.22) });
-        N = { f: f, b: { x: W * 0.48, y: H * 0.5, r: Math.min(W, H) * 0.175 },
-              w: { x: W * 0.855, y: H * 0.5 } };
-      }
-      return true;
-    }
-
-    function ctrl(p0, p1) {
-      return { x: (p0.x + p1.x) / 2, y: p0.y + (p1.y - p0.y) * 0.18 };
-    }
-    function bez(p0, c, p1, t) {
-      var u = 1 - t;
-      return { x: u * u * p0.x + 2 * u * t * c.x + t * t * p1.x,
-               y: u * u * p0.y + 2 * u * t * c.y + t * t * p1.y };
-    }
-    function recortar(p0, p1, r) {
-      var dx = p1.x - p0.x, dy = p1.y - p0.y;
-      var d = Math.hypot(dx, dy) || 1;
-      return { x: p1.x - dx / d * r, y: p1.y - dy / d * r };
-    }
-    // Estela: el mismo pulso repetido hacia atrás con menos tinta.
-    function pulso(p0, c, p1, u, color, cuantos, r) {
-      for (var s = 0; s < cuantos; s++) {
-        var uu = u - s * 0.02;
-        if (uu < 0) continue;
-        var q = bez(p0, c, p1, uu);
-        ctx.fillStyle = rgba(color, (papel ? 0.9 : 1) * (1 - s / cuantos));
-        ctx.beginPath();
-        ctx.arc(q.x, q.y, (r - s * r * 0.16) * esc, 0, TAU);
-        ctx.fill();
-      }
-    }
-    function etiqueta(txt, x, y, px2, peso, alfa, alin, fuente) {
-      ctx.font = peso + ' ' + px2 + 'px ' + (fuente || SANS);
-      ctx.textAlign = alin; ctx.textBaseline = 'middle';
-      var w = ctx.measureText(txt).width;
-      var x0 = alin === 'right' ? x - w : alin === 'center' ? x - w / 2 : x;
-      // Los cables convergen y pasan por donde va el texto; sin este recorte,
-      // en el teléfono se lee "Planillas" con una línea cruzándole el medio.
-      ctx.fillStyle = rgba(col.fondo, 0.9);
-      ctx.fillRect(x0 - 5, y - px2 / 2 - 3, w + 10, px2 + 6);
-      ctx.fillStyle = rgba(col.texto, alfa);
-      ctx.fillText(txt, x, y);
-    }
-
-    var PER = 3000;
-
-    function marco(t) {
-      if (!N) return;
-      ctx.clearRect(0, 0, W, H);
-      var b = N.b, i, llegada = 0;
-
-      // ── los cables ──
-      for (i = 0; i < N.f.length; i++) {
-        var p0 = N.f[i], fin = recortar(p0, b, b.r + 5), c = ctrl(p0, fin);
-        ctx.strokeStyle = rgba(col.texto, papel ? 0.22 : 0.16);
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.moveTo(p0.x, p0.y);
-        ctx.quadraticCurveTo(c.x, c.y, fin.x, fin.y);
-        ctx.stroke();
-
-        // Dos por cable, desfasados: con uno solo el cable pasa la mayor parte
-        // del tiempo vacío y se lee como una línea de adorno, no como un caño
-        // por el que entra algo.
-        for (var kk = 0; kk < 2; kk++) {
-          var p = ((t + i * PER / 4 + kk * PER / 8) % PER) / PER;
-          // Acelera al acercarse: entra al motor, no flota hacia él.
-          var pe = p * p * (3 - 2 * p);
-          if (pe > 0.88) llegada = Math.max(llegada, (pe - 0.88) / 0.12);
-          pulso(p0, c, fin, pe, col.acento, 6, 2.4);
-        }
-      }
-
-      // ── la salida ──
-      var ini = recortar(N.w, b, b.r + 5), c2 = ctrl(ini, N.w);
-      ctx.strokeStyle = rgba(col.texto, papel ? 0.22 : 0.16);
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.moveTo(ini.x, ini.y);
-      ctx.quadraticCurveTo(c2.x, c2.y, N.w.x, N.w.y);
-      ctx.stroke();
-      pulso(ini, c2, N.w, ((t + 700) % 2100) / 2100, VERDE, 6, 2.6);
-
-      // ── el motor ──
-      // Anillo de luz, dibujado con trazo: un relleno radial grande sobre
-      // papel es una mancha naranja, no un brillo.
-      var vibra = 1 + llegada * 0.06;
-      // Un aro, no una banda: tres trazos cada vez más finos y más opacos
-      // hacia adentro. Un relleno radial grande sobre este fondo es una
-      // mancha marrón, que es justo lo que se quería sacar.
-      for (var g2 = 3; g2 >= 1; g2--) {
-        ctx.strokeStyle = rgba(col.acento,
-          (papel ? 0.035 : 0.045) * g2 * (0.7 + llegada * 1.1));
-        ctx.lineWidth = g2 * 3.5 * esc;
-        ctx.beginPath();
-        ctx.arc(b.x, b.y, b.r * (1.05 + g2 * 0.045) * vibra, 0, TAU);
-        ctx.stroke();
-      }
-
-      // Cada llegada abre un anillo. No es adorno: marca el instante en que un
-      // dato ENTRÓ, y es lo que ata el movimiento de los cables con el del
-      // núcleo — sin eso son dos animaciones sueltas en el mismo lienzo.
-      // Con cuatro cables de a dos pulsos, llega uno cada PER/8.
-      var CAD = PER / 8;
-      for (var k2 = 0; k2 < 3; k2++) {
-        var turno = Math.floor(t / CAD) - k2;
-        if (turno < 1) continue;
-        var edad2 = t - turno * CAD;
-        if (edad2 > 1150) continue;
-        var ue2 = edad2 / 1150, desv2 = 1 - ue2;
-        ctx.strokeStyle = rgba(col.acento, (papel ? 0.45 : 0.5) * desv2 * desv2);
-        ctx.lineWidth = 1.6 * esc * desv2;
-        ctx.beginPath();
-        ctx.arc(b.x, b.y, b.r * (1.02 + ue2 * 0.8), 0, TAU);
-        ctx.stroke();
-      }
-
-      var pos = motor.map(function (n) {
-        var ang = n.a + n.vel * t;
-        var rad = b.r * 0.86 * n.r * (1 + 0.035 * Math.sin(n.ph + t * 0.0009));
-        return { x: b.x + Math.cos(ang) * rad, y: b.y + Math.sin(ang) * rad };
-      });
-
-      ctx.strokeStyle = rgba(col.acento, (papel ? 0.5 : 0.42) * (0.75 + llegada * 0.5));
-      ctx.lineWidth = 0.9;
-      ctx.beginPath();
-      for (i = 0; i < vinculos.length; i++) {
-        var A = pos[vinculos[i][0]], B = pos[vinculos[i][1]];
-        ctx.moveTo(A.x, A.y); ctx.lineTo(B.x, B.y);
-      }
-      ctx.stroke();
-
-      ctx.fillStyle = rgba(col.acento, 0.95);
-      for (i = 0; i < pos.length; i++) {
-        ctx.beginPath();
-        ctx.arc(pos[i].x, pos[i].y, (motor[i].anillo ? 1.6 : 2.1) * esc, 0, TAU);
-        ctx.fill();
-      }
-
-      // ── nodos de entrada ──
-      for (i = 0; i < N.f.length; i++) {
-        var n0 = N.f[i];
-        ctx.fillStyle = col.fondo;
-        ctx.strokeStyle = rgba(col.texto, papel ? 0.5 : 0.42);
-        ctx.lineWidth = 1.4;
-        ctx.beginPath(); ctx.arc(n0.x, n0.y, 5 * esc, 0, TAU);
-        ctx.fill(); ctx.stroke();
-        ctx.fillStyle = rgba(col.acento, 0.9);
-        ctx.beginPath(); ctx.arc(n0.x, n0.y, 2 * esc, 0, TAU); ctx.fill();
-
-        if (vert) {
-          etiqueta(FUENTES[i].t, n0.x, n0.y - 27, 11.5, '600', 0.95, 'center');
-          etiqueta(FUENTES[i].s, n0.x, n0.y - 14, 8.5, '400', 0.5, 'center', MONO);
+    function correr() {
+      var acumulado = 500;
+      MENSAJES.forEach(function (m, i) {
+        if (m.lado === 'in') {
+          var esc = escribiendoEl();
+          t(acumulado, function () { cuerpo.insertBefore(esc, inputWrap); estadoEl.textContent = 'escribiendo…'; });
+          acumulado += 900 + Math.random() * 500;
+          t(acumulado, function () { esc.remove(); cuerpo.insertBefore(burbuja(m), inputWrap); estadoEl.textContent = 'en línea'; });
+          acumulado += 700;
         } else {
-          etiqueta(FUENTES[i].t, n0.x - 16, n0.y - 7, 13, '600', 0.95, 'right');
-          etiqueta(FUENTES[i].s, n0.x - 16, n0.y + 8, 9.5, '400', 0.5, 'right', MONO);
+          t(acumulado, function () { cuerpo.insertBefore(burbuja(m), inputWrap); });
+          acumulado += 900;
         }
-      }
-
-      // ── la burbuja, con el mensaje adentro ──
-      var w = N.w;
-      // Se mide con la MISMA tipografía con la que se dibuja. Midiendo a 11 y
-      // dibujando a 12.6, el texto sale más ancho que la caja que se calculó
-      // para contenerlo, y se corta.
-      var fTit = '600 ' + (10.5 * esc).toFixed(1) + 'px ' + SANS;
-      var fSub = (9.5 * esc).toFixed(1) + 'px ' + SANS;
-      ctx.font = fTit;
-      var anchoTxt = ctx.measureText(MSG[0]).width;
-      ctx.font = fSub;
-      anchoTxt = Math.max(anchoTxt, ctx.measureText(MSG[1]).width);
-      var bw = Math.min(anchoTxt + 26, vert ? W * 0.62 : W * 0.3);
-      var bh = 42 * esc;
-      var bx = vert ? w.x - bw / 2 : w.x - 8, by = w.y - bh / 2;
-      // Que no se salga de la caja: el ancho depende del texto y del idioma,
-      // así que confiar en que entre es confiar en la suerte.
-      bx = Math.min(bx, W - bw - 6);
-
-      // Acuse de recibo: cuando el pulso verde toca la burbuja, la burbuja se
-      // enciende. Sin esto el mensaje parece impreso ahí desde siempre, y todo
-      // el recorrido de la izquierda no termina en nada.
-      var desde = ((t - 1400) % 2100 + 2100) % 2100;
-      var pop = desde < 520 ? 1 - desde / 520 : 0;
-      if (pop > 0) {
-        var e2 = 5 * pop * esc;
-        ctx.strokeStyle = rgba(VERDE, 0.45 * pop);
-        ctx.lineWidth = (1 + 5 * pop) * esc;
-        ctx.beginPath();
-        if (ctx.roundRect) ctx.roundRect(bx - e2, by - e2, bw + e2 * 2, bh + e2 * 2, 12);
-        else ctx.rect(bx - e2, by - e2, bw + e2 * 2, bh + e2 * 2);
-        ctx.stroke();
-      }
-
-      ctx.fillStyle = papel ? '#ffffff' : '#10241a';
-      ctx.strokeStyle = rgba(VERDE, (papel ? 0.55 : 0.75) + pop * 0.25);
-      ctx.lineWidth = 1.3 + pop * 0.8;
-      ctx.beginPath();
-      if (ctx.roundRect) ctx.roundRect(bx, by, bw, bh, 9);
-      else ctx.rect(bx, by, bw, bh);
-      ctx.fill(); ctx.stroke();
-      ctx.beginPath();                       // la colita
-      ctx.moveTo(bx + 10, by + bh);
-      ctx.lineTo(bx + 3, by + bh + 8);
-      ctx.lineTo(bx + 22, by + bh);
-      ctx.closePath();
-      ctx.fillStyle = papel ? '#ffffff' : '#10241a';
-      ctx.fill();
-
-      ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
-      ctx.fillStyle = papel ? 'rgba(20,18,15,.92)' : rgba(col.texto, 0.92);
-      ctx.font = fTit;
-      ctx.fillText(MSG[0], bx + 11, by + bh * 0.36);
-      ctx.fillStyle = papel ? 'rgba(20,18,15,.6)' : rgba(col.texto, 0.6);
-      ctx.font = fSub;
-      ctx.fillText(MSG[1], bx + 11, by + bh * 0.68);
-
-      etiqueta('Tu gente', vert ? w.x : bx + bw / 2, by + bh + 22,
-               vert ? 10 : 10.5, '600', 0.7, 'center');
-
-      // ── el nombre, arriba de todo ──
-      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-      ctx.fillStyle = rgba(col.fondo, 0.82);
-      ctx.font = '800 ' + (vert ? 15 : 17) * esc + 'px ' + SANS;
-      var wn = ctx.measureText('FiBOT').width;
-      ctx.fillRect(b.x - wn / 2 - 8, b.y - 11 * esc, wn + 16, 22 * esc);
-      ctx.fillStyle = rgba(col.texto, 0.97);
-      ctx.fillText('FiBOT', b.x, b.y);
+      });
+      t(acumulado + 400, function () { tipearEn(inputTexto, '¿y el 512?'); });
     }
 
-    animar(cv, marco, medir, colores, quieto, hayIO, 1400);
+    cuerpo.appendChild(inputWrap);
+    if (quieto) {
+      MENSAJES.forEach(function (m) { cuerpo.insertBefore(burbuja(m), inputWrap); });
+    } else if (window.IntersectionObserver) {
+      var obsChat = new IntersectionObserver(function (es) {
+        if (es[0].isIntersecting) { obsChat.disconnect(); correr(); }
+      }, { threshold: 0.4 });
+      obsChat.observe(cuerpo);
+    } else {
+      correr();
+    }
+  }
+
+  /* ── motor: la espiral se dibuja con el scroll ────────────── */
+  var svgMotor = document.getElementById('espiral-svg');
+  if (svgMotor && !quieto) {
+    var trazo = document.getElementById('espiral-trazo');
+    var punto = document.getElementById('espiral-punto');
+    var g3 = document.getElementById('espiral-g3');
+    var g4 = document.getElementById('espiral-g4');
+    var g5 = document.getElementById('espiral-g5');
+    var g6 = document.getElementById('espiral-g6');
+    function tramo(s, a, b) { return Math.min(Math.max((s - a) / (b - a), 0), 1); }
+    function actualizar() {
+      var r = svgMotor.getBoundingClientRect();
+      var h = window.innerHeight;
+      var desde = h * 0.9, hasta = h * 0.3;
+      var s = Math.min(Math.max((desde - r.top) / (desde - hasta), 0), 1);
+      trazo.style.strokeDashoffset = Math.round(3200 * (1 - s));
+      punto.setAttribute('opacity', s > 0.01 ? 1 : 0);
+      g3.style.opacity = tramo(s, 0.34, 0.44);
+      g4.style.opacity = tramo(s, 0.58, 0.68);
+      g5.style.opacity = tramo(s, 0.84, 0.93);
+      g6.style.opacity = tramo(s, 0.94, 1);
+    }
+    var pedido = false;
+    function pedir() { if (pedido) return; pedido = true; requestAnimationFrame(function () { pedido = false; actualizar(); }); }
+    window.addEventListener('scroll', pedir, { passive: true });
+    window.addEventListener('resize', pedir);
+    actualizar();
+  } else if (svgMotor) {
+    document.getElementById('espiral-trazo').style.strokeDashoffset = 0;
+    ['espiral-punto', 'espiral-g3', 'espiral-g4', 'espiral-g5', 'espiral-g6'].forEach(function (id) {
+      document.getElementById(id).setAttribute('opacity', 1);
+    });
+  }
+
+  /* ── destellos: trivia de Fibonacci, decorativo ───────────── */
+  if (!quieto) {
+    var CUENTAS = ['φ = 1,6180339887', 'Fₙ = Fₙ₋₁ + Fₙ₋₂', '8 / 5 = 1,6', '144 / 89 ≈ 1,6179', '1 1 2 3 5 8 13 21', '(1+√5) / 2', 'F₁₆ = 987', '21 / 13 = 1,6153', 'lim Fₙ₊₁/Fₙ = φ', '34 + 55 = 89'];
+    var host = document.getElementById('destellos');
+    (function ciclo() {
+      setTimeout(function () {
+        var el = document.createElement('span');
+        el.className = 'destello';
+        el.textContent = CUENTAS[Math.floor(Math.random() * CUENTAS.length)];
+        el.style.left = (6 + Math.random() * 76) + 'vw';
+        el.style.top = (8 + Math.random() * 78) + 'vh';
+        el.style.fontSize = (0.72 + Math.random() * 0.5).toFixed(2) + 'rem';
+        host.appendChild(el);
+        setTimeout(function () { el.remove(); }, 200);
+        ciclo();
+      }, 2200 + Math.random() * 4200);
+    })();
   }
 })();
 </script>
