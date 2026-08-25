@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000" width="1000" height="1000" role="img" aria-label="FiBOT">
+  
+  <rect x="0" y="0" width="1000" height="1000" fill="#100F0D"></rect>
+  <g transform="translate(146 350) scale(0.545)">
+    <g fill="none" stroke="#F2EEE6" stroke-width="20">
+      <rect x="0" y="0" width="800" height="800"></rect>
+      <rect x="800" y="0" width="500" height="500"></rect>
+      <rect x="1000" y="500" width="300" height="300"></rect>
+      <rect x="800" y="600" width="200" height="200"></rect>
+      <rect x="900" y="500" width="100" height="100"></rect>
+    </g>
+    <rect x="800" y="500" width="100" height="100" fill="#6FDCAE"></rect>
+    <text x="400" y="400" text-anchor="middle" dominant-baseline="central" font-family="Space Grotesk, Helvetica, Arial, sans-serif" font-weight="700" font-size="440" letter-spacing="-22" fill="#F2EEE6">Fi</text>
+  </g>
+</svg>

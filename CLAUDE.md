@@ -9,7 +9,41 @@ La **home comercial de FiBOT** — una página estática servida por GitHub Page
 con cuatro verticales concretas hoy (flotas, farmacia, encomiendas,
 vencimientos) listadas en `#frentes`.
 
-**No hay build, ni bundler, ni dependencias.** Se edita `index.html` y se pushea.
+**No hay build, ni bundler, casi ninguna dependencia.** Se edita `index.html`
+y se pushea. La única externa es Google Fonts (Space Grotesk, sólo para la
+marca — ver abajo); si no carga, cae a Helvetica/Arial sin romper nada.
+
+## La marca
+
+El símbolo es la sucesión de Fibonacci (1, 1, 2, 3, 5, 8) como cuadrados
+anidados, con el "1" más chico en verde — la única pieza con color. Manual
+completo y los seis SVG fuente en `assets/logo/` (el repo de origen de estos
+assets es un export del skill `design`; ese `.dc.html` no se versiona acá).
+
+- **`simbolo-oscuro` / `logo-horizontal-oscuro`**: trazo y texto oscuros
+  (`#100F0D`), para fondo claro — es lo que usan el header y el footer de
+  esta página, ambos sobre `--hueso`. `logo-horizontal-oscuro.svg` no vino en
+  el export original (sólo el claro); se derivó a mano con los mismos colores
+  de `simbolo-oscuro.svg` — si en algún momento llega un nuevo export del
+  kit, chequear que siga alineado.
+- **`simbolo-claro` / `logo-horizontal-claro`**: trazo y texto claros
+  (`#F2EEE6`), para fondo oscuro (`--tinta`).
+- **`simbolo-monocromo`**: usa `currentColor`, para bordado/vinilo/sello — un
+  solo color, hereda del contenedor.
+- **`favicon.svg`** (en la raíz, no en `assets/logo/`) y
+  **`avatar-whatsapp.svg`**: variantes recortadas para tamaño chico. El
+  avatar hay que exportarlo a PNG antes de subirlo — WhatsApp no toma SVG.
+
+**Las cuatro reglas del símbolo** (no negociables si se vuelve a tocar):
+el verde es siempre el cuadrado de 1, nunca otra parte del dibujo; nada de
+sombra, degradado ni relieve; no se rota ni se estira (proporción 13:8); si
+no entra completo, se usa sólo el cuadrado de 8 (el que tiene el "Fi") —
+nunca media secuencia.
+
+El header/footer inlinean el SVG directo en el HTML (no `<img src>`), porque
+un SVG referenciado por `<img>` no puede heredar `Space Grotesk` del
+`<link>` de la página — queda en un contexto aparte y usaría el fallback
+igual. Inline sí lo hereda.
 
 ### El criterio que ordena el copy: generalizar el relato, no la prueba
 

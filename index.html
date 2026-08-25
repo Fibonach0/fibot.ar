@@ -10,6 +10,12 @@
 <meta name="theme-color" content="#100f0d" media="(prefers-color-scheme: dark)">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 
+<!-- Sólo para la marca (el símbolo y el wordmark van en Space Grotesk, ver
+     assets/logo/). El resto del sitio sigue en --sans (system-ui). -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
+
 <meta property="og:type" content="website">
 <meta property="og:locale" content="es_AR">
 <meta property="og:site_name" content="FiBOT">
@@ -89,9 +95,9 @@
     border-bottom:1px solid transparent;transition:border-color .2s}
   .top.pegado{border-bottom-color:var(--linea)}
   .top .m{display:flex;align-items:center;gap:24px;height:62px}
-  .marca{font-family:var(--sans);font-weight:800;font-size:1.05rem;
-    letter-spacing:-.03em;text-decoration:none}
-  .marca i{font-style:normal;color:var(--bronce-vivo)}
+  .marca{display:inline-flex;align-items:center;text-decoration:none}
+  .marca svg{height:26px;width:auto;display:block}
+  footer .marca svg{height:22px}
   .nav-desk{margin-left:auto;display:flex;gap:26px;align-items:center}
   .nav-desk a{font-family:var(--sans);font-size:.88rem;color:var(--tinta-2);
     text-decoration:none;transition:color .15s}
@@ -367,7 +373,20 @@
 <body>
 <div class="top">
   <div class="m">
-    <a class="marca" href="#">Fi<i>BOT</i></a>
+    <a class="marca" href="#" aria-label="FiBOT">
+      <svg viewBox="-7 -7 2647 814" role="img" aria-hidden="true">
+        <g fill="none" stroke="#100F0D" stroke-width="14">
+          <rect x="0" y="0" width="800" height="800"></rect>
+          <rect x="800" y="0" width="500" height="500"></rect>
+          <rect x="1000" y="500" width="300" height="300"></rect>
+          <rect x="800" y="600" width="200" height="200"></rect>
+          <rect x="900" y="500" width="100" height="100"></rect>
+        </g>
+        <rect x="800" y="500" width="100" height="100" fill="#12A06F"></rect>
+        <text x="400" y="400" text-anchor="middle" dominant-baseline="central" font-family="Space Grotesk, Helvetica, Arial, sans-serif" font-weight="700" font-size="440" letter-spacing="-22" fill="#100F0D">Fi</text>
+        <text x="1560" y="410" dominant-baseline="central" font-family="Space Grotesk, Helvetica, Arial, sans-serif" font-size="330" letter-spacing="-10" fill="#100F0D"><tspan font-weight="400">Fi</tspan><tspan font-weight="700">BOT</tspan></text>
+      </svg>
+    </a>
 
     <nav class="nav-desk">
       <a href="#frentes">Qué hacemos</a>
@@ -763,7 +782,20 @@
   <div class="m">
     <div class="pie-cols">
       <div>
-        <span class="marca">Fi<i>BOT</i></span>
+        <span class="marca" aria-label="FiBOT">
+          <svg viewBox="-7 -7 2647 814" role="img" aria-hidden="true">
+            <g fill="none" stroke="#100F0D" stroke-width="14">
+              <rect x="0" y="0" width="800" height="800"></rect>
+              <rect x="800" y="0" width="500" height="500"></rect>
+              <rect x="1000" y="500" width="300" height="300"></rect>
+              <rect x="800" y="600" width="200" height="200"></rect>
+              <rect x="900" y="500" width="100" height="100"></rect>
+            </g>
+            <rect x="800" y="500" width="100" height="100" fill="#12A06F"></rect>
+            <text x="400" y="400" text-anchor="middle" dominant-baseline="central" font-family="Space Grotesk, Helvetica, Arial, sans-serif" font-weight="700" font-size="440" letter-spacing="-22" fill="#100F0D">Fi</text>
+            <text x="1560" y="410" dominant-baseline="central" font-family="Space Grotesk, Helvetica, Arial, sans-serif" font-size="330" letter-spacing="-10" fill="#100F0D"><tspan font-weight="400">Fi</tspan><tspan font-weight="700">BOT</tspan></text>
+          </svg>
+        </span>
         <p>Automatización por WhatsApp para empresas que ya tienen los datos y
           no los están mirando.</p>
       </div>
