@@ -22,8 +22,8 @@ python3 -m http.server 8000
 ```
 
 Y chequear las cuatro cosas que ya se rompieron una vez: que las cifras terminen
-en 267 / 11 / 4, que ninguna sección quede sin su clase `.visible`, que el canvas
-del diagrama pinte algo, y que no haya scroll horizontal.
+en 90 / 10.000 / 4, que ninguna sección quede sin su clase `.visible`, que el
+canvas del diagrama pinte algo, y que no haya scroll horizontal.
 
 ## Reglas del JavaScript de esta página
 
