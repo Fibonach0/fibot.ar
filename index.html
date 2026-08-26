@@ -180,6 +180,15 @@
   .wa-nota{font-family:var(--mono);font-size:.63rem;letter-spacing:.16em;text-transform:uppercase;
     color:var(--tenue-2);margin:16px 0 0}
 
+  /* ── mensaje de voz (mock de audio en el chat) ────────── */
+  .voice{display:flex;align-items:center;gap:9px;padding:2px 0}
+  .voice .play{width:28px;height:28px;border-radius:50%;background:#ffffff1f;flex:none;position:relative}
+  .voice .play::after{content:'';position:absolute;top:50%;left:53%;transform:translate(-50%,-50%);
+    border-style:solid;border-width:6px 0 6px 9px;border-color:transparent transparent transparent #e9edef}
+  .voice .onda{display:flex;align-items:center;gap:2.5px;height:22px;flex:1}
+  .voice .onda i{display:block;width:2.5px;border-radius:2px;background:#ffffff55}
+  .voice .dur{font-family:var(--mono);font-size:.68rem;color:#ffffffa0;flex:none}
+
   /* ── franja de cifras ──────────────────────────────── */
   .franja{position:relative;border-top:1px solid var(--linea);border-bottom:1px solid var(--linea);background:var(--tinta-alt)}
   .franja .m{padding:clamp(34px,4vw,52px) 28px;display:grid;gap:18px;grid-template-columns:repeat(auto-fit,minmax(228px,1fr))}
@@ -526,8 +535,40 @@
           </p>
         </div>
         <div class="rev">
-          <p class="bajada" style="margin:0 0 18px">Después — “FiBOT, ¿dónde está la unidad 42?”</p>
-          <div class="b in" style="max-width:100%;display:block">📍 Ruta 9 — km 72<br><strong>Unidad 42</strong><br>Última actualización: hace 3 min</div>
+          <p class="bajada" style="margin:0 0 18px">Después — un audio de siete segundos.</p>
+          <div class="wa">
+            <div class="wa-top">
+              <div class="wa-av">
+                <svg viewBox="0 0 1000 1000" style="width:38px;height:38px;border-radius:50%">
+                  <rect x="0" y="0" width="1000" height="1000" fill="#100F0D"></rect>
+                  <g transform="translate(146 350) scale(0.545)">
+                    <g fill="none" stroke="#ece6db" stroke-width="20">
+                      <rect x="0" y="0" width="800" height="800"></rect>
+                      <rect x="800" y="0" width="500" height="500"></rect>
+                      <rect x="1000" y="500" width="300" height="300"></rect>
+                      <rect x="800" y="600" width="200" height="200"></rect>
+                      <rect x="900" y="500" width="100" height="100"></rect>
+                    </g>
+                    <rect x="800" y="500" width="100" height="100" fill="#6FDCAE"></rect>
+                    <text x="400" y="400" text-anchor="middle" dominant-baseline="central" font-family="Space Grotesk, sans-serif" font-weight="700" font-size="440" letter-spacing="-22" fill="#ece6db">Fi</text>
+                  </g>
+                </svg>
+              </div>
+              <div style="flex:1"><b>FiBOT</b><small>en línea</small></div>
+              <span class="wa-rubro">EJEMPLO</span>
+            </div>
+            <div class="wa-cuerpo" style="min-height:0;padding-bottom:18px">
+              <div class="b out">
+                <div class="voice">
+                  <span class="play"></span>
+                  <span class="onda"><i style="height:7px"></i><i style="height:14px"></i><i style="height:9px"></i><i style="height:19px"></i><i style="height:11px"></i><i style="height:16px"></i><i style="height:6px"></i><i style="height:20px"></i><i style="height:10px"></i><i style="height:15px"></i><i style="height:8px"></i><i style="height:18px"></i><i style="height:12px"></i><i style="height:7px"></i><i style="height:16px"></i></span>
+                  <span class="dur">0:07</span>
+                </div>
+                <span class="t">9:12 ✓✓</span>
+              </div>
+              <div class="b in">📍 Ruta 9 — km 72<br><strong>Unidad 42</strong><br>Última actualización: hace 3 min<span class="t">9:13</span></div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
