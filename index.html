@@ -182,12 +182,18 @@
 
   /* ── mensaje de voz (mock de audio en el chat) ────────── */
   .voice{display:flex;align-items:center;gap:9px;padding:2px 0}
-  .voice .play{width:28px;height:28px;border-radius:50%;background:#ffffff1f;flex:none;position:relative}
+  .voice .play{width:28px;height:28px;border-radius:50%;background:#ffffff1f;flex:none;position:relative;
+    border:none;padding:0;cursor:pointer;transition:background .18s}
+  .voice .play:hover{background:#ffffff30}
   .voice .play::after{content:'';position:absolute;top:50%;left:53%;transform:translate(-50%,-50%);
     border-style:solid;border-width:6px 0 6px 9px;border-color:transparent transparent transparent #e9edef}
+  .voice .play.jugando::after{border-width:0;width:3px;height:11px;left:50%;background:#e9edef;
+    box-shadow:5px 0 0 #e9edef}
   .voice .onda{display:flex;align-items:center;gap:2.5px;height:22px;flex:1}
-  .voice .onda i{display:block;width:2.5px;border-radius:2px;background:#ffffff55}
+  .voice .onda i{display:block;width:2.5px;border-radius:2px;background:#ffffff55;transition:background .2s}
+  .voice .onda i.hecha{background:#ffffffe8}
   .voice .dur{font-family:var(--mono);font-size:.68rem;color:#ffffffa0;flex:none}
+  .transcripcion{font-style:italic;font-size:.82rem;color:#ffffffab;line-height:1.4;margin:7px 0 0}
 
   /* ── franja de cifras ──────────────────────────────── */
   .franja{position:relative;border-top:1px solid var(--linea);border-bottom:1px solid var(--linea);background:var(--tinta-alt)}
@@ -560,10 +566,11 @@
             <div class="wa-cuerpo" style="min-height:0;padding-bottom:18px">
               <div class="b out">
                 <div class="voice">
-                  <span class="play"></span>
+                  <button type="button" class="play" aria-label="Reproducir mensaje de voz"></button>
                   <span class="onda"><i style="height:7px"></i><i style="height:14px"></i><i style="height:9px"></i><i style="height:19px"></i><i style="height:11px"></i><i style="height:16px"></i><i style="height:6px"></i><i style="height:20px"></i><i style="height:10px"></i><i style="height:15px"></i><i style="height:8px"></i><i style="height:18px"></i><i style="height:12px"></i><i style="height:7px"></i><i style="height:16px"></i></span>
                   <span class="dur">0:07</span>
                 </div>
+                <p class="transcripcion">"¿Dónde está la unidad 42?"</p>
                 <span class="t">9:12 ✓✓</span>
               </div>
               <div class="b in">📍 Ruta 9 — km 72<br><strong>Unidad 42</strong><br>Última actualización: hace 3 min<span class="t">9:13</span></div>
@@ -1036,6 +1043,29 @@
       }, 2200 + Math.random() * 4200);
     })();
   }
+
+  /* ── mensaje de voz: animación de "reproducción", sin audio real ── */
+  document.querySelectorAll('.voice .play').forEach(function (btn) {
+    var barras = btn.parentElement.querySelectorAll('.onda i');
+    var dur = 2400;
+    btn.addEventListener('click', function () {
+      if (btn.classList.contains('jugando')) return;
+      btn.classList.add('jugando');
+      btn.setAttribute('aria-label', 'Reproduciendo mensaje de voz');
+      if (quieto) {
+        barras.forEach(function (b) { b.classList.add('hecha'); });
+      } else {
+        barras.forEach(function (b, i) {
+          setTimeout(function () { b.classList.add('hecha'); }, (i / barras.length) * dur);
+        });
+      }
+      setTimeout(function () {
+        btn.classList.remove('jugando');
+        btn.setAttribute('aria-label', 'Reproducir mensaje de voz');
+        barras.forEach(function (b) { b.classList.remove('hecha'); });
+      }, quieto ? 700 : dur + 260);
+    });
+  });
 })();
 </script>
 </body>
