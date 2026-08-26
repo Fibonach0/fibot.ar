@@ -60,12 +60,19 @@ igual. Inline sí lo hereda.
 La página vende **un patrón** ("cruzar varias fuentes y contestar por
 WhatsApp"), no un rubro. Por eso el hero, `#idea` y `#motor` —lo primero que
 ve cualquiera— están escritos en genérico (sistema/planillas/papeles/gente,
-"Pedido 4471", "Caso 412"): si lideran con flota, encasillan el resto de la
-página antes de que el visitante llegue a `#frentes`, que es donde SÍ
-corresponde nombrar cada rubro con sus números reales (267 unidades,
-+10.000 productos, etc.). Al sumar un rubro nuevo a `#frentes`, no lo
-repliques en el hero/`#idea`/`#motor` — esa genericidad es la que hace que
-sumar un rubro nuevo mañana no requiera reescribir la mitad de la página.
+"Pedido 4471", "Caso 412").
+
+`#frentes` (antes nombraba cada rubro — "Flotas", "Farmacia", "Encomiendas" —
+con su número real) se generalizó también (ago 2026): ahora describe
+**patrones de uso** ("Operación en movimiento", "Atención al público",
+"Trazabilidad", "Vencimientos") en vez de rubros con nombre propio, y el
+estado (`.est`) quedó en una palabra ("En producción" / "Nuevo" / "A medida"),
+sin la cifra pegada al lado. Los números reales (267 unidades, +10.000
+productos, etc.) migraron a `.franja`, la barra de cifras — ahí sí siguen
+siendo reales, sólo que ya no atados a un nombre de rubro en el texto. Al
+sumar un frente nuevo, nombralo por el patrón que resuelve, no por el cliente
+que lo pidió — así sumar uno mañana no requiere reescribir la mitad de la
+página ni el copy del hero/`#idea`/`#motor`.
 
 ## Verificar antes de entregar
 
