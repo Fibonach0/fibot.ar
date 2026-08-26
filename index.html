@@ -58,6 +58,7 @@
     --bronce:#E0A44C;
     --bronce-h:#eebe7f;
     --verde:#6FDCAE;
+    --lima:#D9F24E;
 
     --sans:'Space Grotesk',system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
     --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
@@ -293,17 +294,38 @@
     margin:16px 0 0;max-width:none}
 
   /* ── cómo se extiende ─────────────────────────────────── */
-  .extiende-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:30px}
-  .extiende-item{background:#ffffff05;border:1px solid var(--linea-2);border-radius:10px;
-    padding:26px 28px}
-  .extiende-item .q{font-family:var(--sans);color:var(--tenue);font-size:1.05rem;margin:0}
-  .extiende-item .r{font-family:var(--sans);font-weight:700;color:var(--hueso);
-    font-size:1.3rem;letter-spacing:-.02em;margin:10px 0 0}
-  .extiende-final{grid-column:1 / -1;background:var(--bronce);border-color:var(--bronce);
-    padding:30px 32px}
-  .extiende-final .q{color:#00000099}
-  .extiende-final .r{color:var(--tinta);font-size:1.45rem}
-  @media (max-width:640px){.extiende-grid{grid-template-columns:1fr}}
+  .mock-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:32px;align-items:start}
+  @media (max-width:860px){.mock-grid{grid-template-columns:1fr}}
+  .mock-card{display:flex;flex-direction:column;gap:14px}
+  .mock-head h3{font-family:var(--sans);font-weight:700;font-size:1.1rem;margin:0;letter-spacing:-.02em}
+  .mock-head span{font-family:var(--sans);font-size:.82rem;color:var(--tenue);display:block;margin-top:2px}
+
+  .mock-chat{background:#000;border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:10px}
+  .mc-b{max-width:88%;padding:10px 14px;border-radius:11px;font-family:var(--sans);font-size:.9rem;line-height:1.4}
+  .mc-b.in{background:#232323;color:var(--hueso);align-self:flex-start;border-bottom-left-radius:3px}
+  .mc-b.out{background:var(--lima);color:#111;font-weight:700;align-self:flex-end;border-bottom-right-radius:3px}
+  .mc-b time{display:block;font-family:var(--mono);font-size:.66rem;margin-top:5px;opacity:.6}
+  .mc-b.out time{color:#111;opacity:.65}
+
+  .mock-mail{background:var(--hueso);color:#161310;border-radius:12px;overflow:hidden}
+  .mm-asunto{margin:0;padding:18px 20px 6px;font-family:var(--sans);font-weight:700;font-size:1.02rem;line-height:1.3}
+  .mm-asunto span{display:block;font-family:var(--mono);font-size:.6rem;letter-spacing:.18em;
+    color:#8a8074;font-weight:400;margin-bottom:8px}
+  .mm-meta{margin:0;padding:0 20px 14px;font-family:var(--sans);font-size:.78rem;color:#8a8074;
+    border-bottom:1px solid #00000014}
+  .mm-cuerpo{margin:0;padding:16px 20px;font-family:var(--sans);font-size:.86rem;line-height:1.55;color:#3a352e}
+  .mm-reply{background:var(--lima);padding:16px 20px;display:flex;flex-direction:column;gap:4px}
+  .mm-reply span{font-family:var(--mono);font-size:.6rem;letter-spacing:.18em;color:#00000090}
+  .mm-reply b{font-family:var(--sans);font-weight:700;color:#111;font-size:1.02rem}
+
+  .mock-notes{background:#050505;border-radius:12px;padding:26px 18px;display:flex;
+    gap:14px;flex-wrap:wrap;justify-content:center;align-content:center;min-height:168px}
+  .nota{width:118px;height:118px;background:#e7e1d2;color:#1c1a16;font-family:var(--sans);
+    font-size:.84rem;font-weight:500;line-height:1.3;padding:14px;box-shadow:0 6px 16px #00000055}
+  .nota:nth-child(1){transform:rotate(-4deg)}
+  .nota:nth-child(2){transform:rotate(3deg)}
+  .nota:nth-child(3){transform:rotate(-3deg)}
+  .nota.lima{background:var(--lima);font-weight:700;transform:rotate(4deg)}
 </style>
 </head>
 <body>
@@ -671,26 +693,41 @@
   <section id="extiende" class="alt">
     <div class="m">
       <span class="mono rev-c" style="display:block">Cómo se extiende</span>
-      <div class="extiende-grid">
-        <div class="extiende-item rev-c">
-          <p class="q">¿Cargar datos?</p>
-          <p class="r">Que lo haga FiBOT.</p>
+      <div class="mock-grid">
+        <div class="mock-card rev-c">
+          <div class="mock-head">
+            <h3>Chat de trabajo</h3>
+            <span>la conversación real, tal como pasa</span>
+          </div>
+          <div class="mock-chat">
+            <div class="mc-b in">¿Alguien cargó los movimientos de ayer?<time>09:12</time></div>
+            <div class="mc-b in">Y el reporte para la reunión, ¿lo armamos a mano otra vez?<time>09:13</time></div>
+            <div class="mc-b out">No. Que lo haga FiBOT.<time>09:13 ✓✓</time></div>
+          </div>
         </div>
-        <div class="extiende-item rev-c">
-          <p class="q">¿Generar reportes?</p>
-          <p class="r">Que lo haga FiBOT.</p>
+        <div class="mock-card rev-c">
+          <div class="mock-head">
+            <h3>Cadena de mails</h3>
+            <span>el reenvío eterno que termina en una línea</span>
+          </div>
+          <div class="mock-mail">
+            <p class="mm-asunto"><span>Asunto</span>RE: RE: RE: ¿esto lo hacemos manualmente?</p>
+            <p class="mm-meta">De: Operaciones · 3 archivos adjuntos</p>
+            <p class="mm-cuerpo">Te reenvío la planilla actualizada. Ojo que la versión de ayer quedó vieja, cargá sobre esta. Cuando termines avisale al equipo así lo ven antes de la reunión.</p>
+            <div class="mm-reply"><span>Responder a todos</span><b>No. Que lo haga FiBOT.</b></div>
+          </div>
         </div>
-        <div class="extiende-item rev-c">
-          <p class="q">¿Avisar al equipo?</p>
-          <p class="r">Que lo haga FiBOT.</p>
-        </div>
-        <div class="extiende-item rev-c">
-          <p class="q">¿Controlar procesos?</p>
-          <p class="r">Que lo haga FiBOT.</p>
-        </div>
-        <div class="extiende-item extiende-final rev-c">
-          <p class="q">¿Esto lo hacemos manualmente?</p>
-          <p class="r">No. Que lo haga FiBOT.</p>
+        <div class="mock-card rev-c">
+          <div class="mock-head">
+            <h3>Notas pegadas</h3>
+            <span>el recordatorio que nadie debería necesitar</span>
+          </div>
+          <div class="mock-notes">
+            <div class="nota">Cargar los datos de ayer</div>
+            <div class="nota">Armar el reporte del lunes</div>
+            <div class="nota">Avisarle al equipo</div>
+            <div class="nota lima">Que lo haga FiBOT.</div>
+          </div>
         </div>
       </div>
     </div>
