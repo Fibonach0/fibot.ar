@@ -58,7 +58,6 @@
     --bronce:#E0A44C;
     --bronce-h:#eebe7f;
     --verde:#6FDCAE;
-    --lima:#D9F24E;
 
     --sans:'Space Grotesk',system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
     --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
@@ -303,9 +302,9 @@
   .mock-chat{background:#000;border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:10px}
   .mc-b{max-width:88%;padding:10px 14px;border-radius:11px;font-family:var(--sans);font-size:.9rem;line-height:1.4}
   .mc-b.in{background:#232323;color:var(--hueso);align-self:flex-start;border-bottom-left-radius:3px}
-  .mc-b.out{background:var(--lima);color:#111;font-weight:700;align-self:flex-end;border-bottom-right-radius:3px}
+  .mc-b.out{background:var(--bronce);color:var(--tinta);font-weight:700;align-self:flex-end;border-bottom-right-radius:3px}
   .mc-b time{display:block;font-family:var(--mono);font-size:.66rem;margin-top:5px;opacity:.6}
-  .mc-b.out time{color:#111;opacity:.65}
+  .mc-b.out time{color:var(--tinta);opacity:.65}
 
   .mock-mail{background:var(--hueso);color:#161310;border-radius:12px;overflow:hidden}
   .mm-asunto{margin:0;padding:18px 20px 6px;font-family:var(--sans);font-weight:700;font-size:1.02rem;line-height:1.3}
@@ -314,9 +313,9 @@
   .mm-meta{margin:0;padding:0 20px 14px;font-family:var(--sans);font-size:.78rem;color:#8a8074;
     border-bottom:1px solid #00000014}
   .mm-cuerpo{margin:0;padding:16px 20px;font-family:var(--sans);font-size:.86rem;line-height:1.55;color:#3a352e}
-  .mm-reply{background:var(--lima);padding:16px 20px;display:flex;flex-direction:column;gap:4px}
+  .mm-reply{background:var(--bronce);padding:16px 20px;display:flex;flex-direction:column;gap:4px}
   .mm-reply span{font-family:var(--mono);font-size:.6rem;letter-spacing:.18em;color:#00000090}
-  .mm-reply b{font-family:var(--sans);font-weight:700;color:#111;font-size:1.02rem}
+  .mm-reply b{font-family:var(--sans);font-weight:700;color:var(--tinta);font-size:1.02rem}
 
   .mock-notes{background:#050505;border-radius:12px;padding:26px 18px;display:flex;
     gap:14px;flex-wrap:wrap;justify-content:center;align-content:center;min-height:168px}
@@ -325,7 +324,7 @@
   .nota:nth-child(1){transform:rotate(-4deg)}
   .nota:nth-child(2){transform:rotate(3deg)}
   .nota:nth-child(3){transform:rotate(-3deg)}
-  .nota.lima{background:var(--lima);font-weight:700;transform:rotate(4deg)}
+  .nota.bronce{background:var(--bronce);color:var(--tinta);font-weight:700;transform:rotate(4deg)}
 </style>
 </head>
 <body>
@@ -726,7 +725,7 @@
             <div class="nota">Cargar los datos de ayer</div>
             <div class="nota">Armar el reporte del lunes</div>
             <div class="nota">Avisarle al equipo</div>
-            <div class="nota lima">Que lo haga FiBOT.</div>
+            <div class="nota bronce">Que lo haga FiBOT.</div>
           </div>
         </div>
       </div>
