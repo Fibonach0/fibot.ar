@@ -5,7 +5,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Qué es
 
 La **home comercial de FiBOT** — una página estática servida por GitHub Pages en
-**https://www.fibot.ar**. Vende automatización por WhatsApp a PyMEs argentinas,
+**https://fibot.ar** (dominio apex, sin `www` — ver nota de DNS más abajo).
+Vende automatización por WhatsApp a empresas argentinas,
 con cinco verticales concretas hoy (flotas, farmacia, encomiendas, negocios/
 kiosco, vencimientos) listadas en `#frentes`. Reemplaza además a los PDF de
 venta: `#costo` porta la fórmula de costo-de-no-actuar y `#tecnico` el bloque
@@ -124,9 +125,14 @@ input.
 
 - **Nunca commitear directo a `main`**: rama + PR. Pages publica desde `main`,
   así que un push directo es un deploy a producción sin revisión.
-- `CNAME` va en la raíz y **en mayúsculas**, o Pages lo ignora.
-- En Cloudflare el registro va **sin proxy** hasta que GitHub emita el
-  certificado.
+- `CNAME` va en la raíz y **en mayúsculas**, o Pages lo ignora. Contiene
+  `fibot.ar` (apex, sin `www` — cambio de ago 2026, antes era `www.fibot.ar`).
+- El apex (`fibot.ar`) necesita en Cloudflare **registros A** a las cuatro IP
+  de GitHub Pages (`185.199.108.153`, `.109.153`, `.110.153`, `.111.153`) —
+  un CNAME no es válido en la raíz de una zona DNS. `www` puede seguir como
+  CNAME a `fibonach0.github.io`, o borrarse: GitHub redirige automáticamente
+  al dominio que figure en `CNAME` (hoy el apex). Todo **sin proxy** (nube
+  gris) hasta que GitHub emita el certificado del apex.
 - El teléfono (`+54 9 11 2852-4957`) aparece en el JSON-LD, en la nav, en el
   cierre y en el footer: si cambia, hay que buscarlo en todos lados.
 - Piezas tomadas de [HyperUI](https://github.com/markmead/hyperui) y
