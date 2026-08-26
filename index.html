@@ -9,6 +9,7 @@
 <meta name="theme-color" content="#0c0b0a">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="shortcut icon" href="/favicon.ico">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -104,6 +105,9 @@
   .marca svg{width:36px;height:22px;flex:none;display:block}
   .marca span{font-family:var(--sans);font-weight:700;font-size:1.06rem;letter-spacing:-.03em}
   .marca span b{font-weight:400}
+  .marca-slogan{font-family:var(--sans);font-size:.82rem;color:var(--tenue);padding-left:14px;
+    margin-left:2px;border-left:1px solid var(--linea-2);white-space:nowrap}
+  @media (max-width:1080px){.marca-slogan{display:none}}
   .nav-desk{margin-left:auto;display:flex;align-items:center;gap:8px}
   .nav-desk a{font-family:var(--sans);font-size:.88rem;color:var(--tenue);padding:9px 12px;
     border-radius:2px;transition:color .18s,background .18s}
@@ -285,6 +289,21 @@
   .pie-legal{margin-top:40px;padding-top:22px;border-top:1px solid var(--linea);display:flex;gap:18px;
     flex-wrap:wrap;font-family:var(--mono);font-size:.7rem;letter-spacing:.08em;color:var(--tenue-2)}
   .pie-legal span:last-child{margin-left:auto}
+  .pie-slogan{font-family:var(--sans);font-weight:700;color:var(--hueso);font-size:1.02rem;
+    margin:16px 0 0;max-width:none}
+
+  /* ── cómo se extiende ─────────────────────────────────── */
+  .extiende-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:30px}
+  .extiende-item{background:#ffffff05;border:1px solid var(--linea-2);border-radius:10px;
+    padding:26px 28px}
+  .extiende-item .q{font-family:var(--sans);color:var(--tenue);font-size:1.05rem;margin:0}
+  .extiende-item .r{font-family:var(--sans);font-weight:700;color:var(--hueso);
+    font-size:1.3rem;letter-spacing:-.02em;margin:10px 0 0}
+  .extiende-final{grid-column:1 / -1;background:var(--bronce);border-color:var(--bronce);
+    padding:30px 32px}
+  .extiende-final .q{color:#00000099}
+  .extiende-final .r{color:var(--tinta);font-size:1.45rem}
+  @media (max-width:640px){.extiende-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -313,6 +332,7 @@
         </svg>
         <span>Fi<b>BOT</b></span>
       </a>
+      <span class="marca-slogan">Si es repetitivo, que lo haga FiBOT.</span>
       <nav class="nav-desk">
         <a href="#idea">La idea</a>
         <a href="#motor">El motor</a>
@@ -648,6 +668,34 @@
     </div>
   </section>
 
+  <section id="extiende" class="alt">
+    <div class="m">
+      <span class="mono rev-c" style="display:block">Cómo se extiende</span>
+      <div class="extiende-grid">
+        <div class="extiende-item rev-c">
+          <p class="q">¿Cargar datos?</p>
+          <p class="r">Que lo haga FiBOT.</p>
+        </div>
+        <div class="extiende-item rev-c">
+          <p class="q">¿Generar reportes?</p>
+          <p class="r">Que lo haga FiBOT.</p>
+        </div>
+        <div class="extiende-item rev-c">
+          <p class="q">¿Avisar al equipo?</p>
+          <p class="r">Que lo haga FiBOT.</p>
+        </div>
+        <div class="extiende-item rev-c">
+          <p class="q">¿Controlar procesos?</p>
+          <p class="r">Que lo haga FiBOT.</p>
+        </div>
+        <div class="extiende-item extiende-final rev-c">
+          <p class="q">¿Esto lo hacemos manualmente?</p>
+          <p class="r">No. Que lo haga FiBOT.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <section class="cierre">
     <div class="m">
       <div class="rev">
@@ -688,6 +736,7 @@
             <text x="400" y="400" text-anchor="middle" dominant-baseline="central" font-family="Space Grotesk, sans-serif" font-weight="700" font-size="440" letter-spacing="-22" fill="#ece6db">Fi</text>
             <text x="1560" y="410" dominant-baseline="central" font-family="Space Grotesk, sans-serif" font-size="330" letter-spacing="-10" fill="#ece6db"><tspan font-weight="400">Fi</tspan><tspan font-weight="700">BOT</tspan></text>
           </svg>
+          <p class="pie-slogan">Si es repetitivo, que lo haga FiBOT.</p>
           <p>Automatización por WhatsApp para empresas que ya tienen los datos y no los están mirando.</p>
         </div>
         <div>
