@@ -85,7 +85,7 @@ un navegador de verdad antes de decir que está lista:
 python3 -m http.server 8000
 ```
 
-Y chequear: que las cuatro cifras de `.franja` terminen en 250+ / 390.000+ /
+Y chequear: que las cuatro cifras de `.franja` terminen en 300+ / 390.000+ /
 10.000+ / 90+, que el chat del hero corra su secuencia completa sin quedarse a
 mitad de un mensaje, que no haya scroll horizontal (los `.fondo-luz` decorativos
 sangran fuera del viewport a propósito — si reaparece scroll horizontal,
