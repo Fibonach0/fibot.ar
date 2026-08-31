@@ -1,0 +1,1097 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FiBOT — If it's repetitive, let FiBOT do it.</title>
+<meta name="description" content="FiBOT connects the systems your company already uses and answers over WhatsApp the questions your team asks every day.">
+<link rel="canonical" href="https://fibot.ar/en/">
+<link rel="alternate" hreflang="es" href="https://fibot.ar/">
+<link rel="alternate" hreflang="en" href="https://fibot.ar/en/">
+<link rel="alternate" hreflang="pt" href="https://fibot.ar/pt/">
+<link rel="alternate" hreflang="fr" href="https://fibot.ar/fr/">
+<link rel="alternate" hreflang="x-default" href="https://fibot.ar/">
+<meta name="theme-color" content="#0c0b0a">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="shortcut icon" href="/favicon.ico">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<meta property="og:type" content="website">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="FiBOT">
+<meta property="og:url" content="https://fibot.ar/en/">
+<meta property="og:title" content="FiBOT — If it's repetitive, let FiBOT do it.">
+<meta property="og:description" content="FiBOT connects the systems your company already uses and answers over WhatsApp the questions your team asks every day.">
+<meta property="og:image" content="https://fibot.ar/assets/og-fibot.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ProfessionalService",
+  "name": "FiBOT",
+  "url": "https://fibot.ar/en/",
+  "description": "FiBOT connects the systems your company already uses and answers over WhatsApp the questions your team asks every day.",
+  "telephone": "+54-9-11-2852-4957",
+  "email": "Ignacio@fibot.ar",
+  "areaServed": { "@type": "Country", "name": "Argentina" },
+  "parentOrganization": {
+    "@type": "Organization",
+    "name": "AntuñA",
+    "url": "https://www.xn--antua-rta.com.ar/"
+  },
+  "founder": { "@type": "Person", "name": "Ignacio Antuña" }
+}
+</script>
+
+<style>
+  :root{
+    --tinta:#0c0b0a;
+    --tinta-alt:#0f0e0c;
+    --hueso:#ece6db;
+    --tenue:#9a9082;
+    --tenue-2:#57514a;
+    --linea:#221f1b;
+    --linea-2:#2a2622;
+    --bronce:#E0A44C;
+    --bronce-h:#eebe7f;
+    --verde:#6FDCAE;
+
+    --sans:'Space Grotesk',system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    --serif:Georgia,"Iowan Old Style","Palatino Linotype",serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--tinta);color:var(--hueso);font-family:var(--serif);
+    font-size:17px;line-height:1.68;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  a{color:var(--bronce);text-decoration:none}
+  a:hover{color:var(--hueso)}
+  ::selection{background:var(--bronce);color:var(--tinta)}
+  :focus-visible{outline:2px solid var(--bronce);outline-offset:3px}
+
+  .m{max-width:1180px;margin:0 auto;padding:0 28px}
+
+  @keyframes dibujo{to{stroke-dashoffset:0}}
+  @keyframes aparecer{from{opacity:0;transform:scale(.55)}to{opacity:1;transform:scale(1)}}
+  @keyframes subir{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+  @keyframes pulso{0%,100%{opacity:.22}50%{opacity:1}}
+  @keyframes caret{0%,49%{opacity:1}50%,100%{opacity:0}}
+  @keyframes entra{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:none}}
+  @keyframes entraCorto{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+  @keyframes crece{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+  @keyframes destello{0%{opacity:0}22%{opacity:.85}70%{opacity:.5}100%{opacity:0}}
+  .rev{animation:entra .7s cubic-bezier(.22,.61,.36,1) both;animation-timeline:view();animation-range:entry 0% cover 26%}
+  .rev-c{animation:entraCorto .6s cubic-bezier(.22,.61,.36,1) both;animation-timeline:view();animation-range:entry 0% cover 22%}
+  .regla{animation:crece .9s cubic-bezier(.22,.61,.36,1) both;animation-timeline:view();animation-range:entry 0% cover 20%;transform-origin:left}
+  @media (prefers-reduced-motion:reduce){
+    .rev,.rev-c,.regla{animation:none;opacity:1;transform:none}
+  }
+
+  .fondo-grilla{position:absolute;inset:0;pointer-events:none;
+    background-image:linear-gradient(#ffffff08 1px,transparent 1px),linear-gradient(90deg,#ffffff08 1px,transparent 1px);
+    background-size:88px 88px;mask-image:linear-gradient(#000,#000 46%,transparent 92%);z-index:0}
+  .fondo-luz{position:absolute;border-radius:50%;filter:blur(20px);pointer-events:none}
+
+  .destello{position:fixed;z-index:5;pointer-events:none;font-family:var(--mono);
+    letter-spacing:.1em;color:rgba(224,164,76,.5);white-space:nowrap;animation:destello .17s linear both}
+
+  /* ── banner de idioma ─────────────────────────────────── */
+  .lang-banner{background:var(--bronce);color:var(--tinta);font-family:var(--sans);font-size:.86rem;
+    display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;
+    padding:10px 20px;text-align:center;position:relative;z-index:31}
+  .lang-banner a{color:var(--tinta);font-weight:700;text-decoration:underline}
+  .lang-banner a:hover{color:var(--tinta);opacity:.75}
+  .lang-banner button{font-family:var(--sans);font-size:.8rem;color:var(--tinta);background:transparent;
+    border:1px solid var(--tinta);border-radius:2px;padding:4px 10px;cursor:pointer;opacity:.85}
+  .lang-banner button:hover{opacity:1}
+
+  /* ── selector de idioma (footer) ──────────────────────── */
+  .pie-idiomas{display:flex;flex-wrap:wrap;gap:4px 12px}
+  .pie-idiomas a{display:inline;padding:0}
+  .pie-idiomas a[aria-current]{color:var(--bronce)}
+
+  /* ── nav ───────────────────────────────────────────── */
+  .top{position:sticky;top:0;z-index:30;background:rgba(12,11,10,.82);
+    backdrop-filter:blur(14px) saturate(1.2);border-bottom:1px solid var(--linea)}
+  .top .m{height:68px;display:flex;align-items:center;gap:24px}
+  .marca{display:flex;align-items:center;gap:12px;text-decoration:none;color:var(--hueso)}
+  .marca svg{width:36px;height:22px;flex:none;display:block}
+  .marca span{font-family:var(--sans);font-weight:700;font-size:1.06rem;letter-spacing:-.03em}
+  .marca span b{font-weight:400}
+  .marca-slogan{font-family:var(--sans);font-size:.82rem;color:var(--tenue);padding-left:14px;
+    margin-left:2px;border-left:1px solid var(--linea-2);white-space:nowrap}
+  @media (max-width:1080px){.marca-slogan{display:none}}
+  .nav-desk{margin-left:auto;display:flex;align-items:center;gap:8px}
+  .nav-desk a{font-family:var(--sans);font-size:.88rem;color:var(--tenue);padding:9px 12px;
+    border-radius:2px;transition:color .18s,background .18s}
+  .nav-desk a:hover{color:var(--hueso);background:#ffffff0d}
+  @media (max-width:640px){
+    .marca span{display:none}
+    .nav-desk{gap:2px}
+    .nav-desk a{padding:9px 8px;font-size:.82rem}
+  }
+  .btn{font-family:var(--sans);font-weight:500;color:var(--tinta);background:var(--bronce);
+    padding:10px 18px;border-radius:2px;transition:transform .18s,box-shadow .18s,background .18s;
+    display:inline-block;border:none;cursor:pointer}
+  .btn:hover{background:var(--bronce-h);color:var(--tinta);transform:translateY(-1px);
+    box-shadow:0 8px 22px rgba(224,164,76,.28)}
+  .nav-desk .btn{margin-left:10px;font-size:.88rem;padding:10px 18px}
+  .btn-grande{font-size:1.02rem;padding:16px 30px}
+  .btn-grande:hover{transform:translateY(-2px);box-shadow:0 14px 34px rgba(224,164,76,.3)}
+  .btn-ghost{font-family:var(--sans);font-size:.95rem;color:var(--hueso);padding:15px 22px;
+    border:1px solid var(--linea-2);border-radius:2px;transition:border-color .18s,background .18s}
+  .btn-ghost:hover{border-color:var(--bronce);background:#ffffff08}
+
+  /* ── hero ──────────────────────────────────────────── */
+  header.portada{position:relative;padding:clamp(44px,7vw,96px) 0 clamp(40px,5vw,64px)}
+  .portada .grid{display:grid;gap:clamp(34px,5vw,68px);grid-template-columns:repeat(auto-fit,minmax(360px,1fr));align-items:start}
+  .eyebrow-punto{display:flex;align-items:center;gap:12px;margin-bottom:clamp(22px,2.6vw,32px)}
+  .eyebrow-punto i{width:7px;height:7px;background:var(--bronce);border-radius:50%;
+    box-shadow:0 0 0 4px rgba(224,164,76,.18);animation:pulso 2.4s infinite}
+  .mono{font-family:var(--mono);font-size:.7rem;letter-spacing:.22em;text-transform:uppercase;color:var(--bronce)}
+  .simbolo-hero{width:clamp(112px,12vw,156px);height:auto;display:block;margin-bottom:clamp(24px,3vw,36px)}
+  h1.display{font-family:var(--sans);font-weight:700;letter-spacing:-.05em;line-height:1.08;
+    text-wrap:balance;font-size:clamp(3rem,7.8vw,5.8rem);margin:0;max-width:14ch}
+  h1.display em{font-style:normal;color:var(--bronce)}
+  .lead{font-size:clamp(1.14rem,1.7vw,1.38rem);max-width:37ch;line-height:1.52;margin:clamp(24px,2.8vw,34px) 0 0}
+  .nota-margen{font-family:var(--sans);font-size:.87rem;color:var(--tenue);border-left:2px solid var(--bronce);
+    padding-left:16px;margin:30px 0 0;max-width:33ch;line-height:1.55}
+  .cta-row{display:flex;flex-wrap:wrap;gap:14px;align-items:center;margin-top:36px}
+
+  /* ── whatsapp mock ─────────────────────────────────── */
+  .wa-col{padding-top:clamp(0px,4vw,72px)}
+  .wa{background:#0b141a;border-radius:10px;overflow:hidden;
+    box-shadow:0 30px 80px rgba(0,0,0,.6),0 0 0 1px var(--linea);max-width:430px}
+  .wa-top{background:#202c33;padding:11px 14px;display:flex;align-items:center;gap:11px}
+  .wa-av{width:38px;height:38px;flex:none;border-radius:50%;overflow:hidden;display:grid;place-items:center}
+  .wa-top b{color:#e9edef;font-family:var(--sans);font-size:.95rem;font-weight:500;display:block;line-height:1.25}
+  .wa-top small{color:var(--bronce);font-family:var(--sans);font-size:.72rem}
+  .wa-rubro{font-family:var(--mono);font-size:.62rem;color:#8696a0;letter-spacing:.1em;margin-left:auto}
+  .wa-cuerpo{padding:16px 12px 12px;display:flex;flex-direction:column;gap:7px;min-height:368px;
+    background-color:#0b141a;
+    background-image:radial-gradient(circle at 20% 30%,rgba(255,255,255,.022) 1px,transparent 1px),
+      radial-gradient(circle at 70% 65%,rgba(255,255,255,.022) 1px,transparent 1px);
+    background-size:38px 38px,52px 52px}
+  .b{max-width:84%;padding:7px 10px 6px;border-radius:9px;font-family:var(--sans);
+    font-size:.89rem;line-height:1.45;animation:subir .32s ease both}
+  .b.out{align-self:flex-end;background:#005c4b;color:#e9edef;border-top-right-radius:2px}
+  .b.in{align-self:flex-start;background:#202c33;color:#e9edef;border-top-left-radius:2px}
+  .b.aviso{border-left:3px solid var(--bronce)}
+  .b .t{font-size:.62rem;color:#ffffff8c;float:right;margin:7px 0 -2px 8px}
+  .b strong{font-weight:700}
+  .b .n{font-variant-numeric:tabular-nums}
+  .escribiendo{align-self:flex-start;padding:12px 14px;border-radius:9px;border-top-left-radius:2px;
+    background:#202c33;display:flex;gap:5px;align-items:center}
+  .escribiendo i{width:6px;height:6px;border-radius:50%;background:#8696a0;animation:pulso 1.1s infinite}
+  .escribiendo i:nth-child(2){animation-delay:.18s}
+  .escribiendo i:nth-child(3){animation-delay:.36s}
+  .wa-input{margin-top:auto;display:flex;align-items:center;gap:9px;background:#202c33;
+    border-radius:20px;padding:10px 14px}
+  .wa-input span{font-family:var(--sans);font-size:.85rem;color:#8696a0;flex:1}
+  .wa-input .caret{display:inline-block;width:1.5px;height:.95em;background:var(--bronce);
+    vertical-align:-2px;margin-left:1px;animation:caret 1.1s steps(1) infinite}
+  .wa-nota{font-family:var(--mono);font-size:.63rem;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--tenue-2);margin:16px 0 0}
+
+  /* ── mensaje de voz (mock de audio en el chat) ────────── */
+  .voice{display:flex;align-items:center;gap:9px;padding:2px 0}
+  .voice .play{width:28px;height:28px;border-radius:50%;background:#ffffff1f;flex:none;position:relative;
+    border:none;padding:0;cursor:pointer;transition:background .18s}
+  .voice .play:hover{background:#ffffff30}
+  .voice .play::after{content:'';position:absolute;top:50%;left:53%;transform:translate(-50%,-50%);
+    border-style:solid;border-width:6px 0 6px 9px;border-color:transparent transparent transparent #e9edef}
+  .voice .play.jugando::after{border-width:0;width:3px;height:11px;left:50%;background:#e9edef;
+    box-shadow:5px 0 0 #e9edef}
+  .voice .onda{display:flex;align-items:center;gap:2.5px;height:22px;flex:1}
+  .voice .onda i{display:block;width:2.5px;border-radius:2px;background:#ffffff55;transition:background .2s}
+  .voice .onda i.hecha{background:#ffffffe8}
+  .voice .dur{font-family:var(--mono);font-size:.68rem;color:#ffffffa0;flex:none}
+  .transcripcion{font-style:italic;font-size:.82rem;color:#ffffffab;line-height:1.4;margin:7px 0 0}
+
+  /* ── franja de cifras ──────────────────────────────── */
+  .franja{position:relative;border-top:1px solid var(--linea);border-bottom:1px solid var(--linea);background:var(--tinta-alt)}
+  .franja .m{padding:clamp(34px,4vw,52px) 28px;display:grid;gap:18px;grid-template-columns:repeat(auto-fit,minmax(228px,1fr))}
+  .cif{display:flex;flex-direction:column;gap:10px;padding:24px 22px 20px;border:1px solid var(--linea-2);
+    border-radius:8px;background:#ffffff05;transition:border-color .2s,background .2s}
+  .cif:hover{border-color:var(--bronce);background:#ffffff0a}
+  .cif .v{font-family:var(--sans);font-weight:700;font-size:clamp(2rem,3.6vw,2.9rem);letter-spacing:-.05em;
+    color:var(--bronce);line-height:1;font-variant-numeric:tabular-nums}
+  .cif .k{font-family:var(--sans);font-size:.9rem;color:#c4bcaf;line-height:1.45}
+  .cif .f{font-family:var(--mono);font-size:.63rem;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--tenue-2);margin-top:auto;padding-top:6px}
+
+  /* ── secciones ─────────────────────────────────────── */
+  section{position:relative;padding:clamp(62px,7.5vw,104px) 0}
+  section.alt{background:var(--tinta-alt);border-top:1px solid var(--linea);border-bottom:1px solid var(--linea)}
+  .titulo{font-family:var(--sans);font-weight:700;letter-spacing:-.05em;line-height:.96;
+    font-size:clamp(2.1rem,4.6vw,3.4rem);margin:18px 0 0;text-wrap:balance}
+  .titulo em{font-style:normal;color:var(--bronce)}
+  .bajada{max-width:52ch;margin:22px 0 0;color:var(--tenue)}
+  .bajada strong{color:var(--hueso);font-weight:400;border-bottom:1px solid var(--bronce)}
+  .dos{display:grid;gap:clamp(26px,4vw,64px);margin-top:38px;grid-template-columns:repeat(auto-fit,minmax(320px,1fr))}
+  .dos p{max-width:46ch;margin:0}
+  .dos p+p{margin-top:1em}
+
+  /* ── motor: espiral ────────────────────────────────── */
+  .motor-grid{margin-top:clamp(36px,4.5vw,60px);display:grid;gap:clamp(28px,4vw,56px);
+    grid-template-columns:repeat(auto-fit,minmax(330px,1fr));align-items:center}
+  .espiral-nota{font-family:var(--mono);font-size:.63rem;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--tenue-2);margin:16px 0 0}
+  .motor-pasos{display:flex;flex-direction:column;gap:0}
+  .motor-paso{display:grid;grid-template-columns:2.6em 1fr;gap:14px;padding:16px 0;
+    border-top:1px solid var(--linea);transition:background .18s}
+  .motor-paso:hover{background:#ffffff08}
+  .motor-paso:last-child{border-bottom:1px solid var(--linea)}
+  .motor-paso.final{background:#ffffff05}
+  .motor-paso .num{font-family:var(--mono);font-size:.72rem;color:var(--bronce);padding-top:4px}
+  .motor-paso h3{font-family:var(--sans);font-weight:500;font-size:1.02rem;margin:0 0 3px}
+  .motor-paso.final h3{color:var(--bronce)}
+  .motor-paso p{margin:0;color:var(--tenue);font-size:.95rem;max-width:44ch}
+
+  /* ── frentes ───────────────────────────────────────── */
+  .lista{border-top:1px solid var(--linea);margin-top:30px}
+  .item{border-bottom:1px solid var(--linea);padding:28px 0;display:grid;gap:10px 34px;
+    grid-template-columns:minmax(0,10.5em) 1fr;transition:padding-left .2s}
+  .item:hover{padding-left:12px}
+  @media (max-width:560px){
+    .item{grid-template-columns:1fr;gap:10px}
+  }
+  .item h3{font-family:var(--sans);font-weight:700;letter-spacing:-.03em;font-size:clamp(1.4rem,2.5vw,2rem);margin:0}
+  .item.tenue h3{font-family:var(--serif);font-weight:400;color:var(--tenue)}
+  .item .d{color:var(--tenue);max-width:54ch;margin:0}
+  .item .est{font-family:var(--mono);font-size:.63rem;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--tenue-2);display:block;margin-top:10px}
+
+  /* ── la cuenta ─────────────────────────────────────── */
+  .formula{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:34px}
+  .termino{background:#ffffff05;border:1px solid var(--linea-2);border-radius:8px;padding:12px 16px;
+    font-family:var(--sans);font-size:.92rem;text-align:center;line-height:1.3}
+  .termino b{display:block;font-size:.74rem;color:var(--tenue);font-weight:400;margin-top:3px}
+  .termino.destacado{border-color:var(--bronce);background:#e0a44c14}
+  .op{font-family:var(--mono);font-size:1.3rem;color:var(--bronce);font-weight:700}
+  @media (max-width:640px){
+    .formula{flex-direction:column;align-items:center;gap:0}
+    .formula .termino{width:86%;max-width:340px}
+    .formula .op{align-self:center;width:34px;height:34px;line-height:32px;text-align:center;
+      background:var(--tinta-alt);border:1px solid var(--linea-2);border-radius:50%;
+      font-size:1.05rem;margin:6px 0}
+  }
+  .ejemplo{margin-top:28px;display:flex;align-items:baseline;gap:20px;flex-wrap:wrap}
+  .ejemplo .cuenta{font-family:var(--mono);font-size:.95rem;color:var(--tenue)}
+  .ejemplo .num{font-family:var(--sans);font-size:3rem;font-weight:700;color:var(--bronce);
+    letter-spacing:-.02em;line-height:1}
+  .ejemplo .detalle{font-size:.92rem;color:var(--tenue);max-width:26ch;line-height:1.4}
+  .etiqueta-chica{font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--tenue-2);margin-top:20px}
+  .remate{font-size:1.1rem;font-weight:500;font-family:var(--sans);margin-top:22px;max-width:64ch;line-height:1.4}
+  .remate b{font-weight:700;color:var(--bronce)}
+
+  /* ── arranca ───────────────────────────────────────── */
+  .pasos{margin-top:46px;display:grid;gap:34px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+  .paso{border-top:2px solid var(--linea-2);padding-top:20px;max-width:44ch}
+  .paso.actual{border-top-color:var(--bronce)}
+  .paso .cuando{font-family:var(--mono);font-size:.66rem;letter-spacing:.18em;text-transform:uppercase;
+    color:var(--tenue);display:block;margin-bottom:10px}
+  .paso.actual .cuando{color:var(--bronce)}
+  .paso h3{font-family:var(--sans);font-weight:700;letter-spacing:-.025em;font-size:1.26rem;margin:0 0 8px}
+  .paso p{margin:0;color:var(--tenue)}
+
+  /* ── faq ───────────────────────────────────────────── */
+  .faq{margin-top:42px;border-top:1px solid var(--linea)}
+  .faq details{border-bottom:1px solid var(--linea)}
+  .faq summary{cursor:pointer;padding:22px 0;font-family:var(--sans);font-weight:500;font-size:1.05rem;
+    list-style:none;transition:color .18s}
+  .faq summary::-webkit-details-marker{display:none}
+  .faq summary:hover{color:var(--bronce)}
+  .faq p{margin:0 0 24px;color:var(--tenue);max-width:62ch}
+
+  /* ── cierre ────────────────────────────────────────── */
+  .cierre{background:linear-gradient(180deg,var(--tinta-alt),#131110);border-top:1px solid var(--linea);
+    padding:clamp(70px,8.5vw,124px) 0}
+  .cierre .m{display:grid;gap:clamp(34px,5vw,74px);grid-template-columns:repeat(auto-fit,minmax(300px,1fr));align-items:center}
+  .cierre .titulo{margin:0;max-width:20ch}
+  .cierre .simbolo-fondo{width:min(100%,320px);height:auto;justify-self:end}
+
+  /* ── footer ────────────────────────────────────────── */
+  footer{padding:clamp(48px,5.5vw,72px) 0 48px;font-family:var(--sans);font-size:.89rem;
+    color:var(--tenue);border-top:1px solid var(--linea)}
+  .pie-cols{display:grid;gap:32px 40px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+  .pie-cols svg{width:200px;height:auto;display:block}
+  .pie-cols p{margin:16px 0 0;max-width:32ch;line-height:1.55}
+  .pie-cols h4{font-family:var(--mono);font-size:.66rem;letter-spacing:.2em;text-transform:uppercase;
+    color:var(--tenue-2);margin:0 0 14px;font-weight:400}
+  .pie-cols a{color:var(--hueso);display:block;padding:4px 0;transition:color .16s}
+  .pie-cols a:hover{color:var(--bronce)}
+  .pie-legal{margin-top:40px;padding-top:22px;border-top:1px solid var(--linea);display:flex;gap:18px;
+    flex-wrap:wrap;font-family:var(--mono);font-size:.7rem;letter-spacing:.08em;color:var(--tenue-2)}
+  .pie-legal span:last-child{margin-left:auto}
+  .pie-slogan{font-family:var(--sans);font-weight:700;color:var(--hueso);font-size:1.02rem;
+    margin:16px 0 0;max-width:none}
+
+  /* ── cómo se extiende ─────────────────────────────────── */
+  .mock-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:32px;align-items:start}
+  @media (max-width:860px){.mock-grid{grid-template-columns:1fr}}
+  .mock-card{display:flex;flex-direction:column;gap:14px}
+  .mock-head h3{font-family:var(--sans);font-weight:700;font-size:1.1rem;margin:0;letter-spacing:-.02em}
+  .mock-head span{font-family:var(--sans);font-size:.82rem;color:var(--tenue);display:block;margin-top:2px}
+
+  .mock-chat{background:#000;border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:10px}
+  .mc-b{max-width:88%;padding:10px 14px;border-radius:11px;font-family:var(--sans);font-size:.9rem;line-height:1.4}
+  .mc-b.in{background:#232323;color:var(--hueso);align-self:flex-start;border-bottom-left-radius:3px}
+  .mc-b.out{background:var(--bronce);color:var(--tinta);font-weight:700;align-self:flex-end;border-bottom-right-radius:3px}
+  .mc-b time{display:block;font-family:var(--mono);font-size:.66rem;margin-top:5px;opacity:.6}
+  .mc-b.out time{color:var(--tinta);opacity:.65}
+
+  .mock-mail{background:var(--hueso);color:#161310;border-radius:12px;overflow:hidden}
+  .mm-asunto{margin:0;padding:18px 20px 6px;font-family:var(--sans);font-weight:700;font-size:1.02rem;line-height:1.3}
+  .mm-asunto span{display:block;font-family:var(--mono);font-size:.6rem;letter-spacing:.18em;
+    color:#8a8074;font-weight:400;margin-bottom:8px}
+  .mm-meta{margin:0;padding:0 20px 14px;font-family:var(--sans);font-size:.78rem;color:#8a8074;
+    border-bottom:1px solid #00000014}
+  .mm-cuerpo{margin:0;padding:16px 20px;font-family:var(--sans);font-size:.86rem;line-height:1.55;color:#3a352e}
+  .mm-reply{background:var(--bronce);padding:16px 20px;display:flex;flex-direction:column;gap:4px}
+  .mm-reply span{font-family:var(--mono);font-size:.6rem;letter-spacing:.18em;color:#00000090}
+  .mm-reply b{font-family:var(--sans);font-weight:700;color:var(--tinta);font-size:1.02rem}
+
+  .mock-notes{background:#050505;border-radius:12px;padding:26px 18px;display:flex;
+    gap:14px;flex-wrap:wrap;justify-content:center;align-content:center;min-height:168px}
+  .nota{width:118px;height:118px;background:#e7e1d2;color:#1c1a16;font-family:var(--sans);
+    font-size:.84rem;font-weight:500;line-height:1.3;padding:14px;box-shadow:0 6px 16px #00000055}
+  .nota:nth-child(1){transform:rotate(-4deg)}
+  .nota:nth-child(2){transform:rotate(3deg)}
+  .nota:nth-child(3){transform:rotate(-3deg)}
+  .nota.bronce{background:var(--bronce);color:var(--tinta);font-weight:700;transform:rotate(4deg)}
+</style>
+</head>
+<body>
+
+<div style="position:relative;overflow-x:hidden;overflow-y:clip">
+  <div class="fondo-grilla" aria-hidden="true"></div>
+  <div id="destellos" aria-hidden="true"></div>
+  <div class="fondo-luz" aria-hidden="true" style="top:-260px;right:-180px;width:760px;height:760px;
+    background:radial-gradient(circle,rgba(224,164,76,.13),rgba(224,164,76,0) 68%)"></div>
+  <div class="fondo-luz" aria-hidden="true" style="top:1100px;left:-260px;width:620px;height:620px;
+    background:radial-gradient(circle,rgba(224,164,76,.09),rgba(224,164,76,0) 70%)"></div>
+
+  <div class="top">
+    <div class="m" style="display:flex;align-items:center;gap:24px">
+      <a class="marca" href="#top" aria-label="FiBOT">
+        <svg viewBox="-10 -10 1320 820" role="img" aria-hidden="true">
+          <g fill="none" stroke="#ece6db" stroke-width="30">
+            <rect x="0" y="0" width="800" height="800"></rect>
+            <rect x="800" y="0" width="500" height="500"></rect>
+            <rect x="1000" y="500" width="300" height="300"></rect>
+            <rect x="800" y="600" width="200" height="200"></rect>
+            <rect x="900" y="500" width="100" height="100"></rect>
+          </g>
+          <rect x="800" y="500" width="100" height="100" fill="#6FDCAE"></rect>
+          <text x="400" y="400" text-anchor="middle" dominant-baseline="central" font-family="Space Grotesk, sans-serif" font-weight="700" font-size="440" letter-spacing="-22" fill="#ece6db">Fi</text>
+        </svg>
+        <span>Fi<b>BOT</b></span>
+      </a>
+      <span class="marca-slogan">If it's repetitive, let FiBOT do it.</span>
+      <nav class="nav-desk">
+        <a href="#idea">The idea</a>
+        <a href="#frentes">Use cases</a>
+        <a href="#motor">The engine</a>
+        <a href="#arranca">How it starts</a>
+      </nav>
+    </div>
+  </div>
+
+  <header id="top" class="portada">
+    <div class="m grid">
+      <div>
+        <div class="eyebrow-punto"><i></i><span class="mono">Systems → FiBOT → WhatsApp · AR</span></div>
+        <svg class="simbolo-hero" viewBox="-14 -14 1328 828" aria-label="FiBOT">
+          <g fill="none" stroke="#ece6db" stroke-width="14">
+            <rect x="0" y="0" width="800" height="800" style="stroke-dasharray:3200;stroke-dashoffset:3200;animation:dibujo .9s cubic-bezier(.65,.05,.36,1) .15s forwards"></rect>
+            <rect x="800" y="0" width="500" height="500" style="stroke-dasharray:2000;stroke-dashoffset:2000;animation:dibujo .7s cubic-bezier(.65,.05,.36,1) .75s forwards"></rect>
+            <rect x="1000" y="500" width="300" height="300" style="stroke-dasharray:1200;stroke-dashoffset:1200;animation:dibujo .55s cubic-bezier(.65,.05,.36,1) 1.2s forwards"></rect>
+            <rect x="800" y="600" width="200" height="200" style="stroke-dasharray:800;stroke-dashoffset:800;animation:dibujo .45s cubic-bezier(.65,.05,.36,1) 1.55s forwards"></rect>
+            <rect x="900" y="500" width="100" height="100" style="stroke-dasharray:400;stroke-dashoffset:400;animation:dibujo .35s cubic-bezier(.65,.05,.36,1) 1.85s forwards"></rect>
+          </g>
+          <rect x="800" y="500" width="100" height="100" fill="#6FDCAE" style="opacity:0;transform-origin:850px 550px;animation:aparecer .5s cubic-bezier(.2,1.4,.4,1) 2.15s forwards"></rect>
+          <text x="400" y="400" text-anchor="middle" dominant-baseline="central" font-family="Space Grotesk, sans-serif" font-weight="700" font-size="440" letter-spacing="-22" fill="#ece6db" style="opacity:0;animation:aparecer .55s ease 2.35s forwards;transform-origin:400px 400px">Fi</text>
+        </svg>
+        <h1 class="display">If it's repetitive, let <em>FiBOT</em> do it.</h1>
+        <p class="lead">FiBOT connects the systems your company already uses — the ERP, the spreadsheet, the GPS — and answers over WhatsApp what someone would otherwise have to go dig up. It also flags what nobody gets around to checking.</p>
+        <p class="nota-margen">It's not a dashboard. A dashboard waits for you to log in. Six months in, nobody does — we know, because that happened to us before we built this.</p>
+        <div class="cta-row">
+          <a class="btn btn-grande" href="https://wa.me/5491128524957">Message us on WhatsApp</a>
+          <a class="btn-ghost" href="#motor">See how it works</a>
+        </div>
+      </div>
+
+      <div class="wa-col">
+        <div class="wa">
+          <div class="wa-top">
+            <div class="wa-av">
+              <svg viewBox="0 0 1000 1000" style="width:38px;height:38px;border-radius:50%">
+                <rect x="0" y="0" width="1000" height="1000" fill="#100F0D"></rect>
+                <g transform="translate(146 350) scale(0.545)">
+                  <g fill="none" stroke="#ece6db" stroke-width="20">
+                    <rect x="0" y="0" width="800" height="800"></rect>
+                    <rect x="800" y="0" width="500" height="500"></rect>
+                    <rect x="1000" y="500" width="300" height="300"></rect>
+                    <rect x="800" y="600" width="200" height="200"></rect>
+                    <rect x="900" y="500" width="100" height="100"></rect>
+                  </g>
+                  <rect x="800" y="500" width="100" height="100" fill="#6FDCAE"></rect>
+                  <text x="400" y="400" text-anchor="middle" dominant-baseline="central" font-family="Space Grotesk, sans-serif" font-weight="700" font-size="440" letter-spacing="-22" fill="#ece6db">Fi</text>
+                </g>
+              </svg>
+            </div>
+            <div style="flex:1">
+              <b>FiBOT</b>
+              <small id="wa-estado">online</small>
+            </div>
+            <span class="wa-rubro">EXAMPLE</span>
+          </div>
+          <div class="wa-cuerpo" id="wa-cuerpo"></div>
+        </div>
+        <p class="wa-nota">Example conversation · illustrative numbers and names</p>
+      </div>
+    </div>
+  </header>
+
+  <div class="franja" data-cifras="true">
+    <div class="m">
+      <div class="cif rev-c">
+        <span class="v" data-hasta="300">300</span>
+        <span class="k">units with active telemetry, monitored over WhatsApp around the clock</span>
+        <span class="f">Fleet telemetry</span>
+      </div>
+      <div class="cif rev-c">
+        <span class="v" data-hasta="390000">390000</span>
+        <span class="k">geographic positions processed automatically, with no manual entry</span>
+        <span class="f">GPS processing</span>
+      </div>
+      <div class="cif rev-c">
+        <span class="v" data-hasta="10000">10000</span>
+        <span class="k">products monitored —price, coverage, equivalents and variety— always up to date</span>
+        <span class="f">Live catalog</span>
+      </div>
+      <div class="cif rev-c">
+        <span class="v" data-hasta="90">90</span>
+        <span class="k">functions and integrations running in the background, all the time</span>
+        <span class="f">Automation</span>
+      </div>
+    </div>
+  </div>
+
+  <section id="idea">
+    <div class="m">
+      <span class="mono rev-c" style="display:block">01 — The idea</span>
+      <h2 class="titulo rev">The hard part isn't the data. It's getting someone to look at it.</h2>
+      <div class="regla" style="height:1px;background:linear-gradient(90deg,var(--bronce),var(--linea-2));margin:34px 0 0"></div>
+      <div class="dos">
+        <div class="rev">
+          <p>Almost all business software dies the same way: bought with enthusiasm, half-loaded with data, and six months later only one person still opens it. The data exists. Nobody sees it.</p>
+          <p>We flip that around: the information goes looking for the person, through the one channel they actually keep open — nothing to install, nothing to learn.</p>
+        </div>
+        <div class="rev">
+          <p style="color:var(--tenue)">That comes with a cost we'd rather state upfront: <strong style="color:var(--hueso);font-weight:400;border-bottom:1px solid var(--bronce)">not everything should be automated.</strong> If what people ask changes every day and never repeats, FiBOT won't help you — and we'll say so in the first conversation.</p>
+          <p style="color:var(--tenue)">What does work is the boring stuff: the question someone asks fourteen times a week, and the document that expires while nobody's watching.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="frentes">
+    <div class="m">
+      <span class="mono rev-c" style="display:block">02 — Use cases</span>
+      <h2 class="titulo rev">Where it's already running.</h2>
+      <div class="lista">
+        <div class="item rev-c">
+          <h3>Operations on the move</h3>
+          <div>
+            <p class="d">Where everything is, how much fuel it used, which permits are expiring, and which unit to send. It connects to the systems you already have — no switching providers, no migrating anything.</p>
+            <span class="est">In production</span>
+          </div>
+        </div>
+        <div class="item rev-c">
+          <h3>Counter service</h3>
+          <div>
+            <p class="d">There's a computer at the counter, and it works fine — until the power goes out, or there's a line and nobody can step away from the register. FiBOT rides in your pocket: prices, coverage, equivalents, the full record.</p>
+            <span class="est">In production</span>
+          </div>
+        </div>
+        <div class="item rev-c">
+          <h3>Traceability</h3>
+          <div>
+            <p class="d">Every unit gets its own QR code, traceable from intake to delivery. Nothing gets edited or deleted — status builds itself from each scan. Works with no signal too — it queues up and syncs the moment there's a connection.</p>
+            <span class="est">In production</span>
+          </div>
+        </div>
+        <div class="item rev-c">
+          <h3>Expirations</h3>
+          <div>
+            <p class="d">Everything that's about to expire, in one place, alerting whoever needs to act on it. Permits, insurance, contracts, inspections. Starts from a spreadsheet you already have.</p>
+            <span class="est">New</span>
+          </div>
+        </div>
+        <div class="item tenue rev-c">
+          <h3>And yours</h3>
+          <div>
+            <p class="d">If there's a piece of data living in a spreadsheet that someone asks about every day, that's the candidate. We start with one case, not everything at once.</p>
+            <span class="est">Custom-built</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="antes-despues">
+    <div class="m">
+      <span class="mono rev-c" style="display:block">Before / After</span>
+      <h2 class="titulo rev" style="font-size:clamp(2rem,4vw,3rem)">Seven steps gone.</h2>
+      <div class="dos" style="align-items:start">
+        <div class="rev">
+          <p class="bajada" style="margin:0 0 18px">Before — “Where's unit 42?”</p>
+          <p style="font-family:var(--mono);font-size:.85rem;color:var(--tenue);line-height:2.1;margin:0">
+            Open the system → Log in → Search for the unit → Apply filter → Check the position → Copy the data → Send it over WhatsApp
+          </p>
+        </div>
+        <div class="rev">
+          <p class="bajada" style="margin:0 0 18px">After — a seven-second voice note.</p>
+          <div class="wa">
+            <div class="wa-top">
+              <div class="wa-av">
+                <svg viewBox="0 0 1000 1000" style="width:38px;height:38px;border-radius:50%">
+                  <rect x="0" y="0" width="1000" height="1000" fill="#100F0D"></rect>
+                  <g transform="translate(146 350) scale(0.545)">
+                    <g fill="none" stroke="#ece6db" stroke-width="20">
+                      <rect x="0" y="0" width="800" height="800"></rect>
+                      <rect x="800" y="0" width="500" height="500"></rect>
+                      <rect x="1000" y="500" width="300" height="300"></rect>
+                      <rect x="800" y="600" width="200" height="200"></rect>
+                      <rect x="900" y="500" width="100" height="100"></rect>
+                    </g>
+                    <rect x="800" y="500" width="100" height="100" fill="#6FDCAE"></rect>
+                    <text x="400" y="400" text-anchor="middle" dominant-baseline="central" font-family="Space Grotesk, sans-serif" font-weight="700" font-size="440" letter-spacing="-22" fill="#ece6db">Fi</text>
+                  </g>
+                </svg>
+              </div>
+              <div style="flex:1"><b>FiBOT</b><small>online</small></div>
+              <span class="wa-rubro">EXAMPLE</span>
+            </div>
+            <div class="wa-cuerpo" style="min-height:0;padding-bottom:18px">
+              <div class="b out">
+                <div class="voice">
+                  <button type="button" class="play" aria-label="Play voice message"></button>
+                  <span class="onda"><i style="height:7px"></i><i style="height:14px"></i><i style="height:9px"></i><i style="height:19px"></i><i style="height:11px"></i><i style="height:16px"></i><i style="height:6px"></i><i style="height:20px"></i><i style="height:10px"></i><i style="height:15px"></i><i style="height:8px"></i><i style="height:18px"></i><i style="height:12px"></i><i style="height:7px"></i><i style="height:16px"></i></span>
+                  <span class="dur">0:07</span>
+                </div>
+                <p class="transcripcion">"Where's unit 42?"</p>
+                <span class="t">9:12 ✓✓</span>
+              </div>
+              <div class="b in">📍 Route 9 — km 72<br><strong>Unit 42</strong><br>Last updated: 3 min ago<span class="t">9:13</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="motor" class="alt">
+    <div class="m">
+      <span class="mono rev-c" style="display:block">03 — The engine</span>
+      <h2 class="titulo rev">One question. Four places the answer comes from.</h2>
+      <p class="bajada rev">No single source tells the whole truth: the system doesn't always know where everything is, the spreadsheet doesn't say what's missing, and your team knows what never gets written down anywhere. <strong>Cross-checking them is the actual work.</strong></p>
+
+      <div class="motor-grid rev">
+        <div>
+          <svg id="espiral-svg" viewBox="-20 -20 1340 840" role="img" aria-label="The logo's spiral opening from the smallest square to the largest: sources, ingestion, normalization, rules, and the answer that goes out over WhatsApp.">
+            <g fill="none" stroke="var(--linea-2)" stroke-width="14">
+              <rect x="0" y="0" width="800" height="800"></rect>
+              <rect x="800" y="0" width="500" height="500"></rect>
+              <rect x="1000" y="500" width="300" height="300"></rect>
+              <rect x="800" y="600" width="200" height="200"></rect>
+              <rect x="900" y="500" width="100" height="100"></rect>
+            </g>
+            <path id="espiral-trazo" d="M1000,600 A100,100 0 0 0 900,500 A100,100 0 0 0 800,600 A200,200 0 0 0 1000,800 A300,300 0 0 0 1300,500 A500,500 0 0 0 800,0 A800,800 0 0 0 0,800" fill="none" stroke="var(--bronce)" stroke-width="20" stroke-linecap="round" stroke-dasharray="3200" stroke-dashoffset="3200" style="filter:drop-shadow(0 0 14px rgba(224,164,76,.45))"></path>
+            <circle id="espiral-punto" cx="1000" cy="600" r="20" fill="var(--bronce)" opacity="0"></circle>
+            <g id="espiral-g3" opacity="0" style="transition:opacity .3s">
+              <text x="1036" y="576" font-size="40" font-family="JetBrains Mono, monospace" fill="#9a9082" letter-spacing="3">03</text>
+              <text x="1036" y="626" font-size="30" font-family="JetBrains Mono, monospace" fill="#9a9082" letter-spacing="3">NORMALIZE</text>
+            </g>
+            <g id="espiral-g4" opacity="0" style="transition:opacity .3s">
+              <text x="852" y="86" font-size="46" font-family="JetBrains Mono, monospace" fill="#9a9082" letter-spacing="3">04</text>
+              <text x="852" y="140" font-size="46" font-family="JetBrains Mono, monospace" fill="#9a9082" letter-spacing="3">RULES</text>
+              <text x="852" y="300" font-size="58" font-family="Space Grotesk, sans-serif" fill="#ece6db">thresholds</text>
+              <text x="852" y="370" font-size="58" font-family="Space Grotesk, sans-serif" fill="#ece6db">and alerts</text>
+            </g>
+            <g id="espiral-g5" opacity="0" style="transition:opacity .3s">
+              <text x="146" y="556" font-size="40" font-family="JetBrains Mono, monospace" fill="#9a9082" letter-spacing="3">05 · THE ANSWER</text>
+              <text x="146" y="646" font-size="62" font-family="Space Grotesk, sans-serif" fill="#ece6db">one line, no need</text>
+              <text x="146" y="726" font-size="62" font-family="Space Grotesk, sans-serif" fill="#ece6db">to open four things</text>
+            </g>
+            <g id="espiral-g6" opacity="0" style="transition:opacity .35s">
+              <rect x="0" y="700" width="100" height="100" fill="var(--bronce)"></rect>
+              <text x="50" y="765" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="40" fill="#0c0b0a" font-weight="500">WA</text>
+            </g>
+          </svg>
+          <p class="espiral-nota">The spiral opens: from scattered data to the answer</p>
+        </div>
+
+        <div class="motor-pasos">
+          <div class="motor-paso">
+            <span class="num">01</span>
+            <div>
+              <h3>Sources</h3>
+              <p>The system you already have, the usual spreadsheet, and what your team reports. Nothing gets migrated.</p>
+            </div>
+          </div>
+          <div class="motor-paso">
+            <span class="num">02</span>
+            <div>
+              <h3>Ingestion</h3>
+              <p>Webhooks where the platform offers them, periodic polling where it doesn't. Eleven GPS platforms already mapped, among other sources.</p>
+            </div>
+          </div>
+          <div class="motor-paso">
+            <span class="num">03</span>
+            <div>
+              <h3>Normalization</h3>
+              <p>Different formats go in; a single table comes out, in a database that belongs to your company alone, separate from everyone else's.</p>
+            </div>
+          </div>
+          <div class="motor-paso">
+            <span class="num">04</span>
+            <div>
+              <h3>Rules</h3>
+              <p>What gets asked gets answered; what's about to expire flags itself, without anyone having to ask.</p>
+            </div>
+          </div>
+          <div class="motor-paso final">
+            <span class="num">05</span>
+            <div>
+              <h3>Over WhatsApp / email</h3>
+              <p>The biggest square in the spiral, and the little one it comes out through: one line, on the one channel your team already keeps open.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="extiende">
+    <div class="m">
+      <span class="mono rev-c" style="display:block">How it extends</span>
+      <div class="mock-grid">
+        <div class="mock-card rev-c">
+          <div class="mock-head">
+            <h3>Work chat</h3>
+            <span>the real conversation, exactly as it happens</span>
+          </div>
+          <div class="mock-chat">
+            <div class="mc-b in">Did anyone log yesterday's transactions?<time>09:12</time></div>
+            <div class="mc-b in">And the report for the meeting — are we building it by hand again?<time>09:13</time></div>
+            <div class="mc-b out">No. Let FiBOT do it.<time>09:13 ✓✓</time></div>
+          </div>
+        </div>
+        <div class="mock-card rev-c">
+          <div class="mock-head">
+            <h3>Email chain</h3>
+            <span>the endless forward that ends in one line</span>
+          </div>
+          <div class="mock-mail">
+            <p class="mm-asunto"><span>Subject</span>RE: RE: RE: do we do this manually?</p>
+            <p class="mm-meta">From: Operations · 3 attachments</p>
+            <p class="mm-cuerpo">Forwarding the updated spreadsheet. Heads up, yesterday's version is outdated — work off this one. When you're done, let the team know so they can see it before the meeting.</p>
+            <div class="mm-reply"><span>Reply all</span><b>No. Let FiBOT do it.</b></div>
+          </div>
+        </div>
+        <div class="mock-card rev-c">
+          <div class="mock-head">
+            <h3>Sticky notes</h3>
+            <span>the reminder nobody should need</span>
+          </div>
+          <div class="mock-notes">
+            <div class="nota">Log yesterday's data</div>
+            <div class="nota">Put together Monday's report</div>
+            <div class="nota">Let the team know</div>
+            <div class="nota bronce">Let FiBOT do it.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="costo" class="alt">
+    <div class="m">
+      <span class="mono rev-c" style="display:block">The math nobody's done yet</span>
+      <h2 class="titulo rev" style="font-size:clamp(2rem,4vw,3rem)">You don't need a study. The math is enough.</h2>
+      <p class="bajada rev">Minutes lost per question, how many times a day it repeats, business days per month. You run that math yourselves, with your own numbers — we don't have them, not yet. But we already know how it's done: we've been doing it elsewhere.</p>
+      <div class="formula rev">
+        <div class="termino">minutes lost<b>per question</b></div>
+        <span class="op">×</span>
+        <div class="termino">times it repeats<b>per day</b></div>
+        <span class="op">×</span>
+        <div class="termino">business days<b>per month</b></div>
+        <span class="op">=</span>
+        <div class="termino destacado">hours lost<b>per month</b></div>
+      </div>
+      <div class="ejemplo rev-c">
+        <p class="cuenta">8 min × 15 questions × 22 days =</p>
+        <p class="num">44</p>
+        <p class="detalle">hours a month — more than a full workweek, spent on questions that already had an answer somewhere.</p>
+      </div>
+      <p class="etiqueta-chica">Reference numbers, not data from any specific client</p>
+      <p class="remate rev-c">That's <b>528 hours a year</b>. The question that follows isn't whether automating is worth it — it's how much it costs to pay someone to do that, twelve months straight.</p>
+    </div>
+  </section>
+
+  <section id="arranca">
+    <div class="m">
+      <span class="mono rev-c" style="display:block">04 — How it starts</span>
+      <h2 class="titulo rev">How it starts, no detours.</h2>
+      <div class="pasos">
+        <div class="paso actual rev">
+          <span class="cuando">Day 1 · 30 minutes</span>
+          <h3>One conversation, and nothing more</h3>
+          <p>You tell us what your team gets asked every day and how they handle it now. That's enough to tell whether this fits. If it doesn't, it ends right there and costs you nothing.</p>
+        </div>
+        <div class="paso rev">
+          <span class="cuando">Weeks 1 and 2</span>
+          <h3>One case running, not the whole system</h3>
+          <p>We pick the question that repeats the most and connect it to what you already have — the usual system, the spreadsheet, whatever it is. Within two weeks there's something running with a small group of real people.</p>
+        </div>
+        <div class="paso rev">
+          <span class="cuando">After that</span>
+          <h3>What gets added is whatever use demands</h3>
+          <p>The second case gets picked by the people using the first one, not by a planning meeting. What nobody asks for doesn't get built — and that's exactly where most projects blow their budget.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="tecnico" class="alt">
+    <div class="m">
+      <span class="mono rev-c" style="display:block">For anyone who wants to audit it</span>
+      <h2 class="titulo rev" style="font-size:clamp(2rem,4vw,3rem)">Here's how it's built, in four points.</h2>
+      <div class="lista">
+        <div class="item rev-c">
+          <h3>Language</h3>
+          <div><p class="d">You write to it like you would to a person. No exact commands, no menu of options: you ask the way you'd ask a coworker, and the system figures out what's needed.</p></div>
+        </div>
+        <div class="item rev-c">
+          <h3>Integration</h3>
+          <div><p class="d">By API, not scraping. It connects to the systems you already use —ERP, spreadsheets, your own databases— through the API or a direct read. No shared credentials, no touching the original source.</p></div>
+        </div>
+        <div class="item rev-c">
+          <h3>Data</h3>
+          <div><p class="d">It reads, never writes. Read-only access to whatever gets authorized. It doesn't modify an existing system unless explicitly asked to, and that comes with its own separate permission.</p></div>
+        </div>
+        <div class="item rev-c">
+          <h3>Security</h3>
+          <div><p class="d">Role-based access, everything logged. Credentials and tokens never pass through the chat — they stay out of it, like in any serious integration. Every access gets logged: who, what, when.</p></div>
+        </div>
+      </div>
+      <p class="remate rev-c">Each of these four points goes into more detail the moment it's needed. <b>The more you ask, the better.</b></p>
+    </div>
+  </section>
+
+  <section id="preguntas">
+    <div class="m">
+      <span class="mono rev-c" style="display:block">05 — Questions</span>
+      <h2 class="titulo rev">What people always ask us.</h2>
+      <div class="faq rev">
+        <details open>
+          <summary>Do I have to switch systems?</summary>
+          <p>No. We connect to whatever you already have — ERP, spreadsheets, GPS, anything. If yours isn't mapped yet, we look into it, but it isn't always possible — and we find that out in the first week, not six months in.</p>
+        </details>
+        <details>
+          <summary>What if my team doesn't use it?</summary>
+          <p>That's the right question to ask, and the reason this lives on WhatsApp instead of an app. Either way, we measure usage from day one: how many questions, from how many different people. If after four weeks only one person is writing in, the problem wasn't the tool, and we'll tell you that.</p>
+        </details>
+        <details>
+          <summary>How much does it cost?</summary>
+          <p>We don't publish a price list, because the first case defines the scope and the differences are big. What we can promise: the first conversation ends with a firm number, not a range or an "it depends."</p>
+        </details>
+        <details>
+          <summary>Where does my data live?</summary>
+          <p>In a database that belongs only to your company, separate from any other client's. No query from one ever touches another's data — and that's not a sales promise, they're simply separate projects.</p>
+        </details>
+        <details>
+          <summary>And if I want to leave tomorrow?</summary>
+          <p>You take your data, exported, and it shuts off. No lock-in, no long contract. We'd rather you stay because you're using it — which is also the only way this actually works out for us.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <section class="cierre">
+    <div class="m">
+      <div class="rev">
+        <h2 class="titulo">What repetitive task would you like to stop doing?</h2>
+        <p class="bajada">Tell us what your team gets asked every day. If it's always the same thing, FiBOT can probably answer it. If not, we'll tell you — selling something that won't work is bad business for both of us.</p>
+        <div class="cta-row">
+          <a class="btn-ghost" href="#top">Back to top</a>
+          <span class="mono" style="color:var(--tenue-2)">+54 9 11 2852-4957</span>
+        </div>
+      </div>
+      <svg class="simbolo-fondo" viewBox="-14 -14 1328 828" aria-hidden="true">
+        <g fill="none" stroke="var(--linea-2)" stroke-width="14">
+          <rect x="0" y="0" width="800" height="800"></rect>
+          <rect x="800" y="0" width="500" height="500"></rect>
+          <rect x="1000" y="500" width="300" height="300"></rect>
+          <rect x="800" y="600" width="200" height="200"></rect>
+          <rect x="900" y="500" width="100" height="100"></rect>
+        </g>
+        <rect x="800" y="500" width="100" height="100" fill="#6FDCAE"></rect>
+        <text x="400" y="400" text-anchor="middle" dominant-baseline="central" font-family="Space Grotesk, sans-serif" font-weight="700" font-size="440" letter-spacing="-22" fill="var(--linea-2)">Fi</text>
+      </svg>
+    </div>
+  </section>
+
+  <footer>
+    <div class="m">
+      <div class="pie-cols">
+        <div>
+          <svg viewBox="-14 -14 2674 828" aria-label="FiBOT">
+            <g fill="none" stroke="#ece6db" stroke-width="14">
+              <rect x="0" y="0" width="800" height="800"></rect>
+              <rect x="800" y="0" width="500" height="500"></rect>
+              <rect x="1000" y="500" width="300" height="300"></rect>
+              <rect x="800" y="600" width="200" height="200"></rect>
+              <rect x="900" y="500" width="100" height="100"></rect>
+            </g>
+            <rect x="800" y="500" width="100" height="100" fill="#6FDCAE"></rect>
+            <text x="400" y="400" text-anchor="middle" dominant-baseline="central" font-family="Space Grotesk, sans-serif" font-weight="700" font-size="440" letter-spacing="-22" fill="#ece6db">Fi</text>
+            <text x="1560" y="410" dominant-baseline="central" font-family="Space Grotesk, sans-serif" font-size="330" letter-spacing="-10" fill="#ece6db"><tspan font-weight="400">Fi</tspan><tspan font-weight="700">BOT</tspan></text>
+          </svg>
+          <p class="pie-slogan">If it's repetitive, let FiBOT do it.</p>
+          <p>WhatsApp automation for companies that already have the data and aren't looking at it.</p>
+        </div>
+        <div>
+          <h4>Go to</h4>
+          <a href="#idea">The idea</a>
+          <a href="#frentes">Where it runs</a>
+          <a href="#motor">The engine</a>
+          <a href="#arranca">How it starts</a>
+        </div>
+        <div>
+          <h4>Talk to someone</h4>
+          <a href="https://wa.me/5491128524957">+54 9 11 2852-4957</a>
+          <a href="mailto:Ignacio@fibot.ar">By email</a>
+          <a href="https://www.xn--antua-rta.com.ar/">antuña.com.ar</a>
+        </div>
+        <div>
+          <h4>Language</h4>
+          <div class="pie-idiomas" data-lang-switcher></div>
+        </div>
+      </div>
+      <div class="pie-legal">
+        <span>FiBOT — by Ignacio Antuña</span>
+        <span>Buenos Aires, Argentina</span>
+      </div>
+    </div>
+  </footer>
+</div>
+
+<script src="/assets/lang-switch.js"></script>
+<script>
+(function () {
+  var quieto = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ── cifras que se suman (mismo patrón que ya usaba el sitio) ── */
+  var cifras = document.querySelectorAll('.cif .v[data-hasta]');
+  if (cifras.length && window.IntersectionObserver && !quieto) {
+    cifras.forEach(function (el) {
+      el.style.display = 'inline-block';
+      el.style.minWidth = el.getBoundingClientRect().width + 'px';
+      el.textContent = '0';
+    });
+    var obsCif = new IntersectionObserver(function (es) {
+      es.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        obsCif.unobserve(e.target);
+        var el = e.target;
+        var hasta = parseInt(el.dataset.hasta, 10);
+        var dura = 900 + Math.min(hasta / 100, 500);
+        var t0 = null;
+        (function paso(t) {
+          if (t0 === null) t0 = t;
+          var p = Math.min(((t || 0) - t0) / dura, 1);
+          var suave = 1 - Math.pow(1 - p, 3);
+          el.textContent = Math.round(hasta * suave).toLocaleString('en-US') + (p >= 1 ? '+' : '');
+          if (p < 1) requestAnimationFrame(paso);
+        })(performance.now());
+      });
+    }, { threshold: 0.5 });
+    document.querySelectorAll('[data-cifras] .cif').forEach(function (c) { obsCif.observe(c.querySelector('.v')); });
+  } else {
+    cifras.forEach(function (el) { el.textContent = Number(el.dataset.hasta).toLocaleString('en-US') + '+'; });
+  }
+
+  /* ── chat de ejemplo del hero: se arma solo, una vez ──────────
+     Ejemplos genéricos a propósito (pedido/facturación, no un rubro
+     puntual) — ver CLAUDE.md, "generalizar el relato, no la prueba". */
+  var cuerpo = document.getElementById('wa-cuerpo');
+  var estadoEl = document.getElementById('wa-estado');
+  if (cuerpo) {
+    var MENSAJES = [
+      { lado: 'out', texto: 'How\'s order 4471 coming along?', hora: '9:12' },
+      { lado: 'in', html: '<strong>Order 4471</strong> — being prepared, Central warehouse. Ships today at <span class="n">3:00 PM</span>. Owner: dispatch team.', hora: '9:12' },
+      { lado: 'out', texto: 'and how many are still unbilled this month?', hora: '9:13' },
+      { lado: 'in', html: '<strong>38 orders</strong> unbilled — <span class="n">$2,140,000</span>. That\'s <span class="n">6%</span> above last month.', hora: '9:13' },
+      { lado: 'in', aviso: true, html: 'Alert: <strong>order 233</strong> hasn\'t been updated in 2 days. Nobody\'s checked it yet.', hora: '9:14' }
+    ];
+
+    function burbuja(m) {
+      var div = document.createElement('div');
+      div.className = 'b ' + m.lado + (m.aviso ? ' aviso' : '');
+      var check = m.lado === 'out' ? ' ✓✓' : '';
+      div.innerHTML = (m.texto || m.html) + '<span class="t">' + m.hora + check + '</span>';
+      return div;
+    }
+    function escribiendoEl() {
+      var div = document.createElement('div');
+      div.className = 'escribiendo';
+      div.innerHTML = '<i></i><i></i><i></i>';
+      return div;
+    }
+    var timers = [];
+    function t(ms, fn) { timers.push(setTimeout(fn, ms)); }
+    function tipearEn(el, texto, cb) {
+      var i = 0;
+      (function paso() {
+        i++;
+        el.textContent = texto.slice(0, i);
+        if (i < texto.length) t(70 + Math.random() * 90, paso); else if (cb) cb();
+      })();
+    }
+
+    var inputSpan = document.createElement('span');
+    var inputTexto = document.createElement('span');
+    var caret = document.createElement('span');
+    caret.className = 'caret';
+    var inputWrap = document.createElement('div');
+    inputWrap.className = 'wa-input';
+    var flechita = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    flechita.setAttribute('viewBox', '0 0 24 24');
+    flechita.setAttribute('style', 'width:18px;height:18px;fill:#E0A44C;flex:none');
+    flechita.innerHTML = '<path d="M3 20.5v-17l19 8.5-19 8.5z"></path>';
+    inputSpan.appendChild(inputTexto);
+    inputSpan.appendChild(caret);
+    inputWrap.appendChild(inputSpan);
+    inputWrap.appendChild(flechita);
+
+    function correr() {
+      var acumulado = 500;
+      MENSAJES.forEach(function (m, i) {
+        if (m.lado === 'in') {
+          var esc = escribiendoEl();
+          t(acumulado, function () { cuerpo.insertBefore(esc, inputWrap); estadoEl.textContent = 'typing…'; });
+          acumulado += 900 + Math.random() * 500;
+          t(acumulado, function () { esc.remove(); cuerpo.insertBefore(burbuja(m), inputWrap); estadoEl.textContent = 'online'; });
+          acumulado += 700;
+        } else {
+          t(acumulado, function () { cuerpo.insertBefore(burbuja(m), inputWrap); });
+          acumulado += 900;
+        }
+      });
+      t(acumulado + 400, function () { tipearEn(inputTexto, 'and what about 512?'); });
+    }
+
+    cuerpo.appendChild(inputWrap);
+    if (quieto) {
+      MENSAJES.forEach(function (m) { cuerpo.insertBefore(burbuja(m), inputWrap); });
+    } else if (window.IntersectionObserver) {
+      var obsChat = new IntersectionObserver(function (es) {
+        if (es[0].isIntersecting) { obsChat.disconnect(); correr(); }
+      }, { threshold: 0.4 });
+      obsChat.observe(cuerpo);
+    } else {
+      correr();
+    }
+  }
+
+  /* ── motor: la espiral se dibuja con el scroll ────────────── */
+  var svgMotor = document.getElementById('espiral-svg');
+  if (svgMotor && !quieto) {
+    var trazo = document.getElementById('espiral-trazo');
+    var punto = document.getElementById('espiral-punto');
+    var g3 = document.getElementById('espiral-g3');
+    var g4 = document.getElementById('espiral-g4');
+    var g5 = document.getElementById('espiral-g5');
+    var g6 = document.getElementById('espiral-g6');
+    function tramo(s, a, b) { return Math.min(Math.max((s - a) / (b - a), 0), 1); }
+    function actualizar() {
+      var r = svgMotor.getBoundingClientRect();
+      var h = window.innerHeight;
+      var desde = h * 0.9, hasta = h * 0.3;
+      var s = Math.min(Math.max((desde - r.top) / (desde - hasta), 0), 1);
+      trazo.style.strokeDashoffset = Math.round(3200 * (1 - s));
+      punto.setAttribute('opacity', s > 0.01 ? 1 : 0);
+      g3.style.opacity = tramo(s, 0.34, 0.44);
+      g4.style.opacity = tramo(s, 0.58, 0.68);
+      g5.style.opacity = tramo(s, 0.84, 0.93);
+      g6.style.opacity = tramo(s, 0.94, 1);
+    }
+    var pedido = false;
+    function pedir() { if (pedido) return; pedido = true; requestAnimationFrame(function () { pedido = false; actualizar(); }); }
+    window.addEventListener('scroll', pedir, { passive: true });
+    window.addEventListener('resize', pedir);
+    actualizar();
+  } else if (svgMotor) {
+    document.getElementById('espiral-trazo').style.strokeDashoffset = 0;
+    ['espiral-punto', 'espiral-g3', 'espiral-g4', 'espiral-g5', 'espiral-g6'].forEach(function (id) {
+      document.getElementById(id).setAttribute('opacity', 1);
+    });
+  }
+
+  /* ── destellos: trivia de Fibonacci, decorativo ───────────── */
+  if (!quieto) {
+    var CUENTAS = ['φ = 1.6180339887', 'Fₙ = Fₙ₋₁ + Fₙ₋₂', '8 / 5 = 1.6', '144 / 89 ≈ 1.6179', '1 1 2 3 5 8 13 21', '(1+√5) / 2', 'F₁₆ = 987', '21 / 13 = 1.6153', 'lim Fₙ₊₁/Fₙ = φ', '34 + 55 = 89'];
+    var host = document.getElementById('destellos');
+    (function ciclo() {
+      setTimeout(function () {
+        var el = document.createElement('span');
+        el.className = 'destello';
+        el.textContent = CUENTAS[Math.floor(Math.random() * CUENTAS.length)];
+        el.style.left = (6 + Math.random() * 76) + 'vw';
+        el.style.top = (8 + Math.random() * 78) + 'vh';
+        el.style.fontSize = (0.72 + Math.random() * 0.5).toFixed(2) + 'rem';
+        host.appendChild(el);
+        setTimeout(function () { el.remove(); }, 200);
+        ciclo();
+      }, 2200 + Math.random() * 4200);
+    })();
+  }
+
+  /* ── mensaje de voz: animación de "reproducción", sin audio real ── */
+  document.querySelectorAll('.voice .play').forEach(function (btn) {
+    var barras = btn.parentElement.querySelectorAll('.onda i');
+    var dur = 2400;
+    btn.addEventListener('click', function () {
+      if (btn.classList.contains('jugando')) return;
+      btn.classList.add('jugando');
+      btn.setAttribute('aria-label', 'Playing voice message');
+      if (quieto) {
+        barras.forEach(function (b) { b.classList.add('hecha'); });
+      } else {
+        barras.forEach(function (b, i) {
+          setTimeout(function () { b.classList.add('hecha'); }, (i / barras.length) * dur);
+        });
+      }
+      setTimeout(function () {
+        btn.classList.remove('jugando');
+        btn.setAttribute('aria-label', 'Play voice message');
+        barras.forEach(function (b) { b.classList.remove('hecha'); });
+      }, quieto ? 700 : dur + 260);
+    });
+  });
+})();
+</script>
+</body>
+</html>
