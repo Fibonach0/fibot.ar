@@ -6,6 +6,11 @@
 <title>FiBOT — Si es repetitivo, que lo haga FiBOT.</title>
 <meta name="description" content="FiBOT conecta los sistemas que ya usa tu empresa y responde por WhatsApp lo que tu gente pregunta todos los días.">
 <link rel="canonical" href="https://fibot.ar/">
+<link rel="alternate" hreflang="es" href="https://fibot.ar/">
+<link rel="alternate" hreflang="en" href="https://fibot.ar/en/">
+<link rel="alternate" hreflang="pt" href="https://fibot.ar/pt/">
+<link rel="alternate" hreflang="fr" href="https://fibot.ar/fr/">
+<link rel="alternate" hreflang="x-default" href="https://fibot.ar/">
 <meta name="theme-color" content="#0c0b0a">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png">
@@ -96,6 +101,21 @@
 
   .destello{position:fixed;z-index:5;pointer-events:none;font-family:var(--mono);
     letter-spacing:.1em;color:rgba(224,164,76,.5);white-space:nowrap;animation:destello .17s linear both}
+
+  /* ── banner de idioma ─────────────────────────────────── */
+  .lang-banner{background:var(--bronce);color:var(--tinta);font-family:var(--sans);font-size:.86rem;
+    display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;
+    padding:10px 20px;text-align:center;position:relative;z-index:31}
+  .lang-banner a{color:var(--tinta);font-weight:700;text-decoration:underline}
+  .lang-banner a:hover{color:var(--tinta);opacity:.75}
+  .lang-banner button{font-family:var(--sans);font-size:.8rem;color:var(--tinta);background:transparent;
+    border:1px solid var(--tinta);border-radius:2px;padding:4px 10px;cursor:pointer;opacity:.85}
+  .lang-banner button:hover{opacity:1}
+
+  /* ── selector de idioma (footer) ──────────────────────── */
+  .pie-idiomas{display:flex;flex-wrap:wrap;gap:4px 12px}
+  .pie-idiomas a{display:inline;padding:0}
+  .pie-idiomas a[aria-current]{color:var(--bronce)}
 
   /* ── nav ───────────────────────────────────────────── */
   .top{position:sticky;top:0;z-index:30;background:rgba(12,11,10,.82);
@@ -865,6 +885,10 @@
           <a href="mailto:Ignacio@fibot.ar">Por mail</a>
           <a href="https://www.xn--antua-rta.com.ar/">antuña.com.ar</a>
         </div>
+        <div>
+          <h4>Idioma</h4>
+          <div class="pie-idiomas" data-lang-switcher></div>
+        </div>
       </div>
       <div class="pie-legal">
         <span>FiBOT — por Ignacio Antuña</span>
@@ -874,6 +898,7 @@
   </footer>
 </div>
 
+<script src="/assets/lang-switch.js"></script>
 <script>
 (function () {
   var quieto = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
