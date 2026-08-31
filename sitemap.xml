@@ -7,6 +7,8 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://fibot.ar/en/"/>
     <xhtml:link rel="alternate" hreflang="pt" href="https://fibot.ar/pt/"/>
     <xhtml:link rel="alternate" hreflang="fr" href="https://fibot.ar/fr/"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://fibot.ar/de/"/>
+    <xhtml:link rel="alternate" hreflang="sv" href="https://fibot.ar/sv/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://fibot.ar/"/>
     <lastmod>2026-08-31</lastmod>
     <changefreq>monthly</changefreq>
@@ -18,6 +20,8 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://fibot.ar/en/"/>
     <xhtml:link rel="alternate" hreflang="pt" href="https://fibot.ar/pt/"/>
     <xhtml:link rel="alternate" hreflang="fr" href="https://fibot.ar/fr/"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://fibot.ar/de/"/>
+    <xhtml:link rel="alternate" hreflang="sv" href="https://fibot.ar/sv/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://fibot.ar/"/>
     <lastmod>2026-08-31</lastmod>
     <changefreq>monthly</changefreq>
@@ -29,6 +33,8 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://fibot.ar/en/"/>
     <xhtml:link rel="alternate" hreflang="pt" href="https://fibot.ar/pt/"/>
     <xhtml:link rel="alternate" hreflang="fr" href="https://fibot.ar/fr/"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://fibot.ar/de/"/>
+    <xhtml:link rel="alternate" hreflang="sv" href="https://fibot.ar/sv/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://fibot.ar/"/>
     <lastmod>2026-08-31</lastmod>
     <changefreq>monthly</changefreq>
@@ -40,6 +46,34 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://fibot.ar/en/"/>
     <xhtml:link rel="alternate" hreflang="pt" href="https://fibot.ar/pt/"/>
     <xhtml:link rel="alternate" hreflang="fr" href="https://fibot.ar/fr/"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://fibot.ar/de/"/>
+    <xhtml:link rel="alternate" hreflang="sv" href="https://fibot.ar/sv/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fibot.ar/"/>
+    <lastmod>2026-08-31</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://fibot.ar/de/</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://fibot.ar/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fibot.ar/en/"/>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://fibot.ar/pt/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fibot.ar/fr/"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://fibot.ar/de/"/>
+    <xhtml:link rel="alternate" hreflang="sv" href="https://fibot.ar/sv/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fibot.ar/"/>
+    <lastmod>2026-08-31</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://fibot.ar/sv/</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://fibot.ar/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fibot.ar/en/"/>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://fibot.ar/pt/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://fibot.ar/fr/"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://fibot.ar/de/"/>
+    <xhtml:link rel="alternate" hreflang="sv" href="https://fibot.ar/sv/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://fibot.ar/"/>
     <lastmod>2026-08-31</lastmod>
     <changefreq>monthly</changefreq>

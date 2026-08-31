@@ -6,14 +6,18 @@
     es: { label: 'Español', path: '/' },
     en: { label: 'English', path: '/en/' },
     pt: { label: 'Português', path: '/pt/' },
-    fr: { label: 'Français', path: '/fr/' }
+    fr: { label: 'Français', path: '/fr/' },
+    de: { label: 'Deutsch', path: '/de/' },
+    sv: { label: 'Svenska', path: '/sv/' }
   };
 
   var UI = {
     es: { q: '¿Preferís verlo en {L}?', view: 'Ver en {L}', stay: 'Seguir en español' },
     en: { q: 'Prefer to read this in {L}?', view: 'View in {L}', stay: 'Continue in English' },
     pt: { q: 'Prefere ver isto em {L}?', view: 'Ver em {L}', stay: 'Continuar em português' },
-    fr: { q: 'Préférez-vous lire ceci en {L} ?', view: 'Voir en {L}', stay: 'Continuer en français' }
+    fr: { q: 'Préférez-vous lire ceci en {L} ?', view: 'Voir en {L}', stay: 'Continuer en français' },
+    de: { q: 'Lieber auf {L} lesen?', view: 'Auf {L} ansehen', stay: 'Auf Deutsch bleiben' },
+    sv: { q: 'Vill du hellre läsa detta på {L}?', view: 'Visa på {L}', stay: 'Fortsätt på svenska' }
   };
 
   var KEY = 'fibot_lang_pref';
