@@ -138,6 +138,24 @@
   .nav-desk a{font-family:var(--sans);font-size:.88rem;color:var(--tenue);padding:9px 12px;
     border-radius:2px;transition:color .18s,background .18s}
   .nav-desk a:hover{color:var(--hueso);background:#ffffff0d}
+  .nav-lang{position:relative;margin-left:6px}
+  .nav-lang-btn{display:flex;align-items:center;gap:6px;font-family:var(--sans);font-size:.86rem;
+    color:var(--tenue);background:transparent;border:1px solid var(--linea-2);border-radius:2px;
+    padding:7px 10px;cursor:pointer;transition:color .18s,border-color .18s,background .18s}
+  .nav-lang-btn:hover,.nav-lang-btn[aria-expanded="true"]{color:var(--hueso);border-color:var(--bronce);background:#ffffff0d}
+  .nav-lang-btn .bandera{font-size:1rem;line-height:1}
+  .nav-lang-btn .car{font-size:.6rem;color:var(--tenue-2);transition:transform .18s}
+  .nav-lang-btn[aria-expanded="true"] .car{transform:rotate(180deg)}
+  .nav-lang-menu{position:absolute;top:calc(100% + 8px);right:0;min-width:180px;background:var(--tinta-alt);
+    border:1px solid var(--linea-2);border-radius:4px;box-shadow:0 20px 44px rgba(0,0,0,.5);
+    padding:6px;display:none;gap:1px;z-index:40}
+  .nav-lang-menu.abierto{display:grid}
+  .nav-lang-menu a{display:flex;align-items:center;gap:9px;font-family:var(--sans);font-size:.86rem;
+    color:var(--tenue);padding:8px 10px;border-radius:2px;white-space:nowrap}
+  .nav-lang-menu a:hover{color:var(--hueso);background:#ffffff0d}
+  .nav-lang-menu a[aria-current]{color:var(--bronce)}
+  .nav-lang-menu .bandera{font-size:1.05rem;line-height:1}
+  @media (max-width:640px){.nav-lang-btn .cod{display:none}}
   @media (max-width:640px){
     .marca span{display:none}
     .nav-desk{gap:2px}
@@ -408,6 +426,7 @@
         <a href="#frentes">Användningsfall</a>
         <a href="#motor">Motorn</a>
         <a href="#arranca">Så börjar det</a>
+      <div class="nav-lang" data-lang-nav></div>
       </nav>
     </div>
   </div>
