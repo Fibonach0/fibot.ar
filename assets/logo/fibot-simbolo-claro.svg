@@ -8,6 +8,6 @@
     <rect x="800" y="600" width="200" height="200"></rect>
     <rect x="900" y="500" width="100" height="100"></rect>
   </g>
-  <rect x="800" y="500" width="100" height="100" fill="#6FDCAE"></rect>
+  <rect x="807" y="507" width="86" height="86" fill="#6FDCAE"></rect>
   <text x="400" y="400" text-anchor="middle" dominant-baseline="central" font-family="Space Grotesk, Helvetica, Arial, sans-serif" font-weight="700" font-size="440" letter-spacing="-22" fill="#F2EEE6">Fi</text>
 </svg>
