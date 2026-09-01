@@ -8,7 +8,11 @@
     pt: { label: 'Português', path: '/pt/' },
     fr: { label: 'Français', path: '/fr/' },
     de: { label: 'Deutsch', path: '/de/' },
-    sv: { label: 'Svenska', path: '/sv/' }
+    sv: { label: 'Svenska', path: '/sv/' },
+    zh: { label: '中文', path: '/zh/' },
+    ja: { label: '日本語', path: '/ja/' },
+    ko: { label: '한국어', path: '/ko/' },
+    ar: { label: 'العربية', path: '/ar/' }
   };
 
   var UI = {
@@ -17,7 +21,11 @@
     pt: { q: 'Prefere ver isto em {L}?', view: 'Ver em {L}', stay: 'Continuar em português' },
     fr: { q: 'Préférez-vous lire ceci en {L} ?', view: 'Voir en {L}', stay: 'Continuer en français' },
     de: { q: 'Lieber auf {L} lesen?', view: 'Auf {L} ansehen', stay: 'Auf Deutsch bleiben' },
-    sv: { q: 'Vill du hellre läsa detta på {L}?', view: 'Visa på {L}', stay: 'Fortsätt på svenska' }
+    sv: { q: 'Vill du hellre läsa detta på {L}?', view: 'Visa på {L}', stay: 'Fortsätt på svenska' },
+    zh: { q: '更希望阅读{L}版本吗？', view: '查看{L}版本', stay: '继续阅读中文' },
+    ja: { q: '{L}で読みますか？', view: '{L}で見る', stay: '日本語のまま続ける' },
+    ko: { q: '{L}로 보시겠어요?', view: '{L}로 보기', stay: '한국어로 계속 보기' },
+    ar: { q: 'هل تفضل قراءة هذا بـ{L}؟', view: 'عرض بـ{L}', stay: 'المتابعة بالعربية' }
   };
 
   var KEY = 'fibot_lang_pref';
