@@ -2,6 +2,31 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
+<script>
+/* Redirect por idioma del navegador — sólo acá, en la home, y sólo la
+   primera vez (no pisa una preferencia ya guardada ni una URL de idioma
+   a la que alguien llegó directo, ej. compartida o desde el buscador).
+   Va inline y lo más arriba posible del <head> para que corra antes de
+   pintar nada: si dependiera de assets/lang-switch.js (que se carga al
+   final del body) el visitante vería un flash de toda la página en
+   español antes de irse a la suya. */
+(function () {
+  try {
+    if (localStorage.getItem('fibot_lang_pref')) return;
+    var rutas = { en:'/en/', pt:'/pt/', fr:'/fr/', de:'/de/', sv:'/sv/', zh:'/zh/', ja:'/ja/', ko:'/ko/', ar:'/ar/' };
+    var candidatos = (navigator.languages && navigator.languages.length) ? navigator.languages : [navigator.language || 'es'];
+    for (var i = 0; i < candidatos.length; i++) {
+      var code = String(candidatos[i]).slice(0, 2).toLowerCase();
+      if (code === 'es') return;
+      if (rutas[code]) {
+        localStorage.setItem('fibot_lang_pref', code);
+        location.replace(rutas[code]);
+        return;
+      }
+    }
+  } catch (e) {}
+})();
+</script>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>FiBOT — Si es repetitivo, que lo haga FiBOT.</title>
 <meta name="description" content="FiBOT conecta los sistemas que ya usa tu empresa y responde por WhatsApp lo que tu gente pregunta todos los días.">
@@ -107,16 +132,6 @@
 
   .destello{position:fixed;z-index:5;pointer-events:none;font-family:var(--mono);
     letter-spacing:.1em;color:rgba(224,164,76,.5);white-space:nowrap;animation:destello .17s linear both}
-
-  /* ── banner de idioma ─────────────────────────────────── */
-  .lang-banner{background:var(--bronce);color:var(--tinta);font-family:var(--sans);font-size:.86rem;
-    display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;
-    padding:10px 20px;text-align:center;position:relative;z-index:31}
-  .lang-banner a{color:var(--tinta);font-weight:700;text-decoration:underline}
-  .lang-banner a:hover{color:var(--tinta);opacity:.75}
-  .lang-banner button{font-family:var(--sans);font-size:.8rem;color:var(--tinta);background:transparent;
-    border:1px solid var(--tinta);border-radius:2px;padding:4px 10px;cursor:pointer;opacity:.85}
-  .lang-banner button:hover{opacity:1}
 
   /* ── selector de idioma (footer) ──────────────────────── */
   .pie-idiomas{display:flex;flex-wrap:wrap;gap:4px 12px}
