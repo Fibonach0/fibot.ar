@@ -1,0 +1,12 @@
+/* AUTOR */
+  Nombre: Ignacio Antuña
+  Firma: FiBOT-IA
+  Sitio: https://fibot.ar/
+  Ubicación: Zona Norte, Gran Buenos Aires, Argentina
+  Contacto: ignacio@fibot.ar
+
+/* SITIO */
+  Última actualización: 2026/09/01
+  Componentes: HTML, CSS, JS estático (sin build)
+  Idiomas: es, en, pt, fr, de, sv, zh, ja, ko, ar
+  Hosting: GitHub Pages

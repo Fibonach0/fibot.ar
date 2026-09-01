@@ -1,10 +1,12 @@
 <!doctype html>
+<!-- Built by Ignacio Antuña | https://fibot.ar/ -->
 <html lang="zh">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>FiBOT — 重复的事，交给FiBOT去做。</title>
 <meta name="description" content="FiBOT连接你公司已经在用的系统，把员工每天都要问的问题，直接通过WhatsApp给出答案。">
+<meta name="author" content="Ignacio Antuña">
 <link rel="canonical" href="https://fibot.ar/zh/">
 <link rel="alternate" hreflang="es" href="https://fibot.ar/">
 <link rel="alternate" hreflang="en" href="https://fibot.ar/en/">
@@ -41,19 +43,36 @@
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "ProfessionalService",
-  "name": "FiBOT",
-  "url": "https://fibot.ar/zh/",
-  "description": "FiBOT连接你公司已经在用的系统，把员工每天都要问的问题，直接通过WhatsApp给出答案。",
-  "telephone": "+54-9-11-2852-4957",
-  "email": "Ignacio@fibot.ar",
-  "areaServed": { "@type": "Country", "name": "Argentina" },
-  "parentOrganization": {
-    "@type": "Organization",
-    "name": "AntuñA",
-    "url": "https://www.xn--antua-rta.com.ar/"
-  },
-  "founder": { "@type": "Person", "name": "Ignacio Antuña" }
+  "@graph": [
+    {
+      "@type": "Person",
+      "@id": "https://fibot.ar/#person",
+      "name": "Ignacio Antuña",
+      "url": "https://fibot.ar/",
+      "email": "ignacio@fibot.ar",
+      "sameAs": [
+        "https://www.linkedin.com/in/ignacio-antuña/",
+        "https://github.com/Fibonach0"
+      ],
+      "knowsAbout": ["automatización con WhatsApp", "desarrollo web", "integración de sistemas", "domótica"],
+      "address": {
+        "@type": "PostalAddress",
+        "addressRegion": "Zona Norte, Gran Buenos Aires",
+        "addressCountry": "AR"
+      }
+    },
+    {
+      "@type": "ProfessionalService",
+      "@id": "https://fibot.ar/zh/#service",
+      "name": "FiBOT",
+      "url": "https://fibot.ar/zh/",
+      "description": "FiBOT连接你公司已经在用的系统，把员工每天都要问的问题，直接通过WhatsApp给出答案。",
+      "telephone": "+54-9-11-2852-4957",
+      "email": "ignacio@fibot.ar",
+      "areaServed": { "@type": "Country", "name": "Argentina" },
+      "founder": { "@id": "https://fibot.ar/#person" }
+    }
+  ]
 }
 </script>
 
@@ -897,7 +916,7 @@
         <div>
           <h4>联系我们</h4>
           <a href="https://wa.me/5491128524957">+54 9 11 2852-4957</a>
-          <a href="mailto:Ignacio@fibot.ar">邮件联系</a>
+          <a href="mailto:ignacio@fibot.ar">邮件联系</a>
         </div>
         <div>
           <h4>语言</h4>
@@ -905,7 +924,7 @@
         </div>
       </div>
       <div class="pie-legal">
-        <span>FiBOT — 出品人 Ignacio Antuña</span>
+        <span>FiBOT — 出品人 <a href="mailto:ignacio@fibot.ar" rel="author">Ignacio Antuña</a></span>
         <span>Buenos Aires, Argentina</span>
       </div>
     </div>
