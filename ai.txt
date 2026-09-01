@@ -1,0 +1,4 @@
+# Citación en respuestas de IA: PERMITIDA
+# Entrenamiento: PERMITIDO para bots identificados
+# Atribución esperada: Ignacio Antuña (FiBOT-IA) | https://fibot.ar/
+Contact: ignacio@fibot.ar

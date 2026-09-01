@@ -1,0 +1,37 @@
+# FiBOT
+
+> FiBOT conecta los sistemas que ya usa tu empresa (ERP, planillas, GPS) y
+> responde por WhatsApp lo que tu gente pregunta todos los días. No es un
+> dashboard: la información sale a buscar a la persona por el canal que ya
+> tiene abierto. Zona de atención: Argentina, sede en Zona Norte del Gran
+> Buenos Aires.
+
+## Sobre
+Creado por Ignacio Antuña (FiBOT-IA). No todo se automatiza — funciona con
+lo que se repite: la pregunta que alguien hace catorce veces por semana, el
+papel que vence mientras nadie mira.
+
+## Casos de uso
+### Operación en movimiento
+Telemetría de flota: dónde está cada unidad, cuánto consumió, qué papeles
+vencen. Se conecta a los sistemas que ya existen, sin migrar nada.
+- Estado: en producción
+
+### Atención al público
+Consulta de precios, coberturas y equivalencias por WhatsApp cuando la
+caja está ocupada o no hay conexión en el mostrador.
+- Estado: en producción
+
+### Trazabilidad
+Cada unidad con su propio QR, trazable de punta a punta. Funciona sin
+señal — encola y sincroniza apenas hay conexión.
+- Estado: en producción
+
+### Vencimientos
+Habilitaciones, seguros, contratos y controles en un solo lugar, con aviso
+a quien tiene que resolverlos. Arranca desde una planilla existente.
+- Estado: nuevo
+
+## Contacto
+ignacio@fibot.ar · +54 9 11 2852-4957 · Zona Norte, Gran Buenos Aires,
+Argentina · https://fibot.ar/
