@@ -28,6 +28,11 @@ anidados, con el "1" más chico en verde — la única pieza con color. Manual
 completo y los seis SVG fuente en `assets/logo/` (el repo de origen de estos
 assets es un export del skill `design`; ese `.dc.html` no se versiona acá).
 
+Los **tokens** (colores, tipografía, espacio, forma) viven en el `:root` de
+`index.html` y están transcriptos en **[`DESIGN.md`](DESIGN.md)** — ese archivo
+existe para poder llevarlos a otro repo del ecosistema sin que cada superficie
+invente su propio verde. La fuente de verdad sigue siendo el código.
+
 - **`simbolo-claro` / `logo-horizontal-claro`**: trazo y texto claros
   (`#F2EEE6`/`#ece6db`), para fondo oscuro — es lo que usan el header y el
   footer de esta página, porque **todo el sitio es oscuro desde el tema v2**.
