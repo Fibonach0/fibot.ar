@@ -1,6 +1,6 @@
 # fibot.ar
 
-Sitio comercial de **FiBOT**, servido por GitHub Pages en **https://www.fibot.ar**.
+Sitio comercial de **FiBOT**, servido por GitHub Pages en **https://fibot.ar**.
 
 Una sola página estática. **No hay build, ni bundler, ni dependencias**: se edita
 el HTML y se pushea.
@@ -11,7 +11,7 @@ el HTML y se pushea.
 |---|---|
 | `index.html` | la home entera — estilos y script incluidos, sin recursos externos |
 | `404.html` | página de error |
-| `CNAME` | `www.fibot.ar` — lo lee GitHub Pages, va en mayúsculas o lo ignora |
+| `CNAME` | `fibot.ar` (apex, sin `www`) — lo lee GitHub Pages, va en mayúsculas o lo ignora |
 | `favicon.svg` | ícono |
 | `assets/og-fibot.png` | preview para WhatsApp, Twitter y LinkedIn (1200×630) |
 | `robots.txt` · `sitemap.xml` | indexación |
@@ -37,5 +37,11 @@ otro lado:
 
 ## DNS
 
-En Cloudflare, zona `fibot.ar`: `CNAME www → fibonach0.github.io`, **sin proxy**
-(nube gris). Con el proxy naranja GitHub no puede emitir el certificado.
+En Cloudflare, zona `fibot.ar`: el **apex** va con **registros A** a las cuatro
+IP de GitHub Pages (`185.199.108.153`, `.109.153`, `.110.153`, `.111.153`) — un
+CNAME no es válido en la raíz de una zona. `www` resuelve a las mismas cuatro;
+GitHub redirige al dominio que figure en `CNAME`, que es el apex.
+
+Todo **sin proxy** (nube gris): con el proxy naranja GitHub no puede emitir el
+certificado. Para comprobarlo alcanza con resolver el dominio — si contesta
+`185.199.*` está derecho a Pages; `104.*` o `172.67.*` es Cloudflare proxeando.
