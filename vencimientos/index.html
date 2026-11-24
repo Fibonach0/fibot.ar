@@ -1,0 +1,620 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FiBOT Vencimientos — Ningún papel vencido más</title>
+<meta name="description" content="Subís tu planilla de vencimientos y FiBOT avisa por WhatsApp a quien tiene que resolverlo, con tiempo. Seguros, habilitaciones, VTV, matafuegos, contratos.">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#0c0b0a">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="es_AR">
+<meta property="og:site_name" content="FiBOT">
+<meta property="og:title" content="FiBOT Vencimientos — Ningún papel vencido más">
+<meta property="og:description" content="Subís tu planilla y FiBOT avisa por WhatsApp a quien tiene que resolverlo, con tiempo.">
+<meta property="og:image" content="https://fibot.ar/assets/og-fibot.png">
+<style>
+  :root{
+    --tinta:#0c0b0a;
+    --tinta-alt:#0f0e0c;
+    --hueso:#ece6db;
+    --tenue:#9a9082;
+    --tenue-2:#57514a;
+    --linea:#221f1b;
+    --linea-2:#2a2622;
+    --bronce:#E0A44C;
+    --bronce-h:#eebe7f;
+    --verde:#6FDCAE;
+
+    --sans:'Space Grotesk',system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    --serif:Georgia,"Iowan Old Style","Palatino Linotype",serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--tinta);color:var(--hueso);font-family:var(--serif);
+    font-size:17px;line-height:1.68;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  a{color:var(--bronce);text-decoration:none}
+  a:hover{color:var(--hueso)}
+  ::selection{background:var(--bronce);color:var(--tinta)}
+  :focus-visible{outline:2px solid var(--bronce);outline-offset:3px}
+
+  .m{max-width:1180px;margin:0 auto;padding:0 28px}
+
+  @keyframes dibujo{to{stroke-dashoffset:0}}
+  @keyframes aparecer{from{opacity:0;transform:scale(.55)}to{opacity:1;transform:scale(1)}}
+  @keyframes subir{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+  @keyframes pulso{0%,100%{opacity:.22}50%{opacity:1}}
+  @keyframes caret{0%,49%{opacity:1}50%,100%{opacity:0}}
+  @keyframes entra{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:none}}
+  @keyframes entraCorto{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+  @keyframes crece{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+  @keyframes destello{0%{opacity:0}22%{opacity:.85}70%{opacity:.5}100%{opacity:0}}
+  .rev{animation:entra .7s cubic-bezier(.22,.61,.36,1) both;animation-timeline:view();animation-range:entry 0% cover 26%}
+  .rev-c{animation:entraCorto .6s cubic-bezier(.22,.61,.36,1) both;animation-timeline:view();animation-range:entry 0% cover 22%}
+  .regla{animation:crece .9s cubic-bezier(.22,.61,.36,1) both;animation-timeline:view();animation-range:entry 0% cover 20%;transform-origin:left}
+  @media (prefers-reduced-motion:reduce){
+    .rev,.rev-c,.regla{animation:none;opacity:1;transform:none}
+  }
+
+  .fondo-grilla{position:absolute;inset:0;pointer-events:none;
+    background-image:linear-gradient(#ffffff08 1px,transparent 1px),linear-gradient(90deg,#ffffff08 1px,transparent 1px);
+    background-size:88px 88px;mask-image:linear-gradient(#000,#000 46%,transparent 92%);z-index:0}
+  .fondo-luz{position:absolute;border-radius:50%;filter:blur(20px);pointer-events:none}
+
+  .destello{position:fixed;z-index:5;pointer-events:none;font-family:var(--mono);
+    letter-spacing:.1em;color:rgba(224,164,76,.5);white-space:nowrap;animation:destello .17s linear both}
+
+  /* ── selector de idioma (footer) ──────────────────────── */
+  .pie-idiomas{display:flex;flex-wrap:wrap;gap:4px 12px}
+  .pie-idiomas a{display:inline;padding:0}
+  .pie-idiomas a[aria-current]{color:var(--bronce)}
+
+  /* ── nav ───────────────────────────────────────────── */
+  .top{position:sticky;top:0;z-index:30;background:rgba(12,11,10,.82);
+    backdrop-filter:blur(14px) saturate(1.2);border-bottom:1px solid var(--linea)}
+  .top .m{height:68px;display:flex;align-items:center;gap:24px}
+  .marca{display:flex;align-items:center;gap:12px;text-decoration:none;color:var(--hueso)}
+  .marca svg{width:36px;height:22px;flex:none;display:block}
+  .marca span{font-family:var(--sans);font-weight:700;font-size:1.06rem;letter-spacing:-.03em}
+  .marca span b{font-weight:400}
+  .marca-slogan{font-family:var(--sans);font-size:.82rem;color:var(--tenue);padding-left:14px;
+    margin-left:2px;border-left:1px solid var(--linea-2);white-space:nowrap}
+  @media (max-width:1080px){.marca-slogan{display:none}}
+  .nav-desk{margin-left:auto;display:flex;align-items:center;gap:8px}
+  .nav-desk a{font-family:var(--sans);font-size:.88rem;color:var(--tenue);padding:9px 12px;
+    border-radius:2px;transition:color .18s,background .18s}
+  .nav-desk a:hover{color:var(--hueso);background:#ffffff0d}
+  .nav-lang{position:relative;margin-left:6px}
+  .nav-lang-btn{display:flex;align-items:center;gap:6px;font-family:var(--sans);font-size:.86rem;
+    color:var(--tenue);background:transparent;border:1px solid var(--linea-2);border-radius:2px;
+    padding:7px 10px;cursor:pointer;transition:color .18s,border-color .18s,background .18s}
+  .nav-lang-btn:hover,.nav-lang-btn[aria-expanded="true"]{color:var(--hueso);border-color:var(--bronce);background:#ffffff0d}
+  .nav-lang-btn .bandera,.nav-lang-menu .bandera{display:block;width:20px;height:15px;border-radius:2px;object-fit:cover;flex:none;box-shadow:0 0 0 1px rgba(255,255,255,.14)}
+  .nav-lang-btn .car{font-size:.6rem;color:var(--tenue-2);transition:transform .18s}
+  .nav-lang-btn[aria-expanded="true"] .car{transform:rotate(180deg)}
+  .nav-lang-menu{position:absolute;top:calc(100% + 8px);right:0;min-width:180px;background:var(--tinta-alt);
+    border:1px solid var(--linea-2);border-radius:4px;box-shadow:0 20px 44px rgba(0,0,0,.5);
+    padding:6px;display:none;gap:1px;z-index:40}
+  .nav-lang-menu.abierto{display:grid}
+  .nav-lang-menu a{display:flex;align-items:center;gap:9px;font-family:var(--sans);font-size:.86rem;
+    color:var(--tenue);padding:8px 10px;border-radius:2px;white-space:nowrap}
+  .nav-lang-menu a:hover{color:var(--hueso);background:#ffffff0d}
+  .nav-lang-menu a[aria-current]{color:var(--bronce)}
+  @media (max-width:640px){.nav-lang-btn .cod{display:none}}
+  @media (max-width:640px){
+    .marca span{display:none}
+    .nav-desk{gap:2px}
+    .nav-desk a{padding:9px 8px;font-size:.82rem}
+  }
+  .btn{font-family:var(--sans);font-weight:500;color:var(--tinta);background:var(--bronce);
+    padding:10px 18px;border-radius:2px;transition:transform .18s,box-shadow .18s,background .18s;
+    display:inline-block;border:none;cursor:pointer}
+  .btn:hover{background:var(--bronce-h);color:var(--tinta);transform:translateY(-1px);
+    box-shadow:0 8px 22px rgba(224,164,76,.28)}
+  .nav-desk .btn{margin-left:10px;font-size:.88rem;padding:10px 18px}
+  .btn-grande{font-size:1.02rem;padding:16px 30px}
+  .btn-grande:hover{transform:translateY(-2px);box-shadow:0 14px 34px rgba(224,164,76,.3)}
+  .btn-ghost{font-family:var(--sans);font-size:.95rem;color:var(--hueso);padding:15px 22px;
+    border:1px solid var(--linea-2);border-radius:2px;transition:border-color .18s,background .18s}
+  .btn-ghost:hover{border-color:var(--bronce);background:#ffffff08}
+
+  /* ── hero ──────────────────────────────────────────── */
+  header.portada{position:relative;padding:clamp(44px,7vw,96px) 0 clamp(40px,5vw,64px)}
+  .portada .grid{display:grid;gap:clamp(34px,5vw,68px);grid-template-columns:repeat(auto-fit,minmax(360px,1fr));align-items:start}
+  .eyebrow-punto{display:flex;align-items:center;gap:12px;margin-bottom:clamp(22px,2.6vw,32px)}
+  .eyebrow-punto i{width:7px;height:7px;background:var(--bronce);border-radius:50%;
+    box-shadow:0 0 0 4px rgba(224,164,76,.18);animation:pulso 2.4s infinite}
+  .mono{font-family:var(--mono);font-size:.7rem;letter-spacing:.22em;text-transform:uppercase;color:var(--bronce)}
+  .simbolo-hero{width:clamp(112px,12vw,156px);height:auto;display:block;margin-bottom:clamp(24px,3vw,36px)}
+  h1.display{font-family:var(--sans);font-weight:700;letter-spacing:-.05em;line-height:1.08;
+    text-wrap:balance;font-size:clamp(3rem,7.8vw,5.8rem);margin:0;max-width:14ch}
+  h1.display em{font-style:normal;color:var(--bronce)}
+  .lead{font-size:clamp(1.14rem,1.7vw,1.38rem);max-width:37ch;line-height:1.52;margin:clamp(24px,2.8vw,34px) 0 0}
+  .nota-margen{font-family:var(--sans);font-size:.87rem;color:var(--tenue);border-left:2px solid var(--bronce);
+    padding-left:16px;margin:30px 0 0;max-width:33ch;line-height:1.55}
+  .cta-row{display:flex;flex-wrap:wrap;gap:14px;align-items:center;margin-top:36px}
+
+  /* ── whatsapp mock ─────────────────────────────────── */
+  .wa-col{padding-top:clamp(0px,4vw,72px)}
+  .wa{background:#0b141a;border-radius:10px;overflow:hidden;
+    box-shadow:0 30px 80px rgba(0,0,0,.6),0 0 0 1px var(--linea);max-width:430px}
+  .wa-top{background:#202c33;padding:11px 14px;display:flex;align-items:center;gap:11px}
+  .wa-av{width:38px;height:38px;flex:none;border-radius:50%;overflow:hidden;display:grid;place-items:center}
+  .wa-top b{color:#e9edef;font-family:var(--sans);font-size:.95rem;font-weight:500;display:block;line-height:1.25}
+  .wa-top small{color:var(--bronce);font-family:var(--sans);font-size:.72rem}
+  .wa-rubro{font-family:var(--mono);font-size:.62rem;color:#8696a0;letter-spacing:.1em;margin-left:auto}
+  .wa-cuerpo{padding:16px 12px 12px;display:flex;flex-direction:column;gap:7px;min-height:368px;
+    background-color:#0b141a;
+    background-image:radial-gradient(circle at 20% 30%,rgba(255,255,255,.022) 1px,transparent 1px),
+      radial-gradient(circle at 70% 65%,rgba(255,255,255,.022) 1px,transparent 1px);
+    background-size:38px 38px,52px 52px}
+  .b{max-width:84%;padding:7px 10px 6px;border-radius:9px;font-family:var(--sans);
+    font-size:.89rem;line-height:1.45;animation:subir .32s ease both}
+  .b.out{align-self:flex-end;background:#005c4b;color:#e9edef;border-top-right-radius:2px}
+  .b.in{align-self:flex-start;background:#202c33;color:#e9edef;border-top-left-radius:2px}
+  .b.aviso{border-left:3px solid var(--bronce)}
+  .b .t{font-size:.62rem;color:#ffffff8c;float:right;margin:7px 0 -2px 8px}
+  .b strong{font-weight:700}
+  .b .n{font-variant-numeric:tabular-nums}
+  .escribiendo{align-self:flex-start;padding:12px 14px;border-radius:9px;border-top-left-radius:2px;
+    background:#202c33;display:flex;gap:5px;align-items:center}
+  .escribiendo i{width:6px;height:6px;border-radius:50%;background:#8696a0;animation:pulso 1.1s infinite}
+  .escribiendo i:nth-child(2){animation-delay:.18s}
+  .escribiendo i:nth-child(3){animation-delay:.36s}
+  .wa-input{margin-top:auto;display:flex;align-items:center;gap:9px;background:#202c33;
+    border-radius:20px;padding:10px 14px}
+  .wa-input span{font-family:var(--sans);font-size:.85rem;color:#8696a0;flex:1}
+  .wa-input .caret{display:inline-block;width:1.5px;height:.95em;background:var(--bronce);
+    vertical-align:-2px;margin-left:1px;animation:caret 1.1s steps(1) infinite}
+  .wa-nota{font-family:var(--mono);font-size:.63rem;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--tenue-2);margin:16px 0 0}
+
+  /* ── mensaje de voz (mock de audio en el chat) ────────── */
+  .voice{display:flex;align-items:center;gap:9px;padding:2px 0}
+  .voice .play{width:28px;height:28px;border-radius:50%;background:#ffffff1f;flex:none;position:relative;
+    border:none;padding:0;cursor:pointer;transition:background .18s}
+  .voice .play:hover{background:#ffffff30}
+  .voice .play::after{content:'';position:absolute;top:50%;left:53%;transform:translate(-50%,-50%);
+    border-style:solid;border-width:6px 0 6px 9px;border-color:transparent transparent transparent #e9edef}
+  .voice .play.jugando::after{border-width:0;width:3px;height:11px;left:50%;background:#e9edef;
+    box-shadow:5px 0 0 #e9edef}
+  .voice .onda{display:flex;align-items:center;gap:2.5px;height:22px;flex:1}
+  .voice .onda i{display:block;width:2.5px;border-radius:2px;background:#ffffff55;transition:background .2s}
+  .voice .onda i.hecha{background:#ffffffe8}
+  .voice .dur{font-family:var(--mono);font-size:.68rem;color:#ffffffa0;flex:none}
+  .transcripcion{font-style:italic;font-size:.82rem;color:#ffffffab;line-height:1.4;margin:7px 0 0}
+
+  /* ── franja de cifras ──────────────────────────────── */
+  .franja{position:relative;border-top:1px solid var(--linea);border-bottom:1px solid var(--linea);background:var(--tinta-alt)}
+  .franja .m{padding:clamp(34px,4vw,52px) 28px;display:grid;gap:18px;grid-template-columns:repeat(auto-fit,minmax(228px,1fr))}
+  .cif{display:flex;flex-direction:column;gap:10px;padding:24px 22px 20px;border:1px solid var(--linea-2);
+    border-radius:8px;background:#ffffff05;transition:border-color .2s,background .2s}
+  .cif:hover{border-color:var(--bronce);background:#ffffff0a}
+  .cif .v{font-family:var(--sans);font-weight:700;font-size:clamp(2rem,3.6vw,2.9rem);letter-spacing:-.05em;
+    color:var(--bronce);line-height:1;font-variant-numeric:tabular-nums}
+  .cif .k{font-family:var(--sans);font-size:.9rem;color:#c4bcaf;line-height:1.45}
+  .cif .f{font-family:var(--mono);font-size:.63rem;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--tenue-2);margin-top:auto;padding-top:6px}
+
+  /* ── secciones ─────────────────────────────────────── */
+  section{position:relative;padding:clamp(62px,7.5vw,104px) 0}
+  section.alt{background:var(--tinta-alt);border-top:1px solid var(--linea);border-bottom:1px solid var(--linea)}
+  .titulo{font-family:var(--sans);font-weight:700;letter-spacing:-.05em;line-height:.96;
+    font-size:clamp(2.1rem,4.6vw,3.4rem);margin:18px 0 0;text-wrap:balance}
+  .titulo em{font-style:normal;color:var(--bronce)}
+  .bajada{max-width:52ch;margin:22px 0 0;color:var(--tenue)}
+  .bajada strong{color:var(--hueso);font-weight:400;border-bottom:1px solid var(--bronce)}
+  .dos{display:grid;gap:clamp(26px,4vw,64px);margin-top:38px;grid-template-columns:repeat(auto-fit,minmax(320px,1fr))}
+  .dos p{max-width:46ch;margin:0}
+  .dos p+p{margin-top:1em}
+
+  /* ── motor: espiral ────────────────────────────────── */
+  .motor-grid{margin-top:clamp(36px,4.5vw,60px);display:grid;gap:clamp(28px,4vw,56px);
+    grid-template-columns:repeat(auto-fit,minmax(330px,1fr));align-items:center}
+  .espiral-nota{font-family:var(--mono);font-size:.63rem;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--tenue-2);margin:16px 0 0}
+  .motor-pasos{display:flex;flex-direction:column;gap:0}
+  .motor-paso{display:grid;grid-template-columns:2.6em 1fr;gap:14px;padding:16px 0;
+    border-top:1px solid var(--linea);transition:background .18s}
+  .motor-paso:hover{background:#ffffff08}
+  .motor-paso:last-child{border-bottom:1px solid var(--linea)}
+  .motor-paso.final{background:#ffffff05}
+  .motor-paso .num{font-family:var(--mono);font-size:.72rem;color:var(--bronce);padding-top:4px}
+  .motor-paso h3{font-family:var(--sans);font-weight:500;font-size:1.02rem;margin:0 0 3px}
+  .motor-paso.final h3{color:var(--bronce)}
+  .motor-paso p{margin:0;color:var(--tenue);font-size:.95rem;max-width:44ch}
+
+  /* ── frentes ───────────────────────────────────────── */
+  .lista{border-top:1px solid var(--linea);margin-top:30px}
+  .item{border-bottom:1px solid var(--linea);padding:28px 0;display:grid;gap:10px 34px;
+    grid-template-columns:minmax(0,10.5em) 1fr;transition:padding-left .2s}
+  .item:hover{padding-left:12px}
+  @media (max-width:560px){
+    .item{grid-template-columns:1fr;gap:10px}
+  }
+  .item h3{font-family:var(--sans);font-weight:700;letter-spacing:-.03em;font-size:clamp(1.4rem,2.5vw,2rem);margin:0}
+  .item.tenue h3{font-family:var(--serif);font-weight:400;color:var(--tenue)}
+  .item .d{color:var(--tenue);max-width:54ch;margin:0}
+  .item .est{font-family:var(--mono);font-size:.63rem;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--tenue-2);display:block;margin-top:10px}
+
+  /* ── la cuenta ─────────────────────────────────────── */
+  .formula{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:34px}
+  .termino{background:#ffffff05;border:1px solid var(--linea-2);border-radius:8px;padding:12px 16px;
+    font-family:var(--sans);font-size:.92rem;text-align:center;line-height:1.3}
+  .termino b{display:block;font-size:.74rem;color:var(--tenue);font-weight:400;margin-top:3px}
+  .termino.destacado{border-color:var(--bronce);background:#e0a44c14}
+  .op{font-family:var(--mono);font-size:1.3rem;color:var(--bronce);font-weight:700}
+  @media (max-width:640px){
+    .formula{flex-direction:column;align-items:center;gap:0}
+    .formula .termino{width:86%;max-width:340px}
+    .formula .op{align-self:center;width:34px;height:34px;line-height:32px;text-align:center;
+      background:var(--tinta-alt);border:1px solid var(--linea-2);border-radius:50%;
+      font-size:1.05rem;margin:6px 0}
+  }
+  .ejemplo{margin-top:28px;display:flex;align-items:baseline;gap:20px;flex-wrap:wrap}
+  .ejemplo .cuenta{font-family:var(--mono);font-size:.95rem;color:var(--tenue)}
+  .ejemplo .num{font-family:var(--sans);font-size:3rem;font-weight:700;color:var(--bronce);
+    letter-spacing:-.02em;line-height:1}
+  .ejemplo .detalle{font-size:.92rem;color:var(--tenue);max-width:26ch;line-height:1.4}
+  .etiqueta-chica{font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--tenue-2);margin-top:20px}
+  .remate{font-size:1.1rem;font-weight:500;font-family:var(--sans);margin-top:22px;max-width:64ch;line-height:1.4}
+  .remate b{font-weight:700;color:var(--bronce)}
+
+  /* ── arranca ───────────────────────────────────────── */
+  .pasos{margin-top:46px;display:grid;gap:34px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+  .paso{border-top:2px solid var(--linea-2);padding-top:20px;max-width:44ch}
+  .paso.actual{border-top-color:var(--bronce)}
+  .paso .cuando{font-family:var(--mono);font-size:.66rem;letter-spacing:.18em;text-transform:uppercase;
+    color:var(--tenue);display:block;margin-bottom:10px}
+  .paso.actual .cuando{color:var(--bronce)}
+  .paso h3{font-family:var(--sans);font-weight:700;letter-spacing:-.025em;font-size:1.26rem;margin:0 0 8px}
+  .paso p{margin:0;color:var(--tenue)}
+
+  /* ── faq ───────────────────────────────────────────── */
+  .faq{margin-top:42px;border-top:1px solid var(--linea)}
+  .faq details{border-bottom:1px solid var(--linea)}
+  .faq summary{cursor:pointer;padding:22px 0;font-family:var(--sans);font-weight:500;font-size:1.05rem;
+    list-style:none;transition:color .18s}
+  .faq summary::-webkit-details-marker{display:none}
+  .faq summary:hover{color:var(--bronce)}
+  .faq p{margin:0 0 24px;color:var(--tenue);max-width:62ch}
+
+  /* ── cierre ────────────────────────────────────────── */
+  .cierre{background:linear-gradient(180deg,var(--tinta-alt),#131110);border-top:1px solid var(--linea);
+    padding:clamp(70px,8.5vw,124px) 0}
+  .cierre .m{display:grid;gap:clamp(34px,5vw,74px);grid-template-columns:repeat(auto-fit,minmax(300px,1fr));align-items:center}
+  .cierre .titulo{margin:0;max-width:20ch}
+  .cierre .simbolo-fondo{width:min(100%,320px);height:auto;justify-self:end}
+
+  /* ── footer ────────────────────────────────────────── */
+  footer{padding:clamp(48px,5.5vw,72px) 0 48px;font-family:var(--sans);font-size:.89rem;
+    color:var(--tenue);border-top:1px solid var(--linea)}
+  .pie-cols{display:grid;gap:32px 40px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+  .pie-cols svg{width:200px;height:auto;display:block}
+  .pie-cols p{margin:16px 0 0;max-width:32ch;line-height:1.55}
+  .pie-cols h4{font-family:var(--mono);font-size:.66rem;letter-spacing:.2em;text-transform:uppercase;
+    color:var(--tenue-2);margin:0 0 14px;font-weight:400}
+  .pie-cols a{color:var(--hueso);display:block;padding:4px 0;transition:color .16s}
+  .pie-cols a:hover{color:var(--bronce)}
+  .pie-legal{margin-top:40px;padding-top:22px;border-top:1px solid var(--linea);display:flex;gap:18px;
+    flex-wrap:wrap;font-family:var(--mono);font-size:.7rem;letter-spacing:.08em;color:var(--tenue-2)}
+  .pie-legal span:last-child{margin-left:auto}
+  .pie-slogan{font-family:var(--sans);font-weight:700;color:var(--hueso);font-size:1.02rem;
+    margin:16px 0 0;max-width:none}
+
+  /* ── cómo se extiende ─────────────────────────────────── */
+  .mock-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:32px;align-items:start}
+  @media (max-width:860px){.mock-grid{grid-template-columns:1fr}}
+  .mock-card{display:flex;flex-direction:column;gap:14px}
+  .mock-head h3{font-family:var(--sans);font-weight:700;font-size:1.1rem;margin:0;letter-spacing:-.02em}
+  .mock-head span{font-family:var(--sans);font-size:.82rem;color:var(--tenue);display:block;margin-top:2px}
+
+  .mock-chat{background:#000;border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:10px}
+  .mc-b{max-width:88%;padding:10px 14px;border-radius:11px;font-family:var(--sans);font-size:.9rem;line-height:1.4}
+  .mc-b.in{background:#232323;color:var(--hueso);align-self:flex-start;border-bottom-left-radius:3px}
+  .mc-b.out{background:var(--bronce);color:var(--tinta);font-weight:700;align-self:flex-end;border-bottom-right-radius:3px}
+  .mc-b time{display:block;font-family:var(--mono);font-size:.66rem;margin-top:5px;opacity:.6}
+  .mc-b.out time{color:var(--tinta);opacity:.65}
+
+  .mock-mail{background:var(--hueso);color:#161310;border-radius:12px;overflow:hidden}
+  .mm-asunto{margin:0;padding:18px 20px 6px;font-family:var(--sans);font-weight:700;font-size:1.02rem;line-height:1.3}
+  .mm-asunto span{display:block;font-family:var(--mono);font-size:.6rem;letter-spacing:.18em;
+    color:#8a8074;font-weight:400;margin-bottom:8px}
+  .mm-meta{margin:0;padding:0 20px 14px;font-family:var(--sans);font-size:.78rem;color:#8a8074;
+    border-bottom:1px solid #00000014}
+  .mm-cuerpo{margin:0;padding:16px 20px;font-family:var(--sans);font-size:.86rem;line-height:1.55;color:#3a352e}
+  .mm-reply{background:var(--bronce);padding:16px 20px;display:flex;flex-direction:column;gap:4px}
+  .mm-reply span{font-family:var(--mono);font-size:.6rem;letter-spacing:.18em;color:#00000090}
+  .mm-reply b{font-family:var(--sans);font-weight:700;color:var(--tinta);font-size:1.02rem}
+
+  .mock-notes{background:#050505;border-radius:12px;padding:26px 18px;display:flex;
+    gap:14px;flex-wrap:wrap;justify-content:center;align-content:center;min-height:168px}
+  .nota{width:118px;height:118px;background:#e7e1d2;color:#1c1a16;font-family:var(--sans);
+    font-size:.84rem;font-weight:500;line-height:1.3;padding:14px;box-shadow:0 6px 16px #00000055}
+  .nota:nth-child(1){transform:rotate(-4deg)}
+  .nota:nth-child(2){transform:rotate(3deg)}
+  .nota:nth-child(3){transform:rotate(-3deg)}
+  .nota.bronce{background:var(--bronce);color:var(--tinta);font-weight:700;transform:rotate(4deg)}
+
+  /* ── página de producto: Vencimientos ───────────────────── */
+  .uat{background:var(--bronce);color:var(--tinta);font-family:var(--mono);font-size:.72rem;letter-spacing:.12em;
+    text-transform:uppercase;text-align:center;padding:7px 16px}
+  .chips{display:flex;flex-wrap:wrap;gap:10px;margin-top:30px}
+  .chip{font-family:var(--sans);font-size:.92rem;border:1px solid var(--linea-2);border-radius:999px;padding:8px 14px;color:#c4bcaf;background:#ffffff05}
+  .planes{margin-top:44px;display:grid;gap:20px;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));align-items:stretch}
+  .plan{border:1px solid var(--linea-2);border-radius:10px;padding:30px 26px;background:#ffffff05;display:flex;flex-direction:column;gap:14px}
+  .plan.dest{border-color:var(--bronce);background:#e0a44c0d;position:relative}
+  .plan .sello{position:absolute;top:-12px;left:24px;background:var(--bronce);color:var(--tinta);font-family:var(--mono);
+    font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;padding:4px 10px;border-radius:2px}
+  .plan h3{font-family:var(--sans);font-weight:700;font-size:1.3rem;letter-spacing:-.02em;margin:0}
+  .plan .para{font-family:var(--sans);font-size:.9rem;color:var(--tenue);margin:0}
+  .precio{font-family:var(--sans);font-weight:700;font-size:2.6rem;letter-spacing:-.05em;line-height:1;color:var(--hueso)}
+  .precio small{font-size:.95rem;font-weight:400;letter-spacing:0;color:var(--tenue)}
+  .plan ul{list-style:none;margin:4px 0 0;padding:0;font-family:var(--sans);font-size:.95rem;color:#c4bcaf}
+  .plan li{padding:8px 0;border-top:1px solid var(--linea)}
+  .plan li::before{content:"✓";color:var(--verde);margin-right:10px}
+  .plan .btn,.plan .btn-ghost{margin-top:auto;text-align:center}
+  .letra-chica{font-family:var(--sans);font-size:.85rem;color:var(--tenue-2);margin-top:22px}
+  .wa-cuerpo.estatico{min-height:0}
+  @media (max-width:640px){.nav-desk a:not(.btn){display:none}.nav-desk .btn{padding:9px 14px;font-size:.84rem}}
+
+</style>
+</head>
+<body>
+<div class="uat">Versión de prueba (UAT) · precios y textos a confirmar</div>
+<div style="position:relative;overflow-x:hidden;overflow-y:clip">
+  <div class="fondo-grilla" aria-hidden="true"></div>
+  <div class="fondo-luz" aria-hidden="true" style="top:-260px;right:-180px;width:760px;height:760px;
+    background:radial-gradient(circle,rgba(224,164,76,.13),rgba(224,164,76,0) 68%)"></div>
+
+  <div class="top">
+    <div class="m" style="display:flex;align-items:center;gap:24px">
+      <a class="marca" href="/" aria-label="FiBOT">
+        <svg viewBox="-10 -10 1320 820" role="img" aria-hidden="true">
+          <g fill="none" stroke="#ece6db" stroke-width="30">
+            <rect x="0" y="0" width="800" height="800"></rect>
+            <rect x="800" y="0" width="500" height="500"></rect>
+            <rect x="1000" y="500" width="300" height="300"></rect>
+            <rect x="800" y="600" width="200" height="200"></rect>
+            <rect x="900" y="500" width="100" height="100"></rect>
+          </g>
+          <rect x="815" y="515" width="70" height="70" fill="#6FDCAE"></rect>
+          <text x="400" y="400" text-anchor="middle" dominant-baseline="central" font-family="Space Grotesk, sans-serif" font-weight="700" font-size="440" letter-spacing="-22" fill="#ece6db">Fi</text>
+        </svg>
+        <span>Fi<b>BOT</b></span>
+      </a>
+      <span class="marca-slogan">Vencimientos</span>
+      <nav class="nav-desk">
+        <a href="#como">Cómo funciona</a>
+        <a href="#precios">Precios</a>
+        <a href="#preguntas">Preguntas</a>
+        <a class="btn" href="#precios">Probalo gratis</a>
+      </nav>
+    </div>
+  </div>
+
+  <header id="top" class="portada">
+    <div class="m grid">
+      <div>
+        <div class="eyebrow-punto"><i></i><span class="mono">FiBOT Vencimientos · Planilla → WhatsApp</span></div>
+        <h1 class="display">Ningún papel vencido <em>más</em>.</h1>
+        <p class="lead">Subís la planilla que ya tenés y FiBOT le avisa por WhatsApp a quien tiene que resolver cada cosa, con tiempo. Seguros, habilitaciones, VTV, matafuegos, contratos: todo en un solo lugar.</p>
+        <p class="nota-margen">Sin instalar nada y sin cargar todo de nuevo. Se arma en cinco minutos y, si nadie se ocupa, te enterás vos antes de que sea tarde.</p>
+        <div class="cta-row">
+          <a class="btn btn-grande" href="#precios">Probalo gratis 7 días</a>
+          <a class="btn-ghost" href="#como">Ver cómo funciona</a>
+        </div>
+      </div>
+
+      <div class="wa-col">
+        <div class="wa">
+          <div class="wa-top">
+            <div style="flex:1">
+              <b>FiBOT Vencimientos</b>
+              <small>en línea</small>
+            </div>
+            <span class="wa-rubro">EJEMPLO</span>
+          </div>
+          <div class="wa-cuerpo estatico">
+            <div class="b in aviso">⏰ <strong>Vence en 7 días:</strong> póliza del utilitario AB123CD (La Segunda), el lunes 1/12.<br>Te toca a vos, Martín. Ya está?<span class="t">09:00</span></div>
+            <div class="b out">Ya lo renové, sale el 1/12/2027<span class="t">09:14</span></div>
+            <div class="b in">Listo, anotado: nuevo vencimiento <strong>1/12/2027</strong>. Te aviso un mes antes. ✓<span class="t">09:14</span></div>
+            <div class="b in aviso">📋 <strong>Resumen de la semana</strong><br>3 vencen este mes · 1 sin resolver: habilitación municipal del local (vence en 4 días, Laura).<span class="t">Lun 08:00</span></div>
+            <div class="wa-input"><span>Escribí un mensaje</span></div>
+          </div>
+        </div>
+        <p class="wa-nota">Conversación de ejemplo · nombres y datos ilustrativos</p>
+      </div>
+    </div>
+  </header>
+
+  <section id="dolor" class="alt">
+    <div class="m">
+      <span class="mono rev-c" style="display:block">El problema</span>
+      <h2 class="titulo rev">La planilla existe. El problema es que nadie la abre a tiempo.</h2>
+      <div class="dos">
+        <div class="rev">
+          <p>Casi todas las empresas tienen una planilla con lo que vence. Y casi todas se enteran tarde igual: cuando llega la multa, cuando el seguro no cubre o cuando el inspector cierra el local.</p>
+        </div>
+        <div class="rev">
+          <p style="color:var(--tenue)">No es falta de orden: es que mirar una planilla todos los días no es trabajo de nadie. <strong style="color:var(--hueso);font-weight:400;border-bottom:1px solid var(--bronce)">FiBOT la mira por vos</strong> y le escribe a la persona correcta, en el momento justo.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="como">
+    <div class="m">
+      <span class="mono rev-c" style="display:block">Cómo funciona</span>
+      <h2 class="titulo rev">Tres pasos, cinco minutos.</h2>
+      <div class="pasos">
+        <div class="paso actual rev">
+          <span class="cuando">Paso 1</span>
+          <h3>Subí tu planilla</h3>
+          <p>Excel o Google Sheets, con las columnas que ya tengas. FiBOT reconoce qué es cada cosa y la fecha en que vence. Si no tenés planilla, cargás los primeros a mano en un minuto.</p>
+        </div>
+        <div class="paso rev">
+          <span class="cuando">Paso 2</span>
+          <h3>Decí quién se ocupa</h3>
+          <p>Un responsable por cada cosa, con su WhatsApp. Nadie instala nada: les llega un mensaje como cualquier otro.</p>
+        </div>
+        <div class="paso rev">
+          <span class="cuando">Paso 3</span>
+          <h3>FiBOT avisa y persigue</h3>
+          <p>30, 7 y 1 día antes (o cuando vos digas). El responsable contesta “ya está” con la fecha nueva y queda actualizado. Si nadie responde, te avisa a vos.</p>
+        </div>
+      </div>
+      <div class="chips rev-c">
+        <span class="chip">Seguros y pólizas</span><span class="chip">VTV / RTO</span><span class="chip">Habilitaciones</span>
+        <span class="chip">Matafuegos</span><span class="chip">Licencias de conducir</span><span class="chip">Contratos y alquileres</span>
+        <span class="chip">ART y libretas sanitarias</span><span class="chip">Certificados y permisos</span><span class="chip">Lo que tengas en tu planilla</span>
+      </div>
+    </div>
+  </section>
+
+  <section id="cuenta" class="alt">
+    <div class="m">
+      <span class="mono rev-c" style="display:block">La cuenta</span>
+      <h2 class="titulo rev" style="font-size:clamp(2rem,4vw,3rem)">Un solo vencimiento que se escapa cuesta más que un año de avisos.</h2>
+      <p class="bajada rev">Una multa por habilitación vencida, un siniestro sin cobertura, un camión parado en un control. Cualquiera de esos pesa más que lo que sale FiBOT Vencimientos en todo el año. La cuenta la hacés vos con tus números.</p>
+    </div>
+  </section>
+
+  <section id="precios">
+    <div class="m">
+      <span class="mono rev-c" style="display:block">Precios</span>
+      <h2 class="titulo rev">Precio claro, sin reunión.</h2>
+      <p class="bajada rev">Todos los planes arrancan con <strong>7 días gratis</strong>. Pagás por Mercado Pago, mes a mes, y cancelás cuando quieras.</p>
+      <div class="planes">
+        <div class="plan rev-c">
+          <h3>Comercio</h3>
+          <p class="para">Para un local, un estudio o un negocio chico.</p>
+          <div class="precio">$25.000 <small>/ mes</small></div>
+          <ul>
+            <li>Hasta 100 vencimientos</li>
+            <li>Hasta 3 responsables</li>
+            <li>Avisos por WhatsApp 30, 7 y 1 día antes</li>
+            <li>Actualización con un “ya está”</li>
+          </ul>
+          <a class="btn-ghost" href="https://wa.me/5491128524957?text=Quiero%20probar%20FiBOT%20Vencimientos%20(plan%20Comercio)">Empezar prueba gratis</a>
+        </div>
+        <div class="plan dest rev-c">
+          <span class="sello">El más elegido</span>
+          <h3>Pyme</h3>
+          <p class="para">Para empresas con flota, sucursales o varias áreas.</p>
+          <div class="precio">$60.000 <small>/ mes</small></div>
+          <ul>
+            <li>Hasta 1.000 vencimientos</li>
+            <li>Hasta 15 responsables</li>
+            <li>Avisos con los días que elijas</li>
+            <li>Si nadie resuelve, te avisa a vos</li>
+            <li>Resumen semanal para el dueño</li>
+          </ul>
+          <a class="btn" href="https://wa.me/5491128524957?text=Quiero%20probar%20FiBOT%20Vencimientos%20(plan%20Pyme)">Empezar prueba gratis</a>
+        </div>
+        <div class="plan rev-c">
+          <h3>A medida</h3>
+          <p class="para">Muchos vencimientos, varias empresas o conexión con tu sistema.</p>
+          <div class="precio">Hablemos</div>
+          <ul>
+            <li>Vencimientos sin límite</li>
+            <li>Conexión con tu ERP o tu sistema</li>
+            <li>Avisos por área y por sucursal</li>
+            <li>Acompañamiento en el arranque</li>
+          </ul>
+          <a class="btn-ghost" href="https://wa.me/5491128524957?text=Quiero%20FiBOT%20Vencimientos%20a%20medida">Escribinos</a>
+        </div>
+      </div>
+      <p class="letra-chica">Precios en pesos argentinos, finales.</p>
+    </div>
+  </section>
+
+  <section id="preguntas" class="alt">
+    <div class="m">
+      <span class="mono rev-c" style="display:block">Preguntas</span>
+      <h2 class="titulo rev">Lo que siempre nos preguntan.</h2>
+      <div class="faq rev">
+        <details open>
+          <summary>Tengo que instalar algo?</summary>
+          <p>No. Vos lo configurás desde el navegador y a tu gente le llegan los avisos por WhatsApp, como cualquier mensaje.</p>
+        </details>
+        <details>
+          <summary>Mi planilla es un desastre, sirve igual?</summary>
+          <p>Casi seguro que sí. FiBOT entiende columnas con nombres distintos y fechas escritas de varias formas. Lo que no entienda te lo pregunta antes de empezar.</p>
+        </details>
+        <details>
+          <summary>Y si el responsable no contesta?</summary>
+          <p>Vuelve a avisarle y, si sigue sin respuesta cerca de la fecha, te avisa a vos (o a quien elijas). Para eso está.</p>
+        </details>
+        <details>
+          <summary>Puedo cancelar cuando quiera?</summary>
+          <p>Sí. Es mes a mes, sin permanencia. Si te vas, te llevás tu planilla actualizada.</p>
+        </details>
+        <details>
+          <summary>Dónde quedan mis datos?</summary>
+          <p>En una base separada para tu empresa. Solo se usan para mandarte los avisos: no se comparten ni se venden.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <section class="cierre">
+    <div class="m">
+      <div class="rev">
+        <h2 class="titulo">Que el próximo vencimiento te encuentre con tiempo.</h2>
+        <p class="bajada">Siete días gratis para ver cómo te avisa. Si no te sirve, no pagás nada.</p>
+        <div class="cta-row">
+          <a class="btn btn-grande" href="#precios">Probalo gratis</a>
+          <a class="btn-ghost" href="/">Conocer FiBOT</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="m">
+      <div class="pie-cols">
+        <div>
+          <svg viewBox="-14 -14 2674 828" aria-label="FiBOT">
+            <g fill="none" stroke="#ece6db" stroke-width="14">
+              <rect x="0" y="0" width="800" height="800"></rect>
+              <rect x="800" y="0" width="500" height="500"></rect>
+              <rect x="1000" y="500" width="300" height="300"></rect>
+              <rect x="800" y="600" width="200" height="200"></rect>
+              <rect x="900" y="500" width="100" height="100"></rect>
+            </g>
+            <rect x="807" y="507" width="86" height="86" fill="#6FDCAE"></rect>
+            <text x="400" y="400" text-anchor="middle" dominant-baseline="central" font-family="Space Grotesk, sans-serif" font-weight="700" font-size="440" letter-spacing="-22" fill="#ece6db">Fi</text>
+            <text x="1560" y="410" dominant-baseline="central" font-family="Space Grotesk, sans-serif" font-size="330" letter-spacing="-10" fill="#ece6db"><tspan font-weight="400">Fi</tspan><tspan font-weight="700">BOT</tspan></text>
+          <p class="pie-slogan">Si es repetitivo, que lo haga FiBOT.</p>
+        </div>
+        <div>
+          <h4>Vencimientos</h4>
+          <a href="#como">Cómo funciona</a>
+          <a href="#precios">Precios</a>
+          <a href="#preguntas">Preguntas</a>
+        </div>
+        <div>
+          <h4>Hablar con alguien</h4>
+          <a href="https://wa.me/5491128524957">+54 9 11 2852-4957</a>
+          <a href="mailto:ignacio@fibot.ar">Por mail</a>
+          <a href="/privacidad/">Privacidad</a>
+        </div>
+      </div>
+      <div class="pie-legal">
+        <span>FiBOT — por <a href="mailto:ignacio@fibot.ar" rel="author">Ignacio Antuña</a></span>
+        <span>Buenos Aires, Argentina</span>
+      </div>
+    </div>
+  </footer>
+</div>
+</body>
+</html>
